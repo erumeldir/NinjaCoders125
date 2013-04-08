@@ -65,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEngine.h" />
+    <ClInclude Include="defs.h" />
+    <ClInclude Include="RenderEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

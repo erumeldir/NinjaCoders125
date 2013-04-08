@@ -26,5 +26,11 @@
     <ClInclude Include="ClientEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

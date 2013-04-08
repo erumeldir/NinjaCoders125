@@ -5,6 +5,8 @@
 #ifndef CLIENT_ENGINE_H
 #define CLIENT_ENGINE_H
 
+#include "defs.h"
+
 class ClientEngine {
 public:
 	static void init() { ce = new ClientEngine(); }
@@ -13,7 +15,7 @@ public:
 	static int getExitStatus() { return exitStatus; }
 
 	void run();
-	void exit(int i);
+	void exit(int i = 0);
 
 private:
 	//Constructors/destructors are private
