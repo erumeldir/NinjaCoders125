@@ -24,4 +24,5 @@ ClientEngine::~ClientEngine() {
  * The main game loop of the engine.  Initializes and runs the game.
  */
 void ClientEngine::run() {
+	while(
 }

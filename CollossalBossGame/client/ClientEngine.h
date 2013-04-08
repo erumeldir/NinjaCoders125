@@ -18,6 +18,8 @@ private:
 	ClientEngine();
 	virtual ~ClientEngine();
 
+	bool isRunning;
+
 	static ClientEngine *ce;	//instance
 };
 
