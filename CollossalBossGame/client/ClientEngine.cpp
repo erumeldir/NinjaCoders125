@@ -6,6 +6,7 @@
 
 //Static members
 ClientEngine *ClientEngine::ce;
+int ClientEngine::exitStatus;
 
 
 /*
@@ -13,6 +14,12 @@ ClientEngine *ClientEngine::ce;
  */
 ClientEngine::ClientEngine() {
 	isRunning = true;
+	exitStatus = 0;
+}
+
+void ClientEngine::exit(int i) {
+	isRunning = false;
+	exitStatus = i;
 }
 
 /*

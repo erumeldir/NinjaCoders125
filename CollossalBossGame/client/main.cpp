@@ -6,10 +6,9 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-	printf("Hello world!\n");
+	CE::init();
+	CE::get()->run();
+	CE::clean();
 
-	ClientEngine::init();
-	ClientEngine::get()->run();
-	ClientEngine::clean();
-	return 0;
+	return CE::getExitStatus();
 }
