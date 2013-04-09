@@ -5,6 +5,8 @@
 #include "ClientEngine.h"
 #include "defs.h"
 #include "RenderEngine.h"
+#include "ClientObjectManager.h"
+#include "game.h"
 
 //Static members
 ClientEngine *ClientEngine::ce;
@@ -20,6 +22,7 @@ ClientEngine::ClientEngine() {
 
 	//Initialize engines
 	RE::init();
+	COM::init();
 }
 
 /*
@@ -28,6 +31,7 @@ ClientEngine::ClientEngine() {
 ClientEngine::~ClientEngine() {
 	//Clean engines
 	RE::clean();
+	COM::clean();
 }
 
 
@@ -44,9 +48,11 @@ void ClientEngine::exit(int i) {
  */
 void ClientEngine::run() {
 	//Initialize the client side game information
-	
+	gameInit();
+
 	while(isRunning) {
 		//Update game logic/physics (will be moved to the server)
+		COM::get()->update();
 
 		//Render
 		RE::get()->render();
@@ -55,4 +61,5 @@ void ClientEngine::run() {
 
 		//Send event information to the server
 	}
+	gameClean();
 }

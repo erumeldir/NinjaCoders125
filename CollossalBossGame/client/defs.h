@@ -7,4 +7,6 @@
 //Standard includes
 #include <stdio.h>
 
+typedef unsigned int uint;
+
 #endif
