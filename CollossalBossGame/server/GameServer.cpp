@@ -9,7 +9,7 @@ GameServer::GameServer(void)
     client_id = 0;
 
     // set up the server network to listen 
-    network = new ServerNetworker(); 
+    network = new ServerNetworkManager(); 
 }
 
 void GameServer::update() 

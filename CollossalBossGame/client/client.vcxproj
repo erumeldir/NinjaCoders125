@@ -41,6 +41,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>H:\CSE125\NinjaCoders125\CollossalBossGame\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -61,19 +62,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClientEngine.cpp" />
+    <ClCompile Include="ClientNetworkManager.cpp" />
     <ClCompile Include="ClientObject.cpp" />
     <ClCompile Include="ClientObjectManager.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="TestObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEngine.h" />
+    <ClInclude Include="ClientNetworkManager.h" />
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="GameClient.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="TestObject.h" />
   </ItemGroup>

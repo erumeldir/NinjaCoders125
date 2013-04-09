@@ -1,4 +1,4 @@
-#include "ServerNetworker.h"
+#include "ServerNetworkManager.h"
 
 class GameServer
 {
@@ -16,5 +16,5 @@ private:
     static unsigned int client_id;
 
    // The ServerNetwork object 
-    ServerNetworker* network;
+    ServerNetworkManager * network;
 };
