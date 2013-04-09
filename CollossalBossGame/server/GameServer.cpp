@@ -1,5 +1,6 @@
 #include "GameServer.h"
-
+#include <iostream>
+using namespace std;
 
 unsigned int GameServer::client_id; 
 
@@ -23,6 +24,17 @@ void GameServer::update()
     }
 
     receiveFromClients();
+	char data[100];
+
+	cin >> data;
+	cout << data << " sent to Clients" << endl;
+	const unsigned int packet_size = sizeof(Packet);
+    char packet_data[packet_size];
+    Packet packet;
+    packet.packet_type = ACTION_EVENT;
+	memcpy(packet.packet_data, data, 100);
+    packet.serialize(packet_data);
+    network->sendToAll(packet_data,packet_size);
 }
 
 GameServer * server;
@@ -72,27 +84,16 @@ void GameServer::receiveFromClients()
             i += sizeof(Packet);
 
             switch (packet.packet_type) {
-
                 case INIT_CONNECTION:
-
-                    printf("server received init packet from client\n");
-
-                    sendActionPackets();
-
+                    printf("server received init packet from client %d\n", iter->first);
+                    // sendActionPackets();
                     break;
-
                 case ACTION_EVENT:
-
-                    printf("server received action event packet from client\n");
-
-                    sendActionPackets();
-
+                    printf("server received action event packet from client %d\n", iter->first);
+                    // sendActionPackets();
                     break;
-
                 default:
-
                     printf("error in packet types\n");
-
                     break;
             }
         }

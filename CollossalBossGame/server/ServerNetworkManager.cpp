@@ -1,4 +1,5 @@
 #include "ServerNetworkManager.h"
+#include <iostream>
 
 /*
 	This object handles networking for the server

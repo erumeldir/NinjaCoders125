@@ -1,4 +1,6 @@
 #include "GameClient.h"
+#include <iostream>
+using namespace std;
 
 unsigned int GameClient::exper;
 
@@ -50,19 +52,13 @@ void GameClient::update()
         i += sizeof(Packet);
 
         switch (packet.packet_type) {
-
             case ACTION_EVENT:
-
                 printf("client received action event packet from server\n");
-
+				cout << packet.packet_data << endl;
                 sendActionPackets();
-
                 break;
-
             default:
-
                 printf("error in packet types\n");
-
                 break;
         }
     }
