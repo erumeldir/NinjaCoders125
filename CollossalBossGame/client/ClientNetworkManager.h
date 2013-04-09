@@ -2,6 +2,7 @@
 #include <winsock2.h>
 #include <Windows.h>
 #include "NetworkServices.h"
+#include "NetworkData.h"
 #include <ws2tcpip.h>
 #include <stdio.h> 
 
@@ -29,4 +30,6 @@ public:
     // ctor/dtor
     ClientNetworkManager(void);
     ~ClientNetworkManager(void);
+
+	int receivePackets(char *);
 };

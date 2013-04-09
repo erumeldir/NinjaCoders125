@@ -4,17 +4,15 @@ class GameServer
 {
 
 public:
-
     GameServer(void);
     ~GameServer(void);
 
     void update();
+	void receiveFromClients();
+	void sendActionPackets();
 
 private:
-
-   // IDs for the clients connecting for table in ServerNetwork 
-    static unsigned int client_id;
-
-   // The ServerNetwork object 
-    ServerNetworkManager * network;
+    static unsigned int client_id;		// IDs for the clients connecting for table in ServerNetwork 
+    ServerNetworkManager * network;		// The ServerNetwork object 
+    char network_data[MAX_PACKET_SIZE];	// data buffer
 };

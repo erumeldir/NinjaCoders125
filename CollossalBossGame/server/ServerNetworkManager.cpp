@@ -1,6 +1,4 @@
 #include "ServerNetworkManager.h"
-#include "NetworkData.h"
-
 
 /*
 	This object handles networking for the server
@@ -11,7 +9,6 @@
 	3. Set the mode of the socket to be nonblocking
 	4. Setup the TCP listening socket
 	5. start listening for new clients attempting to connect
-
 */
 ServerNetworkManager::ServerNetworkManager(void)
 {
@@ -101,7 +98,7 @@ ServerNetworkManager::ServerNetworkManager(void)
 /* accept new connections
 	id: supposed to be a unique id associated with the client
 	
-	returns true if "a new" client was added. BR: Thought that we would already know what client to add
+	returns true if "a new" client was added.
 */
 bool ServerNetworkManager::acceptNewClient(unsigned int & id)
 {
@@ -138,4 +135,24 @@ int ServerNetworkManager::receiveData(unsigned int client_id, char * recvbuf)
         return iResult;
     }
     return 0;
-} 
+}
+
+// send data to all clients
+void ServerNetworkManager::sendToAll(char * packets, int totalSize)
+{
+    SOCKET currentSocket;
+    std::map<unsigned int, SOCKET>::iterator iter;
+    int iSendResult;
+
+    for (iter = sessions.begin(); iter != sessions.end(); iter++)
+    {
+        currentSocket = iter->second;
+        iSendResult = NetworkServices::sendMessage(currentSocket, packets, totalSize);
+
+        if (iSendResult == SOCKET_ERROR) 
+        {
+            printf("send failed with error: %d\n", WSAGetLastError());
+            closesocket(currentSocket);
+        }
+    }
+}

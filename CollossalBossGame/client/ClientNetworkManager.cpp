@@ -118,3 +118,19 @@ ClientNetworkManager::ClientNetworkManager(void) {
     char value = 1;
     setsockopt( ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 }
+
+int ClientNetworkManager::receivePackets(char * recvbuf) 
+{
+    iResult = NetworkServices::receiveMessage(ConnectSocket, recvbuf, MAX_PACKET_SIZE);
+
+    if ( iResult == 0 )
+    {
+        printf("Connection closed\n");
+        closesocket(ConnectSocket);
+        WSACleanup();
+        exit(1);
+    }
+
+    return iResult;
+}
+

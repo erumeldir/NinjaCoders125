@@ -1,5 +1,4 @@
 #include "GameClient.h"
-#include "NetworkData.h"
 
 unsigned int GameClient::exper;
 
@@ -19,24 +18,52 @@ GameClient::GameClient(void)
     NetworkServices::sendMessage(network->ConnectSocket, packet_data, packet_size);
 }
 
-GameClient * client;
-
-/* Answers the question "What does the client do every cycle?"
-
-*/
-void clientLoop()
+void GameClient::sendActionPackets()
 {
-    while(true)
-    {
-        //printf("Hi from clientLoop!");
-    }
+    // send action packet
+    const unsigned int packet_size = sizeof(Packet);
+    char packet_data[packet_size];
+
+    Packet packet;
+    packet.packet_type = ACTION_EVENT;
+
+    packet.serialize(packet_data);
+
+    NetworkServices::sendMessage(network->ConnectSocket, packet_data, packet_size);
 }
 
-/* the main function on the client side, initalizes the client loop
-
-*/
-int main()
+void GameClient::update()
 {
-	client = new GameClient();
-	clientLoop();
+    Packet packet;
+    int data_length = network->receivePackets(network_data);
+
+    if (data_length <= 0) 
+    {
+        //no data recieved
+        return;
+    }
+
+    int i = 0;
+    while ((unsigned int)i < (unsigned int)data_length) 
+    {
+        packet.deserialize(&(network_data[i]));
+        i += sizeof(Packet);
+
+        switch (packet.packet_type) {
+
+            case ACTION_EVENT:
+
+                printf("client received action event packet from server\n");
+
+                sendActionPackets();
+
+                break;
+
+            default:
+
+                printf("error in packet types\n");
+
+                break;
+        }
+    }
 }

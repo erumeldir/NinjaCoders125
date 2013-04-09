@@ -10,11 +10,16 @@ public:
     GameClient(void);
     ~GameClient(void);
 
-    ClientNetworkManager * network; 
+    ClientNetworkManager * network;
+	
+	void sendActionPackets();
 
+    char network_data[MAX_PACKET_SIZE];
+
+    void update();
 
 private:
 
-   // IDs for the clients connecting for table in ServerNetwork 
+   // IDs for the clients connecting for table in ServerNetwork
     static unsigned int exper;
 };
