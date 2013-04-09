@@ -66,6 +66,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DebugConsole.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="ClientEngine.cpp" />
     <ClCompile Include="ClientNetworkManager.cpp" />
@@ -78,6 +79,7 @@
     <ClCompile Include="TestObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugConsole.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="ClientEngine.h" />
     <ClInclude Include="ClientNetworkManager.h" />
