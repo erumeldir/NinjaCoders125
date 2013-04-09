@@ -1,11 +1,12 @@
 #include "TestObject.h"
 
 
-TestObject::TestObject(uint id) :
+TestObject::TestObject(uint id, Frame newCenter) :
 	ClientObject(id)
 {
 	printf("Created new TestObject %d\n", id);
 	lifeCounter = id;
+	center = newCenter;
 }
 
 
