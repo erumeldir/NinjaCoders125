@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8B5D0E89-D094-42D5-947D-81BAAEAB15B8}</ProjectGuid>
-    <RootNamespace>client</RootNamespace>
+    <ProjectGuid>{A6EE52F9-96B9-44D5-BB52-5BCE07FFDB33}</ProjectGuid>
+    <RootNamespace>server</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -37,10 +37,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>C:\Program Files\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -50,6 +50,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -66,28 +67,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Frame.cpp" />
-    <ClCompile Include="ClientEngine.cpp" />
-    <ClCompile Include="ClientNetworkManager.cpp" />
-    <ClCompile Include="ClientObject.cpp" />
-    <ClCompile Include="ClientObjectManager.cpp" />
-    <ClCompile Include="game.cpp" />
-    <ClCompile Include="GameClient.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="RenderEngine.cpp" />
-    <ClCompile Include="TestObject.cpp" />
+    <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="ServerNetworkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Frame.h" />
-    <ClInclude Include="ClientEngine.h" />
-    <ClInclude Include="ClientNetworkManager.h" />
-    <ClInclude Include="ClientObject.h" />
-    <ClInclude Include="ClientObjectManager.h" />
-    <ClInclude Include="defs.h" />
-    <ClInclude Include="game.h" />
-    <ClInclude Include="GameClient.h" />
-    <ClInclude Include="RenderEngine.h" />
-    <ClInclude Include="TestObject.h" />
+    <ClInclude Include="GameServer.h" />
+    <ClInclude Include="ServerNetworkManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">
