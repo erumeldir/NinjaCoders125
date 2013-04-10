@@ -21,6 +21,8 @@ public:
 	uint genId();
 	void freeId(uint id);
 	void add(ClientObject *obj);
+	ClientObject *find(uint id);
+	void remove(uint id);
 
 private:
 	ClientObjectManager(void);

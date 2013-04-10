@@ -69,10 +69,12 @@
   <ItemGroup>
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
+    <ClCompile Include="ServerObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="ServerNetworkManager.h" />
+    <ClInclude Include="ServerObjectManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">

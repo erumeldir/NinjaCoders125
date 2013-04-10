@@ -87,7 +87,6 @@
     <ClInclude Include="ClientNetworkManager.h" />
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
-    <ClInclude Include="defs.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="RenderEngine.h" />
