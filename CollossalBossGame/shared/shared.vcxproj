@@ -72,9 +72,11 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigurationManager.cpp" />
     <ClCompile Include="NetworkServices.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigurationManager.h" />
     <ClInclude Include="NetworkData.h" />
     <ClInclude Include="NetworkServices.h" />
   </ItemGroup>

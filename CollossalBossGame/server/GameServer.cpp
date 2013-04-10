@@ -1,4 +1,5 @@
 #include "GameServer.h"
+#include "ConfigurationManager.h"
 #include <iostream>
 using namespace std;
 
@@ -48,15 +49,6 @@ void serverLoop()
     {
         server->update();
     }
-}
-
-/* the main function on the server side, initalizes the server loop
-
-*/
-int main()
-{
-	server = new GameServer();
-	serverLoop();
 }
 
 void GameServer::receiveFromClients()
@@ -112,4 +104,17 @@ void GameServer::sendActionPackets()
     packet.serialize(packet_data);
 
     network->sendToAll(packet_data,packet_size);
+}
+
+/* the main function on the server side, initalizes the server loop
+
+*/
+int main()
+{
+	// CM::get();
+	// cout << CM::get()->find_config("asdf") << endl;
+	// system("pause");
+
+	server = new GameServer();
+	serverLoop();
 }
