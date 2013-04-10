@@ -5,10 +5,10 @@
  * Class for handling controller input
  * Code thanks to http://www.codeproject.com/Articles/26949/Xbox-360-Controller-Input-in-C-with-XInput
  */
-XboxController::XboxController(int playerNumber)
+XboxController::XboxController(int player)
 {
     // Set the Controller Number
-    controllerNum = playerNumber - 1;
+    controllerNum = player - 1;
 }
 
 XboxController::~XboxController(void)

@@ -6,7 +6,7 @@ TestObject::TestObject(uint id, Frame newCenter) :
 {
 	printf("Created new TestObject %d\n", id);
 	center = newCenter;
-	xctrl = new XboxController(id % 4);
+	xctrl = new XboxController(id % 4 + 1);
 	if(!xctrl->isConnected()) {
 		printf("Error: Controller %d is not connected\n", id % 4);
 	}
@@ -21,44 +21,45 @@ TestObject::~TestObject(void)
 bool TestObject::update() {
 	if(xctrl->isConnected()) {
 		if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
-			printf("A is pressed\r");
+			printf("A is pressed                               \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-			printf("B is pressed\r");
+			printf("B is pressed                               \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-			printf("X is pressed\r");
+			printf("X is pressed                               \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
-			printf("Y is pressed\r");
+			printf("Y is pressed                               \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-			printf("start > is pressed\r");
+			printf("start > is pressed                         \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
-			printf("< back is pressed\r");
+			printf("< back is pressed                          \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-			printf("UP is pressed\r");
+			printf("UP is pressed                              \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-			printf("LEFT is pressed\r");
+			printf("LEFT is pressed                            \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
-			printf("DOWN is pressed\r");
+			printf("DOWN is pressed                            \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-			printf("RIGHT is pressed\r");
+			printf("RIGHT is pressed                           \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) {
-			printf("Left thumbstick is pressed\r");
+			printf("Left thumbstick is pressed                 \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			printf("Right thumbstick is pressed\r");
+			printf("Right thumbstick is pressed                \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-			printf("Left shoulder is pressed\r");
+			printf("Left shoulder is pressed                   \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			printf("Right shoulder is pressed\r");
+			printf("Right shoulder is pressed                  \r");
 		} else if(xctrl->getState().Gamepad.bLeftTrigger) {
-			printf("Left trigger is pressed\r");
+			printf("Left trigger is pressed                    \r");
 		} else if(xctrl->getState().Gamepad.bRightTrigger) {
-			printf("Right trigger is pressed\r");
+			printf("Right trigger is pressed                   \r");
 		} else {
-			printf("Left stick (%3d,%3d), Right stick (%3d,%3d)\r",
+			printf("Left stick (%4x,%4x), Right stick (%4x,%4x)\r",
 				xctrl->getState().Gamepad.sThumbLX, xctrl->getState().Gamepad.sThumbLY,
 				xctrl->getState().Gamepad.sThumbRX, xctrl->getState().Gamepad.sThumbRY);
 		}
+		xctrl->vibrate(0, 0);//65535);
 	} else {
-		printf("Error: Controller is not connected\r");
+		printf("Error: Controller is not connected             \r");
 	}
 	return false;
 }

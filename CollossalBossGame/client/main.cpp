@@ -22,7 +22,6 @@ void clientLoop()
 
 
 
-
 int main(int argc, char **argv) {
 	/*
 	client = new GameClient();
@@ -34,4 +33,3 @@ int main(int argc, char **argv) {
 
 	return CE::getExitStatus();
 }
-

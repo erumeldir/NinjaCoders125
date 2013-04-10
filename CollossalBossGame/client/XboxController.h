@@ -5,10 +5,10 @@
  * Code thanks to http://www.codeproject.com/Articles/26949/Xbox-360-Controller-Input-in-C-with-XInput
  */
 
-
 // We need the Windows Header and the XInput Header
 #include <windows.h>
 #include <XInput.h>
+
 
 // Now, the XInput Library
 // NOTE: COMMENT THIS OUT IF YOU ARE NOT USING
