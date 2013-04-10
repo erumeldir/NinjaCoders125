@@ -15,6 +15,12 @@
 // A COMPILER THAT SUPPORTS THIS METHOD OF LINKING LIBRARIES
 #pragma comment(lib, "XInput.lib")
 
+//Useful defines
+#define JOY_MAX 0x7fff
+#define DEADZONE JOY_MAX / 2
+#define DIV JOY_MAX * 2	//Divide by this to get an acceptable motion speed
+#define MAX_VIB 0xFFFF
+
 class XboxController
 {
 public:

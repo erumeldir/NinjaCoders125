@@ -1,4 +1,5 @@
 #include "TestObject.h"
+#include "ClientEngine.h"
 #include <math.h>
 #define M_PI 3.14159
 
@@ -34,6 +35,7 @@ bool TestObject::update() {
 			printf("start > is pressed                                         \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
 			printf("< back is pressed                                          \r");
+			CE::get()->exit();
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
 			printf("UP is pressed                                              \r");
 		} else if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
@@ -65,10 +67,7 @@ bool TestObject::update() {
 				y = xctrl->getState().Gamepad.sThumbLY;
 		float x2 = xctrl->getState().Gamepad.sThumbRX,
 				y2 = xctrl->getState().Gamepad.sThumbRY;
-#define JOY_MAX 0x7fff
-#define DEADZONE JOY_MAX / 2
-#define DIV JOY_MAX * 2
-#define MAX_VIB 65535
+
 		if(fabs(x) > DEADZONE || fabs(y) > DEADZONE) {
 			rm->getFrameOfRef()->setRot(Rot_t(0,0,M_PI + atan2(x / DEADZONE,y / DEADZONE)));
 		} else if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
@@ -79,7 +78,7 @@ bool TestObject::update() {
 			rm->getFrameOfRef()->setPos(Point_t(pos.x + x2 / DIV, pos.y - y2 / DIV, 0));
 			xctrl->vibrate(MAX_VIB, MAX_VIB);
 		} else {
-			xctrl->vibrate(0, 0);//65535);
+			xctrl->vibrate(0, 0);
 		}
 	} else {
 		printf("Error: Controller is not connected                             \r");
