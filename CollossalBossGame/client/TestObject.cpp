@@ -1,5 +1,6 @@
 #include "TestObject.h"
-
+#include <math.h>
+#define M_PI 3.14159
 
 TestObject::TestObject(uint id) :
 	ClientObject(id)
@@ -9,7 +10,7 @@ TestObject::TestObject(uint id) :
 	if(!xctrl->isConnected()) {
 		printf("Error: Controller %d is not connected\n", id % 4);
 	}
-	rm = new RenderModel();
+	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI));
 }
 
 
@@ -54,11 +55,32 @@ bool TestObject::update() {
 		} else if(xctrl->getState().Gamepad.bRightTrigger) {
 			printf("Right trigger is pressed                                   \r");
 		} else {
+			//32767 = 7fff
+			
 			printf("Left stick (%4.4d,%4.4d), Right stick (%4.4d,%4.4d)\r",
 				xctrl->getState().Gamepad.sThumbLX, xctrl->getState().Gamepad.sThumbLY,
 				xctrl->getState().Gamepad.sThumbRX, xctrl->getState().Gamepad.sThumbRY);
 		}
-		xctrl->vibrate(0, 0);//65535);
+		float x = xctrl->getState().Gamepad.sThumbLX,
+				y = xctrl->getState().Gamepad.sThumbLY;
+		float x2 = xctrl->getState().Gamepad.sThumbRX,
+				y2 = xctrl->getState().Gamepad.sThumbRY;
+#define JOY_MAX 0x7fff
+#define DEADZONE JOY_MAX / 2
+#define DIV JOY_MAX * 2
+#define MAX_VIB 65535
+		if(fabs(x) > DEADZONE || fabs(y) > DEADZONE) {
+			rm->getFrameOfRef()->setRot(Rot_t(0,0,M_PI + atan2(x / DEADZONE,y / DEADZONE)));
+		} else if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
+			rm->getFrameOfRef()->setRot(Rot_t(0,0,M_PI + atan2(x2 / DEADZONE,y2 / DEADZONE)));
+		}
+		if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
+			Point_t pos = rm->getFrameOfRef()->getPos();
+			rm->getFrameOfRef()->setPos(Point_t(pos.x + x2 / DIV, pos.y - y2 / DIV, 0));
+			xctrl->vibrate(MAX_VIB, MAX_VIB);
+		} else {
+			xctrl->vibrate(0, 0);//65535);
+		}
 	} else {
 		printf("Error: Controller is not connected                             \r");
 	}

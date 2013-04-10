@@ -16,9 +16,13 @@ public:
 	virtual ~Frame(void);
 	void addChild(Frame* newChild);
 	
-	Point_t pos;
-	Rot_t   rot;
+	void setPos(Point_t pt) { pos = pt; }
+	void setRot(Rot_t rt) { rot = rt; }
+	Point_t getPos() { return pos; }
+	Rot_t getRot() { return rot; }
 private:
+	Point_t pos;
+	Rot_t rot;
 	list<Frame*> lsAttachedFrames;
 };
 

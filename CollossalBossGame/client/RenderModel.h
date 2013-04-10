@@ -12,11 +12,11 @@
 class RenderModel
 {
 public:
-	RenderModel(void);
+	RenderModel(Point_t pos, Rot_t rot);
 	virtual ~RenderModel(void);
 
 	virtual void render();
-
+	Frame *getFrameOfRef() { return ref; }
 private:
 	LPDIRECT3DVERTEXBUFFER9 vbuf;
 	Frame *ref;	//The skeleton

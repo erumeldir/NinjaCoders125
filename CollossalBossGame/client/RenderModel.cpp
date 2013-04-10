@@ -11,13 +11,13 @@ struct RENDERVERTEX
 	//rhw is a perspective flag. not sure why it's a float
 };
 
-RenderModel::RenderModel(void)
+RenderModel::RenderModel(Point_t pos, Rot_t rot)
 {
 	//Create the reference frame
-	ref = new Frame(Point_t(), Rot_t());
-	verts[0] = Point_t(200.0f, 0.f, 0.f);
-	verts[1] = Point_t(300.0f, 350.0f, 0.0f);
-	verts[2] = Point_t(0.0f, 350.0f, 0.0f);
+	ref = new Frame(pos, rot);
+	verts[0] = Point_t(-100.f, -100.f, 0.f);
+	verts[1] = Point_t(100.f, -100.f, 0.0f);
+	verts[2] = Point_t(0.f, 100.f, 0.0f);
 
 	//now initialize any models we want to have first
 	// create three vertices using the RENDERVERTEX struct built earlier
@@ -59,29 +59,26 @@ void RenderModel::render() {
 
 	//TODO: while queue has stuff, loop
 	//messy code: want to get the model info, then store that.
-	float cosT = cos(ref->rot.z),
-		  sinT = sin(ref->rot.z);
-	verts[0].x = (verts[0].x - ref->pos.x) * cosT - (verts[0].y -ref->pos.y) * sinT + ref->pos.x;
-	verts[0].y = (verts[0].y - ref->pos.y) * cosT + (verts[0].x - ref->pos.x) * sinT + ref->pos.y;
-	verts[1].x = (verts[1].x - ref->pos.x) * cosT - (verts[1].y -ref->pos.y) * sinT + ref->pos.x;
-	verts[1].y = (verts[1].y - ref->pos.y) * cosT + (verts[1].x - ref->pos.x) * sinT + ref->pos.y;
-	verts[2].x = (verts[2].x - ref->pos.x) * cosT - (verts[2].y -ref->pos.y) * sinT + ref->pos.x;
-	verts[2].y = (verts[2].y - ref->pos.y) * cosT + (verts[2].x - ref->pos.x) * sinT + ref->pos.y;
+	float cosT = cos(ref->getRot().z),
+		  sinT = sin(ref->getRot().z);
+	Point_t pt0, pt1, pt2;
 	
-	/*
-	verts[1].x = verts[1].x * cosT - verts[1].y * sinT;
-	verts[1].y = verts[1].y * cosT + verts[1].x * sinT;
-	
-	verts[2].x = verts[2].x * cosT - verts[2].y * sinT;
-	verts[2].y = verts[2].y * cosT + verts[2].x * sinT;
-	*/
+	pt0.x = (verts[0].x) * cosT - (verts[0].y) * sinT + ref->getPos().x;
+	pt0.y = (verts[0].y) * cosT + (verts[0].x) * sinT + ref->getPos().y;
+	pt0.z = 0;
+	pt1.x = (verts[1].x) * cosT - (verts[1].y) * sinT + ref->getPos().x;
+	pt1.y = (verts[1].y) * cosT + (verts[1].x) * sinT + ref->getPos().y;
+	pt1.z = 0;
+	pt2.x = (verts[2].x) * cosT - (verts[2].y) * sinT + ref->getPos().x;
+	pt2.y = (verts[2].y) * cosT + (verts[2].x) * sinT + ref->getPos().y;
+	pt2.z = 0;
+
 	RENDERVERTEX vertices[] =
 	{
-		{ verts[0].x, verts[0].y, verts[0].z, 1.0f, },
-		{ verts[1].x, verts[1].y, verts[1].z, 1.0f, },
-		{ verts[2].x, verts[2].y, verts[2].z, 1.0f, },
+		{ pt0.x, pt0.y, pt0.z, 1.0f, },
+		{ pt1.x, pt1.y, pt1.z, 1.0f, },
+		{ pt2.x, pt2.y, pt2.z, 1.0f, },
 	};
-	ref->rot.z += 0.0005;
 
 	RE::get()->direct3dDevice->CreateVertexBuffer(
 		3*sizeof(RENDERVERTEX),
