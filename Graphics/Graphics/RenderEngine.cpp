@@ -146,3 +146,28 @@ void RenderEngine::render() {
 	direct3dDevice->Present(NULL, NULL, NULL, NULL);    // displays the created frame
 }
 
+/*loads a single model
+ *
+ * Authors: Bryan
+ */
+#include<string>
+void load () {
+	//the file
+	char * strFileName;
+	strcpy(strFileName, "slime");
+
+	//Allocation class. doesn't seem to be used after this...
+	CAllocateHierarchy Alloc;
+
+	if(FAILED(D3DXLoadMeshHierarchyFromX(strFileName,		// File load
+										D3DXMESH_MANAGED,	// Load Options
+										direct3dDevice,		// D3D Device
+										&Alloc,				// Hierarchy allocation class
+										NULL,				// NO Effects
+										&m_pFrameRoot,		// Frame hierarchy
+										&m_pAnimController)))// Animation Controller
+	{
+		MessageBox(NULL, strFileName, "Model Load Error", MB_OK);
+	}
+
+}

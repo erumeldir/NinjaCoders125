@@ -19,6 +19,10 @@
 
 #include <d3dx9.h>
 
+
+//for importing models
+#include "CAllocateHierarchy.h"
+
 // define the screen resolution
 #define SCREEN_WIDTH  1024 
 #define SCREEN_HEIGHT 768
@@ -31,6 +35,8 @@ public:
 	static void init(HINSTANCE hInstance) { re = new RenderEngine(hInstance); }
 	static RenderEngine *get() { return re; }
 	static void clean() { delete re; }
+
+	void load();
 	
 	void render();
 	
@@ -41,6 +47,8 @@ private:
 	void startWindow (HINSTANCE hInstance);
 	void renderInitalization();		//the stuff that can't be pulled from here
 	void sceneDrawing();
+
+	_D3DXFRAME rootFrame;
 
 	HWND windowHandle;	
 

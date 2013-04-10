@@ -22,6 +22,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	//we've gotten the renderer
 	RenderEngine * re = RenderEngine::get();
 
+	
+
 	// enter the main loop:
 	MSG msg;	//for his stuff...
 
