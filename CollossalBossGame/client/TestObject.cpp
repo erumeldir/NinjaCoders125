@@ -6,7 +6,7 @@ TestObject::TestObject(uint id, Frame newCenter) :
 {
 	printf("Created new TestObject %d\n", id);
 	center = newCenter;
-	xctrl = new XboxController(id % 4);
+	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 	if(!xctrl->isConnected()) {
 		printf("Error: Controller %d is not connected\n", id % 4);
 	}
