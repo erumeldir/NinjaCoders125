@@ -76,6 +76,7 @@
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
+    <ClCompile Include="RenderModel.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="RenderEngine.h" />
+    <ClInclude Include="RenderModel.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="XboxController.h" />
   </ItemGroup>

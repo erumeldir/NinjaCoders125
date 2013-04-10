@@ -7,7 +7,7 @@
 
 void gameInit() {
 	COM *com = COM::get();
-	TestObject   *obj0 = new TestObject(com->genId(), Frame(Point_t(), Rot_t()));
+	TestObject   *obj0 = new TestObject(com->genId());
 				/* *obj1 = new TestObject(com->genId()),
 				 *obj2 = new TestObject(com->genId()),
 				 *obj3 = new TestObject(com->genId()),

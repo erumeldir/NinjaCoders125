@@ -1,4 +1,5 @@
 #include "ClientObjectManager.h"
+#include "RenderEngine.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
@@ -27,6 +28,9 @@ void ClientObjectManager::update() {
 			lsObjsToDelete.push_back(it->second->getId());
 			continue;
 		}
+
+		//Give objects to the render engine for rendering
+		RE::get()->renderThis(it->second);
 
 		//Update physics
 
