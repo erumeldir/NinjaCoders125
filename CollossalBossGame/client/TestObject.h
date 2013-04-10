@@ -7,13 +7,15 @@
 class TestObject : public ClientObject
 {
 public:
-	TestObject(uint id, Frame newCenter);
+	TestObject(uint id);
 	virtual ~TestObject(void);
 
 	virtual bool update();
 
+	virtual RenderModel* getRenderModel() { return rm; }
+
 private:
-	Frame center;
+	RenderModel *rm;
 	XboxController *xctrl;
 };
 

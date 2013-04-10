@@ -15,10 +15,10 @@ public:
 	Frame(Point_t pos, Rot_t rot);
 	virtual ~Frame(void);
 	void addChild(Frame* newChild);
-
-private:
+	
 	Point_t pos;
 	Rot_t   rot;
+private:
 	list<Frame*> lsAttachedFrames;
 };
 
