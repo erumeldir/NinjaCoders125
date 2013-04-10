@@ -1,6 +1,8 @@
 #include <string>
 
 #define MAX_CONFIG_ITEMS 5
+#define MAX_KEY_LENGTH 32
+#define MAX_VALUE_LENGTH 256
 
 class ConfigurationManager
 {
@@ -12,10 +14,12 @@ private:
 	ConfigurationManager();
 	// virtual ~ConfigurationManager();
 	
-	void init(ConfigurationManager * cm);
+	void init(ConfigurationManager * cm);					// Initializes the CM singleton
 	
-	bool initialized;
-	char table[32][2][MAX_CONFIG_ITEMS];
-	int  tlen[2][MAX_CONFIG_ITEMS];
+	bool initialized;										// Set to true when init() is called
+	char keytable[MAX_KEY_LENGTH][MAX_CONFIG_ITEMS];		// Table of keys.
+	char valuetable[MAX_VALUE_LENGTH][MAX_CONFIG_ITEMS];	// Table of values.
+	int  keylen[MAX_CONFIG_ITEMS];							// Number of characters of each key
+	int  valuelen[MAX_CONFIG_ITEMS];						// Number of characters of each value
 };
 typedef ConfigurationManager CM;
