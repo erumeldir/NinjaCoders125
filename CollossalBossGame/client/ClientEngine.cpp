@@ -60,6 +60,7 @@ void ClientEngine::run() {
 		//Poll events
 
 		//Send event information to the server
+		Sleep(10);
 	}
 	gameClean();
 }
