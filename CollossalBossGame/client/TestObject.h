@@ -1,6 +1,8 @@
 #pragma once
 #include "ClientObject.h"
 #include "Frame.h"
+#include "XboxController.h"
+
 
 class TestObject : public ClientObject
 {
@@ -11,7 +13,7 @@ public:
 	virtual bool update();
 
 private:
-	int lifeCounter;
 	Frame center;
+	XboxController *xctrl;
 };
 

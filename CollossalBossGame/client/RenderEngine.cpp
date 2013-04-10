@@ -58,6 +58,10 @@ void RenderEngine::startWindow()
 	);
 
 	ShowWindow(windowHandle, 1);	//1 is the flag for whether to show the window
+/* These did not fix our window problems
+	printf("%s\n", (SetActiveWindow(windowHandle) == NULL ? "Failed to set active window" : "Successfully set active window"));
+	printf("Enabled window: %d\n", EnableWindow(windowHandle, TRUE));
+*/
 }
 
 /*Initialize the 3d Render Environment
