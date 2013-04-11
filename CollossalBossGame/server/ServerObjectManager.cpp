@@ -1,6 +1,6 @@
 #include "ServerObjectManager.h"
 
-ServerObjectManager *ServerObjectManager::com;
+ServerObjectManager *ServerObjectManager::som;
 
 ServerObjectManager::ServerObjectManager(void) {
 	curId = 0;
@@ -9,6 +9,12 @@ ServerObjectManager::ServerObjectManager(void) {
 
 ServerObjectManager::~ServerObjectManager(void)
 {
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+		delete it->second;
+	}
+	mObjs.clear();
 }
 
 /*

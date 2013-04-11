@@ -8,8 +8,13 @@ ClientObjectManager::ClientObjectManager(void) {
 }
 
 
-ClientObjectManager::~ClientObjectManager(void)
-{
+ClientObjectManager::~ClientObjectManager(void) {
+	for(map<uint, ClientObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+		delete it->second;
+	}
+	mObjs.clear();
 }
 
 /*

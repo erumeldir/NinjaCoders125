@@ -69,11 +69,14 @@
   <ItemGroup>
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
+    <ClCompile Include="ServerObject.cpp" />
     <ClCompile Include="ServerObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="PhysicsModel.h" />
     <ClInclude Include="ServerNetworkManager.h" />
+    <ClInclude Include="ServerObject.h" />
     <ClInclude Include="ServerObjectManager.h" />
   </ItemGroup>
   <ItemGroup>

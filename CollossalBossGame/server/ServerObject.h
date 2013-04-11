@@ -1,5 +1,6 @@
 #pragma once
 #include "defs.h"
+#include "PhysicsModel.h"
 
 class ServerObject
 {
@@ -9,6 +10,7 @@ public:
 
 	//To create a server object, you must implement these methods
 	virtual bool update() = 0;
+	virtual PhysicsModel *getPhysicsModel() = 0;
 
 	uint getId() { return id; }
 
