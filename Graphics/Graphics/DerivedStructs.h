@@ -21,7 +21,7 @@
 typedef struct _D3DXMESHCONTAINER_DERIVED: public D3DXMESHCONTAINER
 {
 	//Mesh variables
-    LPDIRECT3DTEXTURE9*  ppTextures;		// Textures of the mesh
+	LPDIRECT3DTEXTURE9*  ppTextures;		// Textures of the mesh
 	D3DMATERIAL9*		 pMaterials9;		// Use the DirectX 9 Material type
 	
 	//Skinned mesh variables
@@ -31,7 +31,7 @@ typedef struct _D3DXMESHCONTAINER_DERIVED: public D3DXMESHCONTAINER
 
 	// Attribute table stuff
 	LPD3DXATTRIBUTERANGE pAttributeTable;	// The attribute table
-    DWORD                NumAttributeGroups;// The number of attribute groups
+	DWORD                NumAttributeGroups;// The number of attribute groups
 
 }MESHCONTAINER, *LPMESHCONTAINER;
 
