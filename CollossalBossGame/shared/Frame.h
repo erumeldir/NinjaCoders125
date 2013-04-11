@@ -9,6 +9,11 @@
 #include <list>
 using namespace std;
 
+struct stateMessage {
+	Point_t pos;
+	Rot_t rot;
+};
+
 class Frame {
 public:
 	Frame();
@@ -23,6 +28,10 @@ public:
 	void setRot(const Rot_t &rt) { rot = rt; }
 	Point_t getPos() { return pos; }
 	Rot_t getRot() { return rot; }
+
+	pair<int, char*> serialize();
+	void deserialize(char* newState);
+	stateMessage st;
 private:
 	Point_t pos;
 	Rot_t rot;

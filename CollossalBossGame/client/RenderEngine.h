@@ -21,6 +21,7 @@
 #include "ClientObject.h"
 using namespace std;
 
+
 // define the screen resolution
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
@@ -28,11 +29,11 @@ using namespace std;
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
 
+#include "RenderModel.h"
+
 class RenderEngine {
 public:
-	static void init() {
-	re = new RenderEngine();
-	}
+	static void init() { re = new RenderEngine(); }
 	static RenderEngine *get() { return re; }
 	static void clean() { delete re; }
 

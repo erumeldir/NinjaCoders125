@@ -1,3 +1,10 @@
+/*
+ * RenderModel.h
+ * Contains the information necessary for rendering
+ *
+ * Authors: Nathan, Haro, Suman, Bryan
+ */
+
 #pragma once
 
 #include "Frame.h"
@@ -22,4 +29,3 @@ private:
 	Frame *ref;	//The skeleton
 	Point_t verts[3];
 };
-

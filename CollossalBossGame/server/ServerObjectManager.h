@@ -17,6 +17,7 @@ public:
 	static void clean() { delete som; }
 
 	void update();
+	void sendState();
 
 	//Object handling
 	uint genId();

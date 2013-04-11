@@ -168,9 +168,8 @@ void ClientNetworkManager::update()
             case ACTION_EVENT:
                 //printf("client received action event packet from server\n");
 					
-					// controllerstatus cs;
-				memcpy(&(((TestObject*)COM::get()->find(0))->cstat), &packet.packet_data, sizeof(controllerstatus));
-					// ((TestObject*)COM::find(0))->cstat = cs;
+				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
+				COM::get()->find(0)->deserialize(packet.packet_data);
                 break;
             default:
                 printf("error in packet types\n");

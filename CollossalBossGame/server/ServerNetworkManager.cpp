@@ -1,5 +1,7 @@
 #include "ServerNetworkManager.h"
 #include "Action.h"
+#include "ServerObjectManager.h"
+#include "TestSObj.h"
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
@@ -115,6 +117,14 @@ void ServerNetworkManager::update() {
 	// get new clients
     if(acceptNewClient(client_id)) {
         printf("client %d has been connected to the server\n",client_id);
+
+		// Create a Test Server Object for them (for now)
+		SOM *som = SOM::get();
+		// Ok, since we should only have one object on both sides, the id's will match
+		// but how do we get them matching later? maybe the server should send
+		// the client the id back or something?
+		som->add(new TestSObj(som->genId()));
+
         client_id++;
     }
 	// Collect data from clients
@@ -143,14 +153,17 @@ void ServerNetworkManager::receiveFromClients() {
                     // sendActionPackets();
                     break;
                 case ACTION_EVENT:
-                    //printf("server received action event packet from client %d\n", iter->first);
-					controllerstatus cs;
-					memcpy(&cs, &packet.packet_data, sizeof(controllerstatus));
-					//cout << cs.A << endl;
+                    printf("server received action event packet from client %d\n", iter->first);
+					//inputstatus is;
+					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
-					char packet_data[sizeof(Packet)];
+					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
+					memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
+
+					// Re-send what you gave me xD (wow, we're a useful server =P)
+					/*char packet_data[sizeof(Packet)];
 					packet.serialize(packet_data);
-					sendToAll(packet_data, sizeof(packet));
+					sendToAll(packet_data, sizeof(packet));*/
                     // sendActionPackets();
                     break;
                 default:

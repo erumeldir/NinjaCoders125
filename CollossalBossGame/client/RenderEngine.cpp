@@ -13,21 +13,6 @@
 //Static Members
 RenderEngine *RenderEngine::re;
 
-//Global vars
-RenderModel *rm;
-
-/*
-#define CUSTOMFVF (D3DFVF_XYZRHW)
-
-struct RENDERVERTEX
-{
-	FLOAT x, y, z, rhw; // from the D3DFVF_XYZRHW flag
-	//rhw is a perspective flag. not sure why it's a float
-};
-*/
-
-
-
 /* create a window that we will render in
 *
 * Returns nothing
@@ -101,48 +86,15 @@ void RenderEngine::renderInitalization()
 RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
-#if 0
-	///////////////////////////////////////////////////////////////////////////
-	//////////////////////////BEGIN TEST CODE//////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////
-
-	//now initialize any models we want to have first
-	// create three vertices using the RENDERVERTEX struct built earlier
-	RENDERVERTEX vertices[] =
-	{
-		{ 320.0f, 50.0f, 0.5f, 1.0f, },
-		{ 520.0f, 400.0f, 0.5f, 1.0f, },
-		{ 120.0f, 400.0f, 0.5f, 1.0f, },
-	};
-
-	// create the vertex and store the pointer into vertexBuffer, which is created globally
-	direct3dDevice->CreateVertexBuffer(
-		3*sizeof(RENDERVERTEX),
-		0,
-		CUSTOMFVF,
-		D3DPOOL_MANAGED,
-		&vertexBuffer,
-		NULL
-	);
-
-	VOID* vertexInfo; // the void pointer
-
-	vertexBuffer->Lock(0, 0, (void**)&vertexInfo, 0); // lock the vertex buffer
-	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
-	vertexBuffer->Unlock(); // unlock the vertex buffer
-	///////////////////////////////////////////////////////////////////////////
-	//////////////////////END TEST CODE////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////
-#endif
 }
 
 /*
 * Clean up DrectX and any other rendering libraries that we may have.
+* Bryan
 */
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
-	delete rm;
 }
 
 /*where we actually draw a scene
@@ -155,70 +107,6 @@ void RenderEngine::sceneDrawing() {
 		(*it)->getRenderModel()->render();
 	}
 	lsObjs.clear();
-#if 0
-	// select which vertex format we are using
-	direct3dDevice->SetFVF(CUSTOMFVF);
-
-	//while the queue has objects, update
-	//TODO: Object queue
-
-	//TODO: while queue has stuff, loop
-	//messy code: want to get the model info, then store that.
-	static float theta = 0;
-	Point_t p0(200.0f, 0.f, 0.f);
-	Point_t p1(300.0f, 350.0f, 0.0f);
-	Point_t p2(0.0f, 350.0f, 0.0f);
-	Point_t pct(275.f, 150.f, 0.0f);
-
-	float cosT = cos(theta),
-		  sinT = sin(theta);
-	p0.x = (p0.x - pct.x) * cosT - (p0.y -pct.y) * sinT + pct.x;
-	p0.y = (p0.y - pct.y) * cosT + (p0.x - pct.x) * sinT + pct.y;
-	p1.x = (p1.x - pct.x) * cosT - (p1.y -pct.y) * sinT + pct.x;
-	p1.y = (p1.y - pct.y) * cosT + (p1.x - pct.x) * sinT + pct.y;
-	p2.x = (p2.x - pct.x) * cosT - (p2.y -pct.y) * sinT + pct.x;
-	p2.y = (p2.y - pct.y) * cosT + (p2.x - pct.x) * sinT + pct.y;
-	
-	/*
-	p1.x = p1.x * cosT - p1.y * sinT;
-	p1.y = p1.y * cosT + p1.x * sinT;
-	
-	p2.x = p2.x * cosT - p2.y * sinT;
-	p2.y = p2.y * cosT + p2.x * sinT;
-	*/
-	RENDERVERTEX vertices[] =
-	{
-		{ p0.x, p0.y, p0.z, 1.0f, },
-		{ p1.x, p1.y, p1.z, 1.0f, },
-		{ p2.x, p2.y, p2.z, 1.0f, },
-	};
-	theta+= 0.005f;
-
-	direct3dDevice->CreateVertexBuffer(
-		3*sizeof(RENDERVERTEX),
-		0,
-		CUSTOMFVF,
-		D3DPOOL_MANAGED,
-		&vertexBuffer,
-		NULL
-	);
-
-	VOID* vertexInfo; // the void pointer
-
-	vertexBuffer->Lock(0, 0, (void**)&vertexInfo, 0); // lock the vertex buffer
-	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
-	vertexBuffer->Unlock(); // unlock the vertex buffer
-
-	//end messy code
-
-	// select the vertex buffer to display
-	direct3dDevice->SetStreamSource(0, vertexBuffer, 0, sizeof(RENDERVERTEX));
-
-	// copy the vertex buffer to the back buffer
-	direct3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
-
-	//end the while loop
-#endif
 }
 
 void RenderEngine::renderThis(ClientObject *obj) {
