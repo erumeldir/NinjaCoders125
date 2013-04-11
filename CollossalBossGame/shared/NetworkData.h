@@ -10,9 +10,17 @@ enum PacketTypes {
 	MESSAGE = 2,
 };
 
+enum CommandTypes {
+    CREATE = 0,
+    UPDATE = 1,
+};
+
 struct Packet {
 
     unsigned int packet_type;
+	unsigned int object_id;
+	unsigned int packet_number;
+	unsigned int command_type;
 	char packet_data[100];
 
     void serialize(char * data) {

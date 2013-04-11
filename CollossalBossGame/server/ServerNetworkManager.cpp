@@ -158,7 +158,8 @@ void ServerNetworkManager::receiveFromClients() {
 					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
 					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
-					memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
+					SOM::get()->find(packet.object_id)->deserialize(packet.packet_data);
+					//memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 
 					// Re-send what you gave me xD (wow, we're a useful server =P)
 					/*char packet_data[sizeof(Packet)];

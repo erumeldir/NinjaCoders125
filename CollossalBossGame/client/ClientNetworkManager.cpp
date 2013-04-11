@@ -169,7 +169,7 @@ void ClientNetworkManager::update()
                 //printf("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
-				COM::get()->find(0)->deserialize(packet.packet_data);
+				COM::get()->find(packet.object_id)->deserialize(packet.packet_data);
                 break;
             default:
                 printf("error in packet types\n");
@@ -178,13 +178,14 @@ void ClientNetworkManager::update()
     }
 }
 
-void ClientNetworkManager::sendData(char * data, int datalen) {
+void ClientNetworkManager::sendData(char * data, int datalen, int objectID) {
 	std::cout << data << std::endl;
 	const unsigned int packet_size = sizeof(Packet);
     char packet_data[packet_size];
 
     Packet packet;
     packet.packet_type = ACTION_EVENT;
+	packet.object_id = objectID;
 	memcpy(packet.packet_data, data, datalen);
     packet.serialize(packet_data);
 

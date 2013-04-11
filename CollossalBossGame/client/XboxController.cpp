@@ -67,7 +67,8 @@ void XboxController::sendInput() {
 		//controllerstatus cs;
 		//memcpy(&cs, reinterpret_cast<char*>(&cstat), sizeof(cs));
 
-		ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus));
+		// TODO: Should be the player object id, which we'll get from the server after connecting
+		ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus), 0);
 	}
 }
 
