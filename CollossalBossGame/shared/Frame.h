@@ -17,7 +17,7 @@ struct stateMessage {
 class Frame {
 public:
 	Frame();
-	Frame(Point_t pos, Rot_t rot);
+	Frame(const Point_t &pos, const Rot_t &rot);
 	virtual ~Frame(void);
 	void addChild(Frame* newChild);
 	

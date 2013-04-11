@@ -33,9 +33,7 @@ LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPAR
 
 class RenderEngine {
 public:
-	static void init() {
-	re = new RenderEngine();
-	}
+	static void init() { re = new RenderEngine(); }
 	static RenderEngine *get() { return re; }
 	static void clean() { delete re; }
 
@@ -51,8 +49,6 @@ private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
-
-	RenderModel triangle;
 
 	RenderEngine();
 	virtual ~RenderEngine();

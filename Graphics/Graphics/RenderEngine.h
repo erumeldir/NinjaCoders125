@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <d3d9.h>
+#include "CModel.h"
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d9.lib")
@@ -30,6 +31,7 @@
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
 
+
 class RenderEngine {
 public:
 	static void init(HINSTANCE hInstance) { re = new RenderEngine(hInstance); }
@@ -38,7 +40,7 @@ public:
 
 	void load();
 	
-	void render();
+	void render(CModel * g_pModel);
 	
 	LPDIRECT3D9 direct3dInterface;    // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice;    // the pointer to the device class
@@ -48,7 +50,16 @@ private:
 	void renderInitalization();		//the stuff that can't be pulled from here
 	void sceneDrawing();
 
-	LPD3DXFRAME rootFrame;
+	LPMESHCONTAINER			firstMesh;
+	UINT					maxBones;
+	LPD3DXMATRIX			boneMatrices;		// Used when calculating the bone position
+	
+	D3DXVECTOR3			boundingSphereCenter;			// Center of bounding sphere of object
+	float				boundingSphereRadius;				// Radius of bounding sphere of object
+	
+	D3DXMATRIXA16 matWorld, matYWorld, matXWorld, matTranslate, matUp, matView, matProj, matZWorld;
+
+	LPD3DXFRAME				rootFrame;
 	LPD3DXANIMATIONCONTROLLER   animationController;// Controller for the animations
 
 	HWND windowHandle;	

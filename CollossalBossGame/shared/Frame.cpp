@@ -6,7 +6,7 @@ Frame::Frame()
 	this->rot = Vec3f();
 }
 
-Frame::Frame(Point_t pos, Rot_t rot)
+Frame::Frame(const Point_t &pos, const Rot_t &rot)
 {
 	this->pos = pos;
 	this->rot = rot;
