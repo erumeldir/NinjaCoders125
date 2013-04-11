@@ -77,6 +77,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="TestObject.cpp" />
+    <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugConsole.h" />
@@ -90,6 +91,7 @@
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="TestObject.h" />
+    <ClInclude Include="XboxController.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">

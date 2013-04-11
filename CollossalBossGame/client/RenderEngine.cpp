@@ -48,6 +48,10 @@ void RenderEngine::startWindow()
 	);
 
 	ShowWindow(windowHandle, 1);	//1 is the flag for whether to show the window
+/* These did not fix our window problems
+	printf("%s\n", (SetActiveWindow(windowHandle) == NULL ? "Failed to set active window" : "Successfully set active window"));
+	printf("Enabled window: %d\n", EnableWindow(windowHandle, TRUE));
+*/
 }
 
 /*Initialize the 3d Render Environment
@@ -78,8 +82,8 @@ void RenderEngine::renderInitalization()
 }
 
 /*
-* Initialize DirectX and any other rendering libraries that we may have.
-*/
+ * Initialize DirectX and any other rendering libraries that we may have.
+ */
 RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
@@ -166,7 +170,7 @@ void RenderEngine::sceneDrawing() {
 		{ p1.x, p1.y, p1.z, 1.0f, },
 		{ p2.x, p2.y, p2.z, 1.0f, },
 	};
-	theta+= 0.005;
+	theta+= 0.005f;
 
 	direct3dDevice->CreateVertexBuffer(
 		3*sizeof(RENDERVERTEX),
@@ -220,13 +224,17 @@ LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPAR
 	switch(message)
 	{	
 		case WM_KEYUP:
-			printf("Kill!!!!!!!!!!\n");
+			printf("Key up\n");
 			break;
 		case WM_DESTROY:
 		{
+			printf("Window destroyed\n");
 			PostQuitMessage(0);
 			return 0;
 		} break;
+		default:
+			printf("Unknown message 0x%x\n", message);
+			break;
 	}
 
 	return DefWindowProc (windowHandle, message, wParam, lParam);

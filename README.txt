@@ -15,3 +15,6 @@
 \_____________________________________________________________________________/
 
 Welcome to the repository for our awesome CSE 125 Game Project! =D
+
+Direct X tutorials (10, 11):
+http://www.rastertek.com/tutindex.html

@@ -48,7 +48,8 @@ private:
 	void renderInitalization();		//the stuff that can't be pulled from here
 	void sceneDrawing();
 
-	_D3DXFRAME rootFrame;
+	LPD3DXFRAME rootFrame;
+	LPD3DXANIMATIONCONTROLLER   animationController;// Controller for the animations
 
 	HWND windowHandle;	
 
