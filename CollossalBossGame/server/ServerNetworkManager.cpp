@@ -143,11 +143,11 @@ void ServerNetworkManager::receiveFromClients() {
                     // sendActionPackets();
                     break;
                 case ACTION_EVENT:
-                    //printf("server received action event packet from client %d\n", iter->first);
-					controllerstatus cs;
-					memcpy(&cs, &packet.packet_data, sizeof(controllerstatus));
-					//cout << cs.A << endl;
+                    printf("server received action event packet from client %d\n", iter->first);
+					inputstatus is;
+					memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
+					// Re-send what you gave me xD (wow, we're a useful server =P)
 					char packet_data[sizeof(Packet)];
 					packet.serialize(packet_data);
 					sendToAll(packet_data, sizeof(packet));

@@ -2,6 +2,10 @@
 #include "XboxController.h"
 #include "Action.h"
 #include <stdio.h>
+#include <math.h>
+
+#define M_PI 3.14159
+
 /*
  * XBOX Controller
  * Class for handling controller input
@@ -30,79 +34,40 @@ XINPUT_STATE XboxController::getState()
 
 void XboxController::sendInput() {
 	// Get the input and send it to the server
-	controllerstatus cstat;
-	SecureZeroMemory(&cstat, sizeof(cstat));
+	inputstatus istat;
+	SecureZeroMemory(&istat, sizeof(istat));
 	if(isConnected()) {
-		//cstat.A = true;
-		if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
-			//printf("A is pressed                                               \r");
-			cstat.A = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-			//printf("B is pressed                                               \r");
-			cstat.B = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-			//printf("X is pressed                                               \r");
-			cstat.X = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
-			//printf("Y is pressed                                               \r");
-			cstat.Y = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-			//printf("start > is pressed                                         \r");
-			cstat.Start = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
-			//printf("< back is pressed                                          \r");
-			cstat.Back = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-			//printf("UP is pressed                                              \r");
-			cstat.UP = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-			//printf("LEFT is pressed                                            \r");
-			cstat.Left = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
-			//printf("DOWN is pressed                                            \r");
-			cstat.Down = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-			//printf("RIGHT is pressed                                           \r");
-			cstat.Right = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) {
-			//printf("Left thumbstick is pressed                                 \r");
-			cstat.LPress = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			//printf("Right thumbstick is pressed                                \r");
-			cstat.RPress = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-			//printf("Left shoulder is pressed                                   \r");
-			cstat.LShoulder = true;
-		} else if(getState().Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			//printf("Right shoulder is pressed                                  \r");
-			cstat.RShoulder = true;
-		} else if(getState().Gamepad.bLeftTrigger) {
-			//printf("Left trigger is pressed                                    \r");
-			cstat.LTrigger = true;
-		} else if(getState().Gamepad.bRightTrigger) {
-			//printf("Right trigger is pressed                                   \r");
-			cstat.RTrigger = true;
-		} else {
-			//32767 = 7fff
-			
-			/*printf("Left stick (%4.4d,%4.4d), Right stick (%4.4d,%4.4d)\r",
-				getState().Gamepad.sThumbLX, getState().Gamepad.sThumbLY,
-				getState().Gamepad.sThumbRX, getState().Gamepad.sThumbRY);*/
+		XINPUT_GAMEPAD gamepad = getState().Gamepad;
+
+		// Map input to actions
+		istat.jump = gamepad.wButtons & XINPUT_GAMEPAD_A;
+		istat.specialPower = gamepad.wButtons & XINPUT_GAMEPAD_B;
+		istat.quit = gamepad.wButtons & XINPUT_GAMEPAD_BACK;
+		istat.attack = gamepad.bRightTrigger; 
+
+		// Get joystick positions
+		float x = gamepad.sThumbLX,
+				y = gamepad.sThumbLY;
+		float x2 = gamepad.sThumbRX,
+				y2 = gamepad.sThumbRY;
+
+		// Set position
+		istat.xDist = fabs(x) > DEADZONE ? x / DIV : 0;
+		istat.yDist = fabs(y) > DEADZONE ? y / DIV : 0;
+
+		// Set rotation
+		istat.rotAngle = 0;
+		if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
+			istat.rotAngle = M_PI + atan2(x2 / DEADZONE, y2 / DEADZONE);
+		} else if(fabs(x) > DEADZONE || fabs(y) > DEADZONE) {
+			istat.rotAngle = M_PI + atan2(x / DEADZONE, y / DEADZONE);
 		}
-		float x = getState().Gamepad.sThumbLX,
-				y = getState().Gamepad.sThumbLY;
-		float x2 = getState().Gamepad.sThumbRX,
-				y2 = getState().Gamepad.sThumbRY;
-		cstat.x1 = x;
-		cstat.y1 = y;
-		cstat.x2 = x2;
-		cstat.y2 = y2;
+		 
+		// I don't think we need this extra memcpy...?
+		//controllerstatus cs;
+		//memcpy(&cs, reinterpret_cast<char*>(&cstat), sizeof(cs));
 
-		
-		controllerstatus cs;
-		memcpy(&cs, reinterpret_cast<char*>(&cstat), sizeof(cs));
-
-		ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&cstat), sizeof(controllerstatus));
+		ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus));
 	}
 }
 

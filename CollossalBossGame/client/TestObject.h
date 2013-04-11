@@ -15,7 +15,7 @@ public:
 
 	virtual RenderModel* getRenderModel() { return rm; }
 
-	controllerstatus cstat;
+	inputstatus istat;
 
 private:
 	RenderModel *rm;
