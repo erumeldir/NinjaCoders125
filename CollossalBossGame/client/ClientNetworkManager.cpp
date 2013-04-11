@@ -1,5 +1,6 @@
 #include "ClientNetworkManager.h"
 #include "ClientObjectManager.h"
+#include "TestObject.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -165,10 +166,11 @@ void ClientNetworkManager::update()
 
         switch (packet.packet_type) {
             case ACTION_EVENT:
-                printf("client received action event packet from server\n");
+                //printf("client received action event packet from server\n");
 					
-					controllerstatus cs;
-					memcpy(&cs, &packet.packet_data, sizeof(controllerstatus));
+					// controllerstatus cs;
+				memcpy(&(((TestObject*)COM::get()->find(0))->cstat), &packet.packet_data, sizeof(controllerstatus));
+					// ((TestObject*)COM::find(0))->cstat = cs;
                 break;
             default:
                 printf("error in packet types\n");

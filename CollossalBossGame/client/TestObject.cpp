@@ -1,4 +1,3 @@
-#include "ClientNetworkManager.h"
 #include "TestObject.h"
 #include "ClientEngine.h"
 #include <math.h>
@@ -27,8 +26,6 @@ TestObject::~TestObject(void)
 }
 
 bool TestObject::update() {
-	controllerstatus cstat;
-	SecureZeroMemory(&cstat, sizeof(cstat));
 	if(cstat.A) {
 		printf("A is pressed                                               \r");
 	} else if(cstat.B) {
@@ -64,9 +61,9 @@ bool TestObject::update() {
 		printf("Right trigger is pressed                                   \r");
 	} else {
 		//32767 = 7fff
-		printf("Left stick (%4.4d,%4.4d), Right stick (%4.4d,%4.4d)\r",
+		/*printf("Left stick (%4.4d,%4.4d), Right stick (%4.4d,%4.4d)\r",
 			cstat.x1, cstat.y1,
-			cstat.x2, cstat.y2);
+			cstat.x2, cstat.y2);*/
 	}
 	float x = cstat.x1;
 	float y = cstat.y1;

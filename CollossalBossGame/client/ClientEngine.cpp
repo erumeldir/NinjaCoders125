@@ -53,6 +53,9 @@ void ClientEngine::run() {
 
 	while(isRunning) {
 		
+		//Send event information to the server
+		xctrl->sendInput();
+		
 		// Fetch Data From the Server
 		ClientNetworkManager::get()->update();
 
@@ -64,9 +67,6 @@ void ClientEngine::run() {
 		
 		//Poll events
 		
-		
-		//Send event information to the server
-		xctrl->sendInput();
 
 		Sleep(10);
 	}
