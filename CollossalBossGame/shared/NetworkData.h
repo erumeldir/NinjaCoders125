@@ -21,3 +21,4 @@ struct Packet {
         memcpy(this, data, sizeof(Packet));
     }
 };
+

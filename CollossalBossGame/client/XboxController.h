@@ -28,6 +28,7 @@ public:
 	virtual ~XboxController(void);
 
     XINPUT_STATE getState();
+	void sendInput();
     bool isConnected();
     void vibrate(int leftVal = 0, int rightVal = 0);
 private:

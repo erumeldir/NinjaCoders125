@@ -1,7 +1,7 @@
 /*
  * ClientEngine.cpp
  */
-
+#include "ClientNetworkManager.h"
 #include "ClientEngine.h"
 #include "defs.h"
 #include "RenderEngine.h"
@@ -23,6 +23,7 @@ ClientEngine::ClientEngine() {
 	//Initialize engines
 	RE::init();
 	COM::init();
+	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 }
 
 /*
@@ -51,6 +52,13 @@ void ClientEngine::run() {
 	gameInit();
 
 	while(isRunning) {
+		
+		//Send event information to the server
+		xctrl->sendInput();
+		
+		// Fetch Data From the Server
+		ClientNetworkManager::get()->update();
+
 		//Update game logic/physics (will be moved to the server)
 		COM::get()->update();
 
@@ -58,8 +66,8 @@ void ClientEngine::run() {
 		RE::get()->render();
 		
 		//Poll events
+		
 
-		//Send event information to the server
 		Sleep(10);
 	}
 	gameClean();

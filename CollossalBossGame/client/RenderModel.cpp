@@ -51,6 +51,7 @@ RenderModel::~RenderModel(void)
 }
 
 void RenderModel::render() {
+	printf("Pos: %d, %d, %d                                       \r",ref->getPos().x, ref->getPos().y, ref->getPos().z); 
 		// select which vertex format we are using
 	RE::get()->direct3dDevice->SetFVF(CUSTOMFVF);
 
