@@ -13,6 +13,7 @@ public:
 	virtual bool update() = 0;
 	virtual RenderModel* getRenderModel() = 0;
 	//virtual AudioModel* getAudioModel() = 0;
+	virtual void deserialize(char* newState) = 0;
 
 	uint getId() { return id; }
 

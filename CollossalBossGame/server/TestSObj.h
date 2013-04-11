@@ -1,5 +1,6 @@
 #pragma once
 #include "ServerObject.h"
+#include "Action.h"
 
 class TestSObj : public ServerObject {
 public:
@@ -8,6 +9,11 @@ public:
 
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
+	virtual pair<int, char*> serialize();
+	inputstatus istat;
+
+	char serialbuffer[100];
+
 private:
 	PhysicsModel *pm;
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string.h>
 
 #define MAX_PACKET_SIZE 1000000
