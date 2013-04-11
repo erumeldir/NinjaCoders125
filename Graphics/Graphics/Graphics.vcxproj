@@ -79,11 +79,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CAllocateHierarchy.cpp" />
+    <ClCompile Include="CModel.cpp" />
     <ClCompile Include="GraphicsTester.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CAllocateHierarchy.h" />
+    <ClInclude Include="CModel.h" />
     <ClInclude Include="DerivedStructs.h" />
     <ClInclude Include="Macros.h" />
     <ClInclude Include="Models.h" />
