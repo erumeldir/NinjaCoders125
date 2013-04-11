@@ -7,7 +7,10 @@
 #include "RenderEngine.h"
 //#include "Models.h"
 #include "defs.h"
+#include "RenderModel.h"
+#include "ClientObjectManager.h"
 
+//Static Members
 RenderEngine *RenderEngine::re;
 
 /* create a window that we will render in
@@ -48,10 +51,6 @@ void RenderEngine::startWindow()
 	);
 
 	ShowWindow(windowHandle, 1);	//1 is the flag for whether to show the window
-/* These did not fix our window problems
-	printf("%s\n", (SetActiveWindow(windowHandle) == NULL ? "Failed to set active window" : "Successfully set active window"));
-	printf("Enabled window: %d\n", EnableWindow(windowHandle, TRUE));
-*/
 }
 
 /*Initialize the 3d Render Environment
@@ -87,7 +86,7 @@ void RenderEngine::renderInitalization()
 RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
-
+#if 0
 	///////////////////////////////////////////////////////////////////////////
 	//////////////////////////BEGIN TEST CODE//////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////
@@ -119,6 +118,7 @@ RenderEngine::RenderEngine() {
 	///////////////////////////////////////////////////////////////////////////
 	//////////////////////END TEST CODE////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////
+#endif
 }
 
 /*
@@ -128,12 +128,20 @@ RenderEngine::RenderEngine() {
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
+	delete rm;
 }
 
 /*where we actually draw a scene
 * Bryan
 */
 void RenderEngine::sceneDrawing() {
+	for(list<ClientObject *>::iterator it = lsObjs.begin();
+			it != lsObjs.end();
+			++it) {
+		(*it)->getRenderModel()->render();
+	}
+	lsObjs.clear();
+#if 0
 	// select which vertex format we are using
 	direct3dDevice->SetFVF(CUSTOMFVF);
 
@@ -196,6 +204,11 @@ void RenderEngine::sceneDrawing() {
 	direct3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 
 	//end the while loop
+#endif
+}
+
+void RenderEngine::renderThis(ClientObject *obj) {
+	lsObjs.push_back(obj);
 }
 
 /*we set up and clean up from rendering a scene

@@ -21,4 +21,17 @@ typedef struct Vec3f {
 	float x, y, z;
 } Point_t, Rot_t;
 
+//Input definitions
+typedef enum ACTION {
+	ACT_MOVE_X,
+	ACT_MOVE_Y,
+	ACT_TURN_X,
+	ACT_TURN_Y,
+	ACT_FOCUS,
+	ACT_JUMP,
+	ACT_SPECIAL,
+	ACT_ATTACK,
+	ACT_NUM_ACTIONS
+};
+
 #endif

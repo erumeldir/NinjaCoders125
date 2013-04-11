@@ -1,18 +1,23 @@
 #include "ServerNetworkManager.h"
+#include "Action.h"
 #include <iostream>
 
-/*
-	This object handles networking for the server
+unsigned int ServerNetworkManager::client_id;
+ServerNetworkManager ServerNetworkManager::SNM;
 
-	0. Variable Initialization
-	1. Initialize Components to make connection
-	2. Create the socket
-	3. Set the mode of the socket to be nonblocking
-	4. Setup the TCP listening socket
-	5. start listening for new clients attempting to connect
-*/
+/*
+ *	This object handles networking for the server
+ *
+ *	0. Variable Initialization
+ *	1. Initialize Components to make connection
+ *	2. Create the socket
+ *	3. Set the mode of the socket to be nonblocking
+ *	4. Setup the TCP listening socket
+ *	5. start listening for new clients attempting to connect
+ */
 ServerNetworkManager::ServerNetworkManager(void)
 {
+	client_id = 0;
 	//0. Variable Initialization
 	// create WSADATA object
     WSADATA wsaData;
@@ -96,40 +101,93 @@ ServerNetworkManager::ServerNetworkManager(void)
     }
 }
 
+// Destructor - does nothing.
+ServerNetworkManager::~ServerNetworkManager(void) {}
+
+// Fetch the singleton ServerNetworkManager object.
+ServerNetworkManager * ServerNetworkManager::get() {
+	return &SNM;
+}
+
+// Update loop - accepts new connections
+// Collects and stores data 
+void ServerNetworkManager::update() {
+	// get new clients
+    if(acceptNewClient(client_id)) {
+        printf("client %d has been connected to the server\n",client_id);
+        client_id++;
+    }
+	// Collect data from clients
+    receiveFromClients();
+}
+
+// Loop through each client and checks messages sent from them.
+void ServerNetworkManager::receiveFromClients() {
+    Packet packet;
+    // go through all clients
+    std::map<unsigned int, SOCKET>::iterator iter;
+    for(iter = sessions.begin(); iter != sessions.end(); iter++) {
+        int data_length = receiveData(iter->first, network_data);
+        if (data_length <= 0) { //no data recieved
+            continue;
+        }
+
+        int i = 0;
+        while ((unsigned int)i < (unsigned int)data_length) {
+            packet.deserialize(&(network_data[i]));
+            i += sizeof(Packet);
+
+            switch (packet.packet_type) {
+                case INIT_CONNECTION:
+                    printf("server received init packet from client %d\n", iter->first);
+                    // sendActionPackets();
+                    break;
+                case ACTION_EVENT:
+                    printf("server received action event packet from client %d\n", iter->first);
+					inputstatus is;
+					memcpy(&is, &packet.packet_data, sizeof(inputstatus));
+
+					// Re-send what you gave me xD (wow, we're a useful server =P)
+					char packet_data[sizeof(Packet)];
+					packet.serialize(packet_data);
+					sendToAll(packet_data, sizeof(packet));
+                    // sendActionPackets();
+                    break;
+                default:
+                    printf("error in packet types\n");
+                    break;
+            }
+        }
+    }
+}
+
 /* accept new connections
 	id: supposed to be a unique id associated with the client
 	
 	returns true if "a new" client was added.
 */
-bool ServerNetworkManager::acceptNewClient(unsigned int & id)
-{
+bool ServerNetworkManager::acceptNewClient(unsigned int & id) {
     // if client waiting, accept the connection and save the socket
     ClientSocket = accept(ListenSocket,NULL,NULL);
 
-    if (ClientSocket != INVALID_SOCKET) 
-    {
+    if (ClientSocket != INVALID_SOCKET) {
         //disable nagle on the client's socket
         char value = 1;
         setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 
         // insert new client into session id table
         sessions.insert( pair<unsigned int, SOCKET>(id, ClientSocket) );
-
         return true;
     }
-
     return false;
 }
 
 // receive incoming data
-int ServerNetworkManager::receiveData(unsigned int client_id, char * recvbuf)
-{
-    if( sessions.find(client_id) != sessions.end() )
-    {
-        SOCKET currentSocket = sessions[client_id];
+int ServerNetworkManager::receiveData(unsigned int c_id, char * recvbuf) {
+    if( sessions.find(c_id) != sessions.end() ) {
+        SOCKET currentSocket = sessions[c_id];
         iResult = NetworkServices::receiveMessage(currentSocket, recvbuf, MAX_PACKET_SIZE);
-        if (iResult == 0)
-        {
+        if (iResult == 0) {
             printf("Connection closed\n");
             closesocket(currentSocket);
         }
@@ -139,21 +197,19 @@ int ServerNetworkManager::receiveData(unsigned int client_id, char * recvbuf)
 }
 
 // send data to all clients
-void ServerNetworkManager::sendToAll(char * packets, int totalSize)
-{
+void ServerNetworkManager::sendToAll(char * packets, int totalSize) {
     SOCKET currentSocket;
     std::map<unsigned int, SOCKET>::iterator iter;
     int iSendResult;
 
-    for (iter = sessions.begin(); iter != sessions.end(); iter++)
-    {
+    for (iter = sessions.begin(); iter != sessions.end(); iter++) {
         currentSocket = iter->second;
         iSendResult = NetworkServices::sendMessage(currentSocket, packets, totalSize);
 
-        if (iSendResult == SOCKET_ERROR) 
-        {
+        if (iSendResult == SOCKET_ERROR) {
             printf("send failed with error: %d\n", WSAGetLastError());
             closesocket(currentSocket);
         }
     }
 }
+

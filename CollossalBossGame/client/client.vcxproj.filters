@@ -36,13 +36,7 @@
     <ClCompile Include="TestObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Frame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ClientNetworkManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DebugConsole.cpp">
@@ -51,15 +45,15 @@
     <ClCompile Include="XboxController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RenderModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClientObject.h">
@@ -74,19 +68,16 @@
     <ClInclude Include="TestObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Frame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ClientNetworkManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DebugConsole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XboxController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

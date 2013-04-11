@@ -1,7 +1,15 @@
 #include "ClientNetworkManager.h"
-#include <stdio.h>
+#include "ClientObjectManager.h"
+#include "TestObject.h"
+#include <iostream>
 #include <string>
 #include <vector>
+#include "Action.h"
+
+ClientNetworkManager ClientNetworkManager::CNM;
+#define HOST "127.0.0.1"
+#define PORT DEFAULT_PORT
+
 /*
 	This object handles networking for the client
 
@@ -14,10 +22,6 @@
 		5. disable nagle... don't know what it is, the tutorial said this was optional
 
 */
-
-#define HOST "127.0.0.1"
-#define PORT DEFAULT_PORT
-
 ClientNetworkManager::ClientNetworkManager(void) {
 	// 0. Inital Variables
     // create WSADATA object
@@ -119,6 +123,10 @@ ClientNetworkManager::ClientNetworkManager(void) {
     setsockopt( ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 }
 
+ClientNetworkManager::~ClientNetworkManager(void) {
+
+}
+
 int ClientNetworkManager::receivePackets(char * recvbuf) 
 {
     iResult = NetworkServices::receiveMessage(ConnectSocket, recvbuf, MAX_PACKET_SIZE);
@@ -134,3 +142,50 @@ int ClientNetworkManager::receivePackets(char * recvbuf)
     return iResult;
 }
 
+ClientNetworkManager * ClientNetworkManager::get() {
+	return &CNM;
+}
+
+void ClientNetworkManager::update()
+{
+    Packet packet;
+    int data_length = receivePackets(network_data);
+
+    if (data_length <= 0) 
+    {
+        //no data recieved
+        return;
+    }
+
+    int i = 0;
+	//
+    while ((unsigned int)i < (unsigned int)data_length) 
+    {
+        packet.deserialize(&(network_data[i]));
+        i += sizeof(Packet);
+
+        switch (packet.packet_type) {
+            case ACTION_EVENT:
+                //printf("client received action event packet from server\n");
+					
+				memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
+                break;
+            default:
+                printf("error in packet types\n");
+                break;
+        }
+    }
+}
+
+void ClientNetworkManager::sendData(char * data, int datalen) {
+	std::cout << data << std::endl;
+	const unsigned int packet_size = sizeof(Packet);
+    char packet_data[packet_size];
+
+    Packet packet;
+    packet.packet_type = ACTION_EVENT;
+	memcpy(packet.packet_data, data, datalen);
+    packet.serialize(packet_data);
+
+    NetworkServices::sendMessage(ConnectSocket, packet_data, packet_size);
+}

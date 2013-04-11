@@ -15,10 +15,17 @@ public:
 	Frame(Point_t pos, Rot_t rot);
 	virtual ~Frame(void);
 	void addChild(Frame* newChild);
+	
+	void translate(const Vec3f &dv);
+	void rotate(const Vec3f &dr);
 
+	void setPos(const Point_t &pt) { pos = pt; }
+	void setRot(const Rot_t &rt) { rot = rt; }
+	Point_t getPos() { return pos; }
+	Rot_t getRot() { return rot; }
 private:
 	Point_t pos;
-	Rot_t   rot;
+	Rot_t rot;
 	list<Frame*> lsAttachedFrames;
 };
 
