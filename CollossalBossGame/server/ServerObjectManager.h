@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 
 using namespace std;
 
@@ -32,6 +33,8 @@ private:
 
 	map<uint, ServerObject *> mObjs;
 	vector<uint> vFreeIds;
+	list<ServerObject *> lsObjsAdded;
+	list<uint> lsObjsRemoved;
 	int curId;
 };
 typedef ServerObjectManager SOM;

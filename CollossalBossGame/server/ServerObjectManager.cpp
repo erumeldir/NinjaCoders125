@@ -21,10 +21,10 @@ ServerObjectManager::~ServerObjectManager(void)
 /*
  * Performs logic updates
  */
-#include <list>
 
 void ServerObjectManager::update() {
 	list<uint> lsObjsToDelete;
+	list<uint>::iterator idIter;
 	list<ServerObject *> lsObjsThatMoved;
 	list<ServerObject *>::iterator objIter;
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
@@ -51,13 +51,13 @@ void ServerObjectManager::update() {
 	}
 
 	//Remove objects queued for deleting BEFORE collision checks occur
-	for(list<uint>::iterator itDel = lsObjsToDelete.begin();
-			itDel != lsObjsToDelete.end();
-			++itDel) {
-		map<uint, ServerObject *>::iterator itObj = mObjs.find(*itDel);
-		ServerObject *obj = itObj->second;
-		mObjs.erase(itObj);
-		delete obj;
+	for(idIter = lsObjsToDelete.begin(); idIter != lsObjsToDelete.end(); ++idIter) {
+		map<uint, ServerObject *>::iterator itObj = mObjs.find(*idIter);
+		if(itObj != mObjs.end()) {
+			ServerObject *obj = itObj->second;
+			mObjs.erase(itObj);
+			delete obj;
+		}
 	}
 	lsObjsToDelete.clear();
 
@@ -77,9 +77,16 @@ void ServerObjectManager::update() {
 	}
 
 	//Remove objects requested for removal, but not deletion
+	for(idIter = lsObjsRemoved.begin(); idIter != lsObjsRemoved.end(); ++idIter) {
+		mObjs.erase(*idIter);
+	}
+	lsObjsToDelete.clear();
 
 	//Add objects requested for addition
-
+	for(objIter = lsObjsAdded.begin(); objIter != lsObjsAdded.end(); ++objIter) {
+		mObjs.insert(pair<uint,ServerObject*>((*objIter)->getId(),*objIter));
+	}
+	lsObjsAdded.clear();
 }
 
 uint ServerObjectManager::genId() {
@@ -99,7 +106,8 @@ void ServerObjectManager::freeId(uint id) {
 }
 
 void ServerObjectManager::add(ServerObject *obj) {
-	mObjs.insert(pair<uint,ServerObject*>(obj->getId(), obj));
+	//mObjs.insert(pair<uint,ServerObject*>(obj->getId(), obj));
+	lsObjsAdded.push_back(obj);
 }
 
 ServerObject *ServerObjectManager::find(uint id) {
@@ -111,5 +119,6 @@ ServerObject *ServerObjectManager::find(uint id) {
 }
 
 void ServerObjectManager::remove(uint id) {
-	mObjs.erase(id);
+	//mObjs.erase(id);
+	lsObjsRemoved.push_back(id);
 }
