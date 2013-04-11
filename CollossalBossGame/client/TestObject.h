@@ -15,7 +15,9 @@ public:
 
 	virtual RenderModel* getRenderModel() { return rm; }
 
-	inputstatus istat;
+	virtual void deserialize(char* newState);
+
+	//inputstatus istat;
 
 private:
 	RenderModel *rm;

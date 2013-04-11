@@ -1,4 +1,7 @@
+#include "ServerNetworkManager.h"
 #include "ServerObjectManager.h"
+#include "NetworkData.h"
+
 
 ServerObjectManager *ServerObjectManager::som;
 
@@ -55,6 +58,27 @@ void ServerObjectManager::update() {
 
 	//Add objects requested for addition
 
+}
+
+/**
+ * Sends the object states to the clients.
+ * Author: Haro
+ */
+void ServerObjectManager::sendState()
+{
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+		// If object changed...
+		pair<int, char*> data = it->second->serialize();
+		Packet packet;
+		packet.packet_type = ACTION_EVENT;
+		memcpy(packet.packet_data, data.second, data.first);
+		char packet_data[104];
+		packet.serialize(packet_data);
+
+		ServerNetworkManager::get()->sendToAll(packet_data, data.first);
+	}
 }
 
 uint ServerObjectManager::genId() {
