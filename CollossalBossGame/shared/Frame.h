@@ -16,6 +16,9 @@ public:
 	virtual ~Frame(void);
 	void addChild(Frame* newChild);
 	
+	void translate(const Vec3f &dv);
+	void rotate(const Vec3f &dr);
+
 	void setPos(Point_t pt) { pos = pt; }
 	void setRot(Rot_t rt) { rot = rt; }
 	Point_t getPos() { return pos; }

@@ -2,7 +2,7 @@
 
 
 TestSObj::TestSObj(uint id) : ServerObject(id) {
-	pm = new PhysicsModel(Point_t(), Rot_t());
+	pm = new PhysicsModel(Point_t(), Rot_t(), 500);
 }
 
 
