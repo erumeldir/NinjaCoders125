@@ -5,6 +5,7 @@
  */
 #include "RenderEngine.h"
 #include "Models.h"
+#include "CAllocateHierarchy.h"
 
 RenderEngine *RenderEngine::re;
 
@@ -91,7 +92,7 @@ void RenderEngine::renderInitalization()
 	D3DPRESENT_PARAMETERS deviceInfo;    // create a struct to hold various device information
 
 	ZeroMemory(&deviceInfo, sizeof(deviceInfo));    // clear out the struct for use
-	deviceInfo.Windowed = FALSE;    // program windowed, not fullscreen
+	deviceInfo.Windowed = TRUE;    // program windowed, not fullscreen
 	deviceInfo.SwapEffect = D3DSWAPEFFECT_DISCARD;    // discard old frames
 	deviceInfo.hDeviceWindow = windowHandle;    // set the window to be used by Direct3D
 	deviceInfo.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
@@ -146,3 +147,31 @@ void RenderEngine::render() {
 	direct3dDevice->Present(NULL, NULL, NULL, NULL);    // displays the created frame
 }
 
+/*loads a single model
+ *
+ * Authors: Bryan
+ */
+#include<string>
+void RenderEngine::load () {
+	//the file
+	/*char * strFileName;
+	strcpy_s(strFileName, 7, "tiny.x");
+	*/
+	LPCWSTR fileName = L"tiny.x";
+	//Allocation class. doesn't seem to be used after this...
+	CAllocateHierarchy Alloc;
+
+	//Get the frame root we want to load into
+	HRESULT hr = D3DXLoadMeshHierarchyFromX(fileName,		// File load
+										D3DXMESH_MANAGED,	// Load Options
+										direct3dDevice,		// D3D Device
+										&Alloc,				// Hierarchy allocation class
+										NULL,				// NO Effects
+										&rootFrame,		// Frame hierarchy
+										&animationController);
+	if(FAILED(hr))// Animation Controller
+	{
+		MessageBox(NULL, L"tiny.x", L"Load error", MB_OK);
+	}
+
+}

@@ -21,12 +21,15 @@
 #include "ClientObject.h"
 using namespace std;
 
+
 // define the screen resolution
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
+
+#include "RenderModel.h"
 
 class RenderEngine {
 public:
@@ -48,6 +51,8 @@ private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
+
+	RenderModel triangle;
 
 	RenderEngine();
 	virtual ~RenderEngine();

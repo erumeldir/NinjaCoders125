@@ -25,6 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// enter the main loop:
 	MSG msg;	//for his stuff...
 
+	re->load();
 	while(TRUE)
 	{
 		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

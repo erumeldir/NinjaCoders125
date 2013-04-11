@@ -13,21 +13,6 @@
 //Static Members
 RenderEngine *RenderEngine::re;
 
-//Global vars
-RenderModel *rm;
-
-/*
-#define CUSTOMFVF (D3DFVF_XYZRHW)
-
-struct RENDERVERTEX
-{
-	FLOAT x, y, z, rhw; // from the D3DFVF_XYZRHW flag
-	//rhw is a perspective flag. not sure why it's a float
-};
-*/
-
-
-
 /* create a window that we will render in
 *
 * Returns nothing
@@ -138,6 +123,7 @@ RenderEngine::RenderEngine() {
 
 /*
 * Clean up DrectX and any other rendering libraries that we may have.
+* Bryan
 */
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
