@@ -12,7 +12,7 @@ public:
 	//To create a client object, you must implement these methods
 	virtual bool update() = 0;
 	virtual RenderModel* getRenderModel() = 0;
-
+	//virtual AudioModel* getAudioModel() = 0;
 
 	uint getId() { return id; }
 

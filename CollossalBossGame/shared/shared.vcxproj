@@ -73,11 +73,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConfigurationManager.cpp" />
+    <ClCompile Include="Frame.cpp" />
     <ClCompile Include="NetworkServices.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Action.h" />
     <ClInclude Include="ConfigurationManager.h" />
+    <ClInclude Include="defs.h" />
+    <ClInclude Include="Frame.h" />
     <ClInclude Include="NetworkData.h" />
     <ClInclude Include="NetworkServices.h" />
   </ItemGroup>

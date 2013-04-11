@@ -1,4 +1,5 @@
 #include "ClientNetworkManager.h"
+#include "ClientObjectManager.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -168,7 +169,6 @@ void ClientNetworkManager::update()
 					
 					controllerstatus cs;
 					memcpy(&cs, &packet.packet_data, sizeof(controllerstatus));
-					std::cout << cs.A << std::endl;
                 break;
             default:
                 printf("error in packet types\n");

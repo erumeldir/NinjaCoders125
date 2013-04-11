@@ -21,3 +21,16 @@ void Frame::addChild(Frame* newChild)
 {
 	lsAttachedFrames.push_back(newChild);
 }
+
+
+void Frame::translate(const Vec3f &dv) {
+	pos.x += dv.x;
+	pos.y += dv.y;
+	pos.z += dv.z;
+}
+
+void Frame::rotate(const Vec3f &dr) {
+	rot.x += dr.x;
+	rot.y += dr.y;
+	rot.z += dr.z;
+}

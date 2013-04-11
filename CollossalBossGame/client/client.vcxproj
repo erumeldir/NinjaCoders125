@@ -67,7 +67,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DebugConsole.cpp" />
-    <ClCompile Include="Frame.cpp" />
     <ClCompile Include="ClientEngine.cpp" />
     <ClCompile Include="ClientNetworkManager.cpp" />
     <ClCompile Include="ClientObject.cpp" />
@@ -81,12 +80,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugConsole.h" />
-    <ClInclude Include="Frame.h" />
     <ClInclude Include="ClientEngine.h" />
     <ClInclude Include="ClientNetworkManager.h" />
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
-    <ClInclude Include="defs.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />

@@ -1,15 +1,15 @@
-#include "ClientObjectManager.h"
-#include "RenderEngine.h"
+#include "ServerObjectManager.h"
 
-ClientObjectManager *ClientObjectManager::com;
+ServerObjectManager *ServerObjectManager::som;
 
-ClientObjectManager::ClientObjectManager(void) {
+ServerObjectManager::ServerObjectManager(void) {
 	curId = 0;
 }
 
 
-ClientObjectManager::~ClientObjectManager(void) {
-	for(map<uint, ClientObject *>::iterator it = mObjs.begin();
+ServerObjectManager::~ServerObjectManager(void)
+{
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
 			++it) {
 		delete it->second;
@@ -22,9 +22,9 @@ ClientObjectManager::~ClientObjectManager(void) {
  */
 #include <list>
 
-void ClientObjectManager::update() {
+void ServerObjectManager::update() {
 	list<uint> lsObjsToDelete;
-	for(map<uint, ClientObject *>::iterator it = mObjs.begin();
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
 			++it) {
 		//Update object (game logic)
@@ -34,9 +34,6 @@ void ClientObjectManager::update() {
 			continue;
 		}
 
-		//Give objects to the render engine for rendering
-		RE::get()->renderThis(it->second);
-
 		//Update physics
 
 		//Perform initial layer of collision checks
@@ -45,8 +42,8 @@ void ClientObjectManager::update() {
 	for(list<uint>::iterator itDel = lsObjsToDelete.begin();
 			itDel != lsObjsToDelete.end();
 			++itDel) {
-		map<uint, ClientObject *>::iterator itObj = mObjs.find(*itDel);
-		ClientObject *obj = itObj->second;
+		map<uint, ServerObject *>::iterator itObj = mObjs.find(*itDel);
+		ServerObject *obj = itObj->second;
 		mObjs.erase(itObj);
 		delete obj;
 	}
@@ -60,7 +57,7 @@ void ClientObjectManager::update() {
 
 }
 
-uint ClientObjectManager::genId() {
+uint ServerObjectManager::genId() {
 	if(vFreeIds.size() == 0) {
 		return curId++;
 	}
@@ -71,24 +68,23 @@ uint ClientObjectManager::genId() {
 	return id;
 }
 
-void ClientObjectManager::freeId(uint id) {
+void ServerObjectManager::freeId(uint id) {
 	//Mark this ID as being ready for recycling
 	vFreeIds.push_back(id);
 }
 
-void ClientObjectManager::add(ClientObject *obj) {
-	mObjs.insert(pair<uint,ClientObject*>(obj->getId(), obj));
+void ServerObjectManager::add(ServerObject *obj) {
+	mObjs.insert(pair<uint,ServerObject*>(obj->getId(), obj));
 }
 
-
-ClientObject *ClientObjectManager::find(uint id) {
-	map<uint, ClientObject*>::iterator res = mObjs.find(id);
+ServerObject *ServerObjectManager::find(uint id) {
+	map<uint, ServerObject*>::iterator res = mObjs.find(id);
 	if(res != mObjs.end()) {
 		return res->second;
 	}
 	return NULL;
 }
 
-void ClientObjectManager::remove(uint id) {
+void ServerObjectManager::remove(uint id) {
 	mObjs.erase(id);
 }
