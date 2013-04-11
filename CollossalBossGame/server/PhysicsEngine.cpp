@@ -28,5 +28,5 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	return true;	//We'll add a detection for has-moved later
 }
 
-void PhysicsEngine::applyPhysics(PhysicsModel *mdl1, PhysicsModel *mdl2) {
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 }
