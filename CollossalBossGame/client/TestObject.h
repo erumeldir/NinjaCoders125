@@ -1,6 +1,7 @@
 #pragma once
 #include "ClientObject.h"
 #include "Frame.h"
+#include "Action.h"
 #include "XboxController.h"
 
 
@@ -14,8 +15,10 @@ public:
 
 	virtual RenderModel* getRenderModel() { return rm; }
 
+	controllerstatus cstat;
+
 private:
 	RenderModel *rm;
-	XboxController *xctrl;
+	// XboxController *xctrl;
 };
 

@@ -6,6 +6,7 @@
 #define CLIENT_ENGINE_H
 
 #include "defs.h"
+#include "XboxController.h"
 
 class ClientEngine {
 public:
@@ -23,6 +24,7 @@ private:
 	virtual ~ClientEngine();
 
 	bool isRunning;
+	XboxController * xctrl;
 
 	static int exitStatus;
 	static ClientEngine *ce;	//instance
