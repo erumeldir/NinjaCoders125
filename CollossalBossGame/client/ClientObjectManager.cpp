@@ -1,5 +1,6 @@
 #include "ClientObjectManager.h"
 #include "RenderEngine.h"
+#include "DebugConsole.h"
 
 ClientObjectManager *ClientObjectManager::com;
 

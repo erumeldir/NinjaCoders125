@@ -24,12 +24,42 @@ void DebugConsole::print(const char *szFormat, ...) {
 	va_start(vl, szFormat);
 
 	int l = strlen(szFormat);
+    char *str = (char*)malloc(strlen(szFormat) + 1);
+    memcpy(str, szFormat, strlen(szFormat) + 1);
+    char *ptrStart, *ptrEnd;
+
+    for(ptrStart = str, ptrEnd = str; *ptrEnd != 0; ++ptrEnd) {
+        if(*ptrEnd == '%') {
+            *ptrEnd++ = 0;
+			print_str(ptrStart);
+            switch(*ptrEnd) {
+            case 'd':
+				print(va_arg(vl,int));
+                break;
+            case 'f':
+				print(va_arg(vl,double));
+                break;
+            case 'c':
+				print(va_arg(vl,char));
+                break;
+            case 's':
+				print_str(va_arg(vl,char*));
+                break;
+            default:
+				print('%');
+                break;
+            }
+            ptrStart = ptrEnd + 1;
+        }
+    }
+	print_str(ptrStart);
+    free(str);
 
 	va_end(vl);
 }
 
 
-void DebugConsole::print(float f) {
+void DebugConsole::print(double f) {
 	if(enFile) {
 		fout << f;
 	}
@@ -47,7 +77,7 @@ void DebugConsole::print(char c) {
 	}
 }
 
-void DebugConsole::print(char *s) {
+void DebugConsole::print_str(char *s) {
 	if(enFile) {
 		fout << s;
 	}
