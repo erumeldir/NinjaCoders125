@@ -13,12 +13,13 @@
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d9.lib")
-
+#pragma comment (lib, "d3dx9d.lib")
 #include <d3dx9.h>
 
 #include <list>
 #include <stdio.h>
 #include "ClientObject.h"
+#include "XAnimator_lib.h"
 using namespace std;
 
 
@@ -43,7 +44,7 @@ public:
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
 
 	void renderThis(ClientObject *obj);
-
+	
 
 private:
 	void startWindow ();
@@ -53,6 +54,10 @@ private:
 	RenderEngine();
 	virtual ~RenderEngine();
 //LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
+
+	IXAnimator* xAnimator;
+	int skeletonGraphicId;
+	D3DXMATRIX world;
 
 	//Static members
 	static RenderEngine *re;

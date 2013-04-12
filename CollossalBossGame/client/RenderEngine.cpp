@@ -9,6 +9,12 @@
 #include "defs.h"
 #include "RenderModel.h"
 #include "ClientObjectManager.h"
+#include <mmsystem.h>
+
+#if defined(DEBUG) | defined(_DEBUG)
+	#include <crtdbg.h>
+	#define new new(_NORMAL_BLOCK,__FILE__, __LINE__)
+#endif
 
 //Static Members
 RenderEngine *RenderEngine::re;
@@ -42,7 +48,7 @@ void RenderEngine::startWindow()
 		"WindowClass",
 		"Our First Direct3D Program",
 		WS_EX_TOPMOST | WS_POPUP,
-		0, 0,
+		CW_USEDEFAULT, CW_USEDEFAULT, //0, 0,
 		SCREEN_WIDTH, SCREEN_HEIGHT,
 		NULL,
 		NULL,
@@ -78,6 +84,38 @@ void RenderEngine::renderInitalization()
 	D3DCREATE_SOFTWARE_VERTEXPROCESSING,
 	&deviceInfo,
 	&direct3dDevice);
+
+	
+	D3DXMATRIX matView;
+	D3DXMatrixLookAtLH(&matView,&D3DXVECTOR3(0,1,-4),&D3DXVECTOR3(0,1,0), &D3DXVECTOR3(0,1,0) );
+	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
+
+	D3DXMATRIX matProj;
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 200.0f );
+	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
+
+	direct3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_XRGB(80,80,80) );
+
+	// Fill in a light structure defining our light
+	D3DLIGHT9 light;
+	ZeroMemory( &light, sizeof(D3DLIGHT9) );
+	light.Type       = D3DLIGHT_DIRECTIONAL;
+	light.Diffuse.r  = 1.0f;
+	light.Diffuse.g  = 1.0f;
+	light.Diffuse.b  = 1.0f;
+	light.Diffuse.a  = 1.0f;
+	light.Range      = 500.0f;
+	// Create a direction for our light - it must be normalized  
+	D3DXVECTOR3 vecDir;
+	vecDir = D3DXVECTOR3(0.0f,-0.3f,0.5);
+	D3DXVec3Normalize( (D3DXVECTOR3*)&light.Direction, &vecDir );
+
+	// Tell the device about the light and turn it on
+	direct3dDevice->SetLight( 0, &light );
+	direct3dDevice->LightEnable( 0, TRUE ); 
+
+	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+
 }
 
 /*
@@ -86,6 +124,10 @@ void RenderEngine::renderInitalization()
 RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
+	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
+	if (!xAnimator->LoadXFile("tiny.x",&skeletonGraphicId) )
+		printf("\n\n\n\nLoad ERRRRRRRRRR.\n\n\n\n");
+
 }
 
 /*
@@ -101,6 +143,13 @@ RenderEngine::~RenderEngine() {
 * Bryan
 */
 void RenderEngine::sceneDrawing() {
+	
+	D3DXMatrixIdentity(&world);
+	
+	D3DXMatrixRotationY(&world, 0.f);//timeGetTime()%3600*0.00174533f);
+#define timeSinceLastUpdate 4
+	xAnimator->Render(skeletonGraphicId,world,timeSinceLastUpdate);
+
 	for(list<ClientObject *>::iterator it = lsObjs.begin();
 			it != lsObjs.end();
 			++it) {

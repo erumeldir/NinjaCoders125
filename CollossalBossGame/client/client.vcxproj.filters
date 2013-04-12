@@ -80,5 +80,16 @@
     <ClInclude Include="PlayerCObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="XAnimator\XAnimator_lib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tiny.x">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="tiny_skin.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
