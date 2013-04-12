@@ -1,7 +1,8 @@
 #include "ServerNetworkManager.h"
 #include "Action.h"
 #include "ServerObjectManager.h"
-#include "TestSObj.h"
+#include "PlayerSObj.h"
+#include "ConfigurationManager.h"
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
@@ -68,7 +69,11 @@ ServerNetworkManager::ServerNetworkManager(void)
     }
 
     // 3. Set the mode of the socket to be nonblocking
-    u_long iMode = 1;
+    u_long iMode = 1;	
+	if(CM::get()->find_config_as_bool("NETWORK_SERVER_USE_NONBLOCKING")) {
+		printf("Setting Server Network to be non-blocking.");
+		iMode = 0;
+	}
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);
 
     if (iResult == SOCKET_ERROR) {
@@ -115,6 +120,7 @@ ServerNetworkManager * ServerNetworkManager::get() {
 // Collects and stores data 
 void ServerNetworkManager::update() {
 	// get new clients
+	do {
     if(acceptNewClient(client_id)) {
         DC::get()->print("client %d has been connected to the server\n",client_id);
 
@@ -123,10 +129,13 @@ void ServerNetworkManager::update() {
 		// Ok, since we should only have one object on both sides, the id's will match
 		// but how do we get them matching later? maybe the server should send
 		// the client the id back or something?
-		som->add(new TestSObj(som->genId()));
+		som->add(new PlayerSObj(som->genId()));
+
+		// TODO Send generated player id back to client
 
         client_id++;
     }
+	} while (client_id == 0);
 	// Collect data from clients
     receiveFromClients();
 }
@@ -138,19 +147,24 @@ void ServerNetworkManager::receiveFromClients() {
     std::map<unsigned int, SOCKET>::iterator iter;
     for(iter = sessions.begin(); iter != sessions.end(); iter++) {
         int data_length = receiveData(iter->first, network_data);
-        if (data_length <= 0) { //no data recieved
-            continue;
+
+		// TODO FOR NOW: CHANGE? loop until you get data from a client....
+        while (data_length <= 0) { //no data recieved
+            //continue;
+			data_length = receiveData(iter->first, network_data);
         }
 
         int i = 0;
         while ((unsigned int)i < (unsigned int)data_length) {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
-
+			// <Log Packet>
+			cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
+			// </Log Packet>
             switch (packet.packet_type) {
+				ServerObject* destObject;
                 case INIT_CONNECTION:
                     DC::get()->print("server received init packet from client %d\n", iter->first);
-                    // sendActionPackets();
                     break;
                 case ACTION_EVENT:
                     DC::get()->print("server received action event packet from client %d\n", iter->first);
@@ -158,7 +172,13 @@ void ServerNetworkManager::receiveFromClients() {
 					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
 					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
-					memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
+					destObject = SOM::get()->find(packet.object_id);
+
+					// TODO handshake to set up player object, so this shouldn't happen after that
+					if (destObject != NULL) {
+						destObject->deserialize(packet.packet_data);
+					}
+					//memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 
 					// Re-send what you gave me xD (wow, we're a useful server =P)
 					/*char packet_data[sizeof(Packet)];

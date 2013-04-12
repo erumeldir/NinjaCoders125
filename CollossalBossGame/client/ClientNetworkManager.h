@@ -28,7 +28,7 @@ public:
 	static ClientNetworkManager * get();
 	int receivePackets(char *);
 	void update();
-	void sendData(char * data, int datalen);
+	void sendData(char * data, int datalen, int objectID);
 private:
 	// ctor/dtor
     ClientNetworkManager(void);

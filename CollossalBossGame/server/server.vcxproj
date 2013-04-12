@@ -70,6 +70,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="PlayerSObj.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
     <ClCompile Include="ServerObject.cpp" />
     <ClCompile Include="ServerObjectManager.cpp" />
@@ -80,6 +81,7 @@
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PhysicsModel.h" />
+    <ClInclude Include="PlayerSObj.h" />
     <ClInclude Include="ServerNetworkManager.h" />
     <ClInclude Include="ServerObject.h" />
     <ClInclude Include="ServerObjectManager.h" />
