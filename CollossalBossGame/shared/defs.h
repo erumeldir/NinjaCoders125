@@ -7,6 +7,7 @@
 
 //Standard includes
 #include <stdio.h>
+#include "DebugConsole.h"
 
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)

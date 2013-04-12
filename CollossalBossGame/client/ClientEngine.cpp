@@ -23,6 +23,7 @@ ClientEngine::ClientEngine() {
 	//Initialize engines
 	RE::init();
 	COM::init();
+	DC::init("clientLog.txt");
 	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 }
 
@@ -33,6 +34,7 @@ ClientEngine::~ClientEngine() {
 	//Clean engines
 	RE::clean();
 	COM::clean();
+	DC::clean();
 }
 
 

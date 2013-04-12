@@ -23,6 +23,7 @@ int main()
 	// cout << CM::get()->find_config("asdf") << endl;
 	// system("pause");
 	SOM::init();
+	DC::init("serverLog.txt");
 
 	// Keep track of how long our updates take
 	time_t beginLoopTimer;
@@ -60,4 +61,5 @@ int main()
     }
 
 	SOM::clean();
+	DC::clean();
 }
