@@ -6,6 +6,7 @@
 #include "defs.h"
 #include "RenderEngine.h"
 #include "ClientObjectManager.h"
+#include "AudioEngine.h"
 #include "game.h"
 
 //Static members
@@ -23,6 +24,7 @@ ClientEngine::ClientEngine() {
 	//Initialize engines
 	RE::init();
 	COM::init();
+	AE::init();
 	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 }
 
@@ -33,6 +35,7 @@ ClientEngine::~ClientEngine() {
 	//Clean engines
 	RE::clean();
 	COM::clean();
+	AE::clean();
 }
 
 
