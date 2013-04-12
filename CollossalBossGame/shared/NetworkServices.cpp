@@ -1,4 +1,5 @@
 #include "NetworkServices.h"
+#include "NetworkData.h"
 
 /* this current object sends a message
 	curSocket: the socket we'll send the message through
@@ -13,7 +14,7 @@
 int NetworkServices::sendMessage(SOCKET curSocket, char * message, int messageSize)
 {
 	//the 0 is saying that we don't need to set any flags
-    return send(curSocket, message, messageSize, 0);
+    return send(curSocket, message, (sizeof(Packet))+messageSize-PACKET_SIZE, 0);
 }
 
 /* this current object recieves a message

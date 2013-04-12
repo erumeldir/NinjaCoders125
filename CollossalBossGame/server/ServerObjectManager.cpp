@@ -104,6 +104,7 @@ void ServerObjectManager::sendState()
 		pair<int, char*> data = it->second->serialize();
 		Packet packet;
 		packet.packet_type = ACTION_EVENT;
+		packet.object_id = it->second->getId();
 		memcpy(packet.packet_data, data.second, data.first);
 		char packet_data[104];
 		packet.serialize(packet_data);
