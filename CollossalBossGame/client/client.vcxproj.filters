@@ -39,9 +39,6 @@
     <ClCompile Include="ClientNetworkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DebugConsole.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="XboxController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,9 +66,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClientNetworkManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugConsole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XboxController.h">
