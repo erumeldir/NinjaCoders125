@@ -2,6 +2,7 @@
 #include "Action.h"
 #include "ServerObjectManager.h"
 #include "PlayerSObj.h"
+#include "ConfigurationManager.h"
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
@@ -68,7 +69,11 @@ ServerNetworkManager::ServerNetworkManager(void)
     }
 
     // 3. Set the mode of the socket to be nonblocking
-    u_long iMode = 1;
+    u_long iMode = 1;	
+	if(CM::get()->find_config_as_bool("NETWORK_SERVER_USE_NONBLOCKING")) {
+		printf("Setting Server Network to be non-blocking.");
+		iMode = 0;
+	}
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);
 
     if (iResult == SOCKET_ERROR) {
@@ -153,12 +158,13 @@ void ServerNetworkManager::receiveFromClients() {
         while ((unsigned int)i < (unsigned int)data_length) {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
-
+			// <Log Packet>
+			cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
+			// </Log Packet>
             switch (packet.packet_type) {
 				ServerObject* destObject;
                 case INIT_CONNECTION:
                     printf("server received init packet from client %d\n", iter->first);
-                    // sendActionPackets();
                     break;
                 case ACTION_EVENT:
                     printf("server received action event packet from client %d\n", iter->first);
