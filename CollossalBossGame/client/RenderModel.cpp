@@ -49,12 +49,15 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot)
 	vbuf->Lock(0, 0, (void**)&vertexInfo, 0); // lock the vertex buffer
 	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
 	vbuf->Unlock(); // unlock the vertex buffer
+	
+	RenderEngine::loadModel("tiny.x", &skeletonGraphicId);
 }
 
 
 RenderModel::~RenderModel(void)
 {
 }
+
 
 void RenderModel::render() {
 	//printf("Pos: %d, %d, %d                                       \r",ref->getPos().x, ref->getPos().y, ref->getPos().z); 
@@ -109,6 +112,9 @@ void RenderModel::render() {
 
 	// copy the vertex buffer to the back buffer
 	RE::get()->direct3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+
+	//put in render call here
+	RenderEngine::animate(skeletonGraphicId);
 }
 
 /*#include "RenderModel.h"

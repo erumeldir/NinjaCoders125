@@ -28,4 +28,5 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 vbuf;
 	Frame *ref;	//The skeleton
 	Point_t verts[3];
+	int skeletonGraphicId;
 };

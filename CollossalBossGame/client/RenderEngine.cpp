@@ -18,6 +18,8 @@
 
 //Static Members
 RenderEngine *RenderEngine::re;
+IXAnimator* RenderEngine::xAnimator;
+D3DXMATRIX RenderEngine::world;
 
 /* create a window that we will render in
 *
@@ -125,8 +127,6 @@ RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
-	if (!xAnimator->LoadXFile("tiny.x",&skeletonGraphicId) )
-		printf("\n\n\n\nLoad ERRRRRRRRRR.\n\n\n\n");
 	
 	xpos = 0;
 	ypos = 0;
@@ -173,11 +173,6 @@ RenderEngine::~RenderEngine() {
 * Bryan
 */
 void RenderEngine::sceneDrawing() {
-	
-
-#define timeSinceLastUpdate 4
-	xAnimator->Render(skeletonGraphicId,world,timeSinceLastUpdate);
-
 	for(list<ClientObject *>::iterator it = lsObjs.begin();
 			it != lsObjs.end();
 			++it) {

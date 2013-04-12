@@ -57,7 +57,7 @@ bool TestObject::update() {
 	// TODO: This should delete if the server told it to
 #define MYDIV 100
 	Point_t pt = rm->getFrameOfRef()->getPos();
-	RE::get()->moveCamera(pt.x / MYDIV, pt.y / MYDIV, pt.z / MYDIV);
+	//RE::get()->moveCamera(pt.x / MYDIV, pt.y / MYDIV, pt.z / MYDIV);
 	return false;
 }
 
