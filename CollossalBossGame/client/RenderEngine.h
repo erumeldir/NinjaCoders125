@@ -45,6 +45,7 @@ public:
 
 	void renderThis(ClientObject *obj);
 	
+	void moveCamera(float x, float y, float z);
 
 private:
 	void startWindow ();
@@ -61,6 +62,8 @@ private:
 
 	//Static members
 	static RenderEngine *re;
+
+	float xpos, ypos, zpos;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;

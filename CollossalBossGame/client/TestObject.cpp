@@ -2,6 +2,7 @@
 #include "ClientEngine.h"
 #include <math.h>
 #include <Windows.h>
+#include "RenderEngine.h"
 #define M_PI 3.14159
 
 TestObject::TestObject(uint id) :
@@ -54,6 +55,9 @@ bool TestObject::update() {
 	// TODO Note: Should we vibrate the controller from here? like...from the player object? 
 	*/
 	// TODO: This should delete if the server told it to
+#define MYDIV 100
+	Point_t pt = rm->getFrameOfRef()->getPos();
+	RE::get()->moveCamera(pt.x / MYDIV, pt.y / MYDIV, pt.z / MYDIV);
 	return false;
 }
 

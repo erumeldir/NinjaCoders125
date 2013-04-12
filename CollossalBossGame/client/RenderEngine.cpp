@@ -127,7 +127,37 @@ RenderEngine::RenderEngine() {
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 	if (!xAnimator->LoadXFile("tiny.x",&skeletonGraphicId) )
 		printf("\n\n\n\nLoad ERRRRRRRRRR.\n\n\n\n");
+	
+	xpos = 0;
+	ypos = 0;
+	zpos = 10;
 
+	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
+
+	D3DXMatrixIdentity(&world);
+	D3DXMatrixIdentity(&xworld);
+	D3DXMatrixIdentity(&yworld);
+	D3DXMatrixIdentity(&zworld);
+	D3DXMatrixIdentity(&sworld);
+
+	D3DXMatrixScaling(&sworld, 0.01f, 0.01, 0.01);
+	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);//timeGetTime()%3600*0.00174533f);
+	D3DXMatrixRotationZ(&zworld, 3.1415);//timeGetTime()%3600*0.00174533f);
+	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
+	//moveCamera(0, 0, 10);
+	world = xworld * yworld * zworld * tworld *sworld;
+
+}
+
+void RenderEngine::moveCamera(float x, float y, float z)
+{
+	DC::get()->print("Zpos: %f, YPos: %f, XPos: %f, x: %f, y: %f, z: %f\n", zpos, ypos, xpos, x, y, z);
+	D3DXMATRIX tworld;
+	D3DXMatrixIdentity(&tworld);
+	D3DXMatrixTranslation(&tworld, x - xpos, y - ypos, 0);
+	world = world * tworld;
+	ypos = y;
+	xpos = x;
 }
 
 /*
@@ -144,9 +174,7 @@ RenderEngine::~RenderEngine() {
 */
 void RenderEngine::sceneDrawing() {
 	
-	D3DXMatrixIdentity(&world);
-	
-	D3DXMatrixRotationY(&world, 0.f);//timeGetTime()%3600*0.00174533f);
+
 #define timeSinceLastUpdate 4
 	xAnimator->Render(skeletonGraphicId,world,timeSinceLastUpdate);
 
