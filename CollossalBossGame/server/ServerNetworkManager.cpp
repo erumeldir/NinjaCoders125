@@ -159,7 +159,8 @@ void ServerNetworkManager::receiveFromClients() {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
 			// <Log Packet>
-			cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
+			//cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
+			DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
 			// </Log Packet>
             switch (packet.packet_type) {
 				ServerObject* destObject;

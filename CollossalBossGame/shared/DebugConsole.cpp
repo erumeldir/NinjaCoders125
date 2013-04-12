@@ -38,13 +38,13 @@ void DebugConsole::printAll(int flags, const char *szFormat, va_list vl) {
 		SYSTEMTIME st;
 		GetLocalTime(&st);
 		print(flags, st.wHour);
-		print(':');
+		print(flags, ':');
 		print(flags, st.wMinute);
-		print(':');
+		print(flags, ':');
 		print(flags, st.wSecond);
-		print(':');
+		print(flags, ':');
 		print(flags, st.wMilliseconds);
-		print(' ');
+		print(flags, ' ');
 	}
 
 	//Process the format string
@@ -113,7 +113,7 @@ void DebugConsole::print(int flags, char c) {
 void DebugConsole::print_str(int flags, char *s) {
 	if(enFile && flags & LOGFILE) {
 		fout << s;
-	} else
+	}
 	if(flags & CONSOLE) {
 		printf("%s", s);
 	}
