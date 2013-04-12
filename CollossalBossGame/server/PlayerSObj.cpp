@@ -1,8 +1,9 @@
 #include "PlayerSObj.h"
+#define M_PI 3.14159
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	printf("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(), Rot_t(), 500);
+	pm = new PhysicsModel(Point_t(300,500,0), Rot_t(0,0,M_PI), 500);
 
 	// Initialize input status
 	istat.attack = false;
@@ -47,7 +48,7 @@ pair<int, char*> PlayerSObj::serialize() {
 
 void PlayerSObj::deserialize(char* newInput)
 {
-	inputstatus* newStatus = reinterpret_cast<inputstatus*>(&newInput);
+	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat.attack = newStatus->attack;
 	istat.jump = newStatus->jump;
 	istat.specialPower = newStatus->specialPower;

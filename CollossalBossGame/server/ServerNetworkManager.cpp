@@ -1,7 +1,7 @@
 #include "ServerNetworkManager.h"
 #include "Action.h"
 #include "ServerObjectManager.h"
-#include "TestSObj.h"
+#include "PlayerSObj.h"
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
@@ -115,6 +115,7 @@ ServerNetworkManager * ServerNetworkManager::get() {
 // Collects and stores data 
 void ServerNetworkManager::update() {
 	// get new clients
+	do {
     if(acceptNewClient(client_id)) {
         printf("client %d has been connected to the server\n",client_id);
 
@@ -123,10 +124,13 @@ void ServerNetworkManager::update() {
 		// Ok, since we should only have one object on both sides, the id's will match
 		// but how do we get them matching later? maybe the server should send
 		// the client the id back or something?
-		som->add(new TestSObj(som->genId()));
+		som->add(new PlayerSObj(som->genId()));
+
+		// TODO Send generated player id back to client
 
         client_id++;
     }
+	} while (client_id == 0);
 	// Collect data from clients
     receiveFromClients();
 }
@@ -138,8 +142,11 @@ void ServerNetworkManager::receiveFromClients() {
     std::map<unsigned int, SOCKET>::iterator iter;
     for(iter = sessions.begin(); iter != sessions.end(); iter++) {
         int data_length = receiveData(iter->first, network_data);
-        if (data_length <= 0) { //no data recieved
-            continue;
+
+		// TODO FOR NOW: CHANGE? loop until you get data from a client....
+        while (data_length <= 0) { //no data recieved
+            //continue;
+			data_length = receiveData(iter->first, network_data);
         }
 
         int i = 0;
@@ -148,6 +155,7 @@ void ServerNetworkManager::receiveFromClients() {
             i += sizeof(Packet);
 
             switch (packet.packet_type) {
+				ServerObject* destObject;
                 case INIT_CONNECTION:
                     printf("server received init packet from client %d\n", iter->first);
                     // sendActionPackets();
@@ -158,7 +166,12 @@ void ServerNetworkManager::receiveFromClients() {
 					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
 					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
-					SOM::get()->find(packet.object_id)->deserialize(packet.packet_data);
+					destObject = SOM::get()->find(packet.object_id);
+
+					// TODO handshake to set up player object, so this shouldn't happen after that
+					if (destObject != NULL) {
+						destObject->deserialize(packet.packet_data);
+					}
 					//memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 
 					// Re-send what you gave me xD (wow, we're a useful server =P)

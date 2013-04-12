@@ -151,10 +151,12 @@ void ClientNetworkManager::update()
     Packet packet;
     int data_length = receivePackets(network_data);
 
-    if (data_length <= 0) 
+	// TODO All right, so this is in lock step right now, maybe change it?
+    while (data_length <= 0) 
     {
         //no data recieved
-        return;
+        //return;
+		data_length = receivePackets(network_data);
     }
 
     int i = 0;

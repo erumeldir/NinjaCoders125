@@ -1,5 +1,5 @@
 #include "PlayerCObj.h"
-#define M_PI 3.14159
+#define M_PI 3.14159 // TODO We should move this out somewhere
 
 PlayerCObj::PlayerCObj(uint id) :
 	ClientObject(id)

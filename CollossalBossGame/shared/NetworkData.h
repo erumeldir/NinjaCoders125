@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define MAX_PACKET_SIZE 1000000
+#define PACKET_SIZE 512
 
 enum PacketTypes {
     INIT_CONNECTION = 0,
@@ -21,7 +22,7 @@ struct Packet {
 	unsigned int object_id;
 	unsigned int packet_number;
 	unsigned int command_type;
-	char packet_data[100];
+	char packet_data[PACKET_SIZE];
 
     void serialize(char * data) {
         memcpy(data, this, sizeof(Packet));
