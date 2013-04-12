@@ -41,7 +41,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 
     if (iResult != 0) {
-        printf("WSAStartup failed with error: %d\n", iResult);
+		DC::get()->print("WSAStartup failed with error: %d\n", iResult);
 		system("pause");
         exit(1);
     }
@@ -58,7 +58,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
 
     if( iResult != 0 ) 
     {
-        printf("getaddrinfo failed with error: %d\n", iResult);
+        DC::get()->print("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
 		system("pause");
         exit(1);
@@ -73,7 +73,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
             ptr->ai_protocol);
 
         if (ConnectSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
+            DC::get()->print("socket failed with error: %ld\n", WSAGetLastError());
             WSACleanup();
 			system("pause");
             exit(1);
@@ -86,7 +86,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
         {
             closesocket(ConnectSocket);
             ConnectSocket = INVALID_SOCKET;
-            printf ("The server is down... did not connect.\n");
+            DC::get()->print ("The server is down... did not connect.\n");
         }
     }
 
@@ -97,7 +97,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
     // if connection failed
     if (ConnectSocket == INVALID_SOCKET) 
     {
-        printf("Unable to connect to server!\n");
+        DC::get()->print("Unable to connect to server!\n");
         WSACleanup();
 		system("pause");
         exit(1);
@@ -111,7 +111,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
     iResult = ioctlsocket(ConnectSocket, FIONBIO, &iMode);
     if (iResult == SOCKET_ERROR)
     {
-        printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
+        DC::get()->print("ioctlsocket failed with error: %d\n", WSAGetLastError());
         closesocket(ConnectSocket);
         WSACleanup();
 		system("pause");
@@ -133,7 +133,7 @@ int ClientNetworkManager::receivePackets(char * recvbuf)
 
     if ( iResult == 0 )
     {
-        printf("Connection closed\n");
+        DC::get()->print("Connection closed\n");
         closesocket(ConnectSocket);
         WSACleanup();
         exit(1);
@@ -166,13 +166,13 @@ void ClientNetworkManager::update()
 
         switch (packet.packet_type) {
             case ACTION_EVENT:
-                //printf("client received action event packet from server\n");
+                //DC::get()->print("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 				COM::get()->find(0)->deserialize(packet.packet_data);
                 break;
             default:
-                printf("error in packet types\n");
+                DC::get()->print("error in packet types\n");
                 break;
         }
     }

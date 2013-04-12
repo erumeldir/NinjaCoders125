@@ -7,11 +7,11 @@
 TestObject::TestObject(uint id) :
 	ClientObject(id)
 {
-	printf("Created new TestObject %d\n", id);
+	DC::get()->print("Created new TestObject %d\n", id);
 	/*
 	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 	if(!xctrl->isConnected()) {
-		printf("Error: Controller %d is not connected\n", id % 4);
+		DC::get()->print("Error: Controller %d is not connected\n", id % 4);
 	}
 	*/
 	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI));
@@ -38,13 +38,13 @@ bool TestObject::update() {
 		CE::get()->exit();
 	}
 	if (istat.attack) {
-		printf("ATTACKING!!!                                               \r");
+		DC::get()->print("ATTACKING!!!                                               \r");
 	}
 	if (istat.jump) {
-		printf("JUMPING!                                                   \r");
+		DC::get()->print("JUMPING!                                                   \r");
 	}
 	if (istat.specialPower) {
-		printf("SPECIAL POWER!!!!!                                         \r");
+		DC::get()->print("SPECIAL POWER!!!!!                                         \r");
 	}
 	
 	rm->getFrameOfRef()->setRot(Rot_t(0, 0, istat.rotAngle));

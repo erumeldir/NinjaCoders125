@@ -36,7 +36,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
-        printf("WSAStartup failed with error: %d\n", iResult);
+        DC::get()->print("WSAStartup failed with error: %d\n", iResult);
         exit(1);
     }
 
@@ -51,7 +51,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
 
     if ( iResult != 0 ) {
-        printf("getaddrinfo failed with error: %d\n", iResult);
+        DC::get()->print("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
         exit(1);
     }
@@ -61,7 +61,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
     if (ListenSocket == INVALID_SOCKET) {
-        printf("socket failed with error: %ld\n", WSAGetLastError());
+        DC::get()->print("socket failed with error: %ld\n", WSAGetLastError());
         freeaddrinfo(result);
         WSACleanup();
         exit(1);
@@ -72,7 +72,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);
 
     if (iResult == SOCKET_ERROR) {
-        printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
+        DC::get()->print("ioctlsocket failed with error: %d\n", WSAGetLastError());
         closesocket(ListenSocket);
         WSACleanup();
         exit(1);
@@ -82,7 +82,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 
     if (iResult == SOCKET_ERROR) {
-        printf("bind failed with error: %d\n", WSAGetLastError());
+        DC::get()->print("bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(result);
         closesocket(ListenSocket);
         WSACleanup();
@@ -96,7 +96,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = listen(ListenSocket, SOMAXCONN);
 
     if (iResult == SOCKET_ERROR) {
-        printf("listen failed with error: %d\n", WSAGetLastError());
+        DC::get()->print("listen failed with error: %d\n", WSAGetLastError());
         closesocket(ListenSocket);
         WSACleanup();
         exit(1);
@@ -116,7 +116,7 @@ ServerNetworkManager * ServerNetworkManager::get() {
 void ServerNetworkManager::update() {
 	// get new clients
     if(acceptNewClient(client_id)) {
-        printf("client %d has been connected to the server\n",client_id);
+        DC::get()->print("client %d has been connected to the server\n",client_id);
 
 		// Create a Test Server Object for them (for now)
 		SOM *som = SOM::get();
@@ -149,11 +149,11 @@ void ServerNetworkManager::receiveFromClients() {
 
             switch (packet.packet_type) {
                 case INIT_CONNECTION:
-                    printf("server received init packet from client %d\n", iter->first);
+                    DC::get()->print("server received init packet from client %d\n", iter->first);
                     // sendActionPackets();
                     break;
                 case ACTION_EVENT:
-                    printf("server received action event packet from client %d\n", iter->first);
+                    DC::get()->print("server received action event packet from client %d\n", iter->first);
 					//inputstatus is;
 					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
@@ -167,7 +167,7 @@ void ServerNetworkManager::receiveFromClients() {
                     // sendActionPackets();
                     break;
                 default:
-                    printf("error in packet types\n");
+                    DC::get()->print("error in packet types\n");
                     break;
             }
         }
@@ -201,7 +201,7 @@ int ServerNetworkManager::receiveData(unsigned int c_id, char * recvbuf) {
         SOCKET currentSocket = sessions[c_id];
         iResult = NetworkServices::receiveMessage(currentSocket, recvbuf, MAX_PACKET_SIZE);
         if (iResult == 0) {
-            printf("Connection closed\n");
+            DC::get()->print("Connection closed\n");
             closesocket(currentSocket);
         }
         return iResult;
@@ -220,7 +220,7 @@ void ServerNetworkManager::sendToAll(char * packets, int totalSize) {
         iSendResult = NetworkServices::sendMessage(currentSocket, packets, totalSize);
 
         if (iSendResult == SOCKET_ERROR) {
-            printf("send failed with error: %d\n", WSAGetLastError());
+            DC::get()->print("send failed with error: %d\n", WSAGetLastError());
             closesocket(currentSocket);
         }
     }
