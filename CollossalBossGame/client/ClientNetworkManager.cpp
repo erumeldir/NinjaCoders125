@@ -110,7 +110,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
 
     u_long iMode = 1;
 	if(CM::get()->find_config_as_bool("NETWORK_CLIENT_USE_NONBLOCKING")) {
-		printf("Setting Client Network to be non-blocking.");
+		DC::get()->print("Setting Client Network to be non-blocking.");
 		iMode = 0;
 	}
 

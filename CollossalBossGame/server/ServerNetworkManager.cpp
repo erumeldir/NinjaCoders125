@@ -71,7 +71,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     // 3. Set the mode of the socket to be nonblocking
     u_long iMode = 1;	
 	if(CM::get()->find_config_as_bool("NETWORK_SERVER_USE_NONBLOCKING")) {
-		printf("Setting Server Network to be non-blocking.");
+		DC::get()->print("Setting Server Network to be non-blocking.");
 		iMode = 0;
 	}
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);

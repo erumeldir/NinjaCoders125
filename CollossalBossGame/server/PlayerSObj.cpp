@@ -2,7 +2,7 @@
 #define M_PI 3.14159
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
-	printf("Created new PlayerSObj %d\n", id);
+	DC::get()->print("Created new PlayerSObj %d\n", id);
 	pm = new PhysicsModel(Point_t(300,500,0), Rot_t(0,0,M_PI), 500);
 
 	// Initialize input status
@@ -26,13 +26,13 @@ bool PlayerSObj::update() {
 	}
 	if (istat.attack) {
 		// Determine attack logic here
-		printf("SERVER KNOWS YOU'RE ATTACKING!!!                                               \r");
+		DC::get()->print("SERVER KNOWS YOU'RE ATTACKING!!!                                               \r");
 	}
 	if (istat.jump) {
-		printf("SERVER KNOWS YOU'RE JUMPING!                                                   \r");
+		DC::get()->print("SERVER KNOWS YOU'RE JUMPING!                                                   \r");
 	}
 	if (istat.specialPower) {
-		printf("SERVER KNOWS YOU'RE SPECIAL POWERING!!!!!                                      \r");
+		DC::get()->print("SERVER KNOWS YOU'RE SPECIAL POWERING!!!!!                                      \r");
 	}
 	
 	pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));

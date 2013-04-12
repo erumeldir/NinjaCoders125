@@ -17,7 +17,7 @@ public:
 	// input from the client (a.k.a. playerobjects)
 	virtual void deserialize(char* newState) {
 		// TODO: add to error console
-		printf("ERROR! Trying to deserialize input for a server object that doesn't take input from the client\n");
+		DC::get()->print("ERROR! Trying to deserialize input for a server object that doesn't take input from the client\n");
 	}
 
 	uint getId() { return id; }
