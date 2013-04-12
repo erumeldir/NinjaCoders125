@@ -35,10 +35,11 @@ void Frame::rotate(const Vec3f &dr) {
 	rot.z += dr.z;
 }
 
-pair<int, char*> Frame::serialize() {
+int Frame::serialize(char * buf) {
 	st.pos = pos;
 	st.rot = rot;
-	return pair<int, char*>(sizeof(st), reinterpret_cast<char *>(&st));
+	memcpy(buf, reinterpret_cast<char *>(&st), sizeof(st));
+	return sizeof(st);
 }
 
 void Frame::deserialize(char* newState) {

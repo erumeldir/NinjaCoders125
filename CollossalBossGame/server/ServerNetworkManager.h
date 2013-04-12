@@ -26,13 +26,18 @@ public:
 	void receiveFromClients();									// Collects data from all clients
 	bool acceptNewClient(unsigned int & id);					// accept new connections
     int  receiveData(unsigned int client_id, char * recvbuf);	// receive incoming data
-    void sendToAll(char * packets, int totalSize);				// send data to all clients
+	char* getSendBuffer();										// Fetches send buffer to fill for sending.
+    // send data to all clients
+	void sendToAll(unsigned int packet_type, unsigned int data_size);
+	void sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int data_size);
+	void sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size);
+	void sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size);
 
     SOCKET ListenSocket;	// Socket to listen for new connections
     SOCKET ClientSocket;	// Socket to give to the clients
     int iResult;			// for error checking return values
     std::map<unsigned int, SOCKET> sessions; // table to keep track of each client's socket
-	
+	Packet send_buffer;
 	
 };
 

@@ -9,7 +9,7 @@ public:
 
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
-	virtual pair<int, char*> serialize();
+	virtual int serialize(char * buf);
 	inputstatus istat;
 
 	char serialbuffer[100];

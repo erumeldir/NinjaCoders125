@@ -24,6 +24,7 @@ struct Packet {
 	unsigned int object_id;		// ID of object to be updated on either client or server.
 	unsigned int packet_number;	// The packet being sent back and forth.
 	unsigned int command_type;	// Command read by the ClientObjectManager
+	unsigned int data_size;		// Extra field for messages that require the size to be known (if it doesn't fill out the whole buffer).
 	char packet_data[PACKET_SIZE];		// Buffer to hold the data of the Packet.
 
 	// Copies the data of this struct into a character buffer.
@@ -35,5 +36,9 @@ struct Packet {
     void deserialize(char * data) {
         memcpy(this, data, sizeof(Packet));
     }
+
+	void clear() {
+		SecureZeroMemory(this, sizeof(Packet));
+	}
 };
 

@@ -29,7 +29,7 @@ public:
 	Point_t getPos() { return pos; }
 	Rot_t getRot() { return rot; }
 
-	pair<int, char*> serialize();
+	int serialize(char * buf);
 	void deserialize(char* newState);
 	stateMessage st;
 private:

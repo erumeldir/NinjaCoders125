@@ -44,8 +44,8 @@ bool PlayerSObj::update() {
 	return false;
 }
 
-pair<int, char*> PlayerSObj::serialize() {
-	return pm->ref->serialize();
+int PlayerSObj::serialize(char * buf) {
+	return pm->ref->serialize(buf);
 }
 
 void PlayerSObj::deserialize(char* newInput)

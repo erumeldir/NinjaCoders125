@@ -42,6 +42,6 @@ bool TestSObj::update() {
 	return false;
 }
 
-pair<int, char*> TestSObj::serialize() {
-	return pm->ref->serialize();
+int TestSObj::serialize(char * buf) {
+	return pm->ref->serialize(buf);
 }

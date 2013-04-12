@@ -10,7 +10,7 @@ public:
 
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
-	virtual pair<int, char*> serialize();
+	virtual int serialize(char * buf);
 	void deserialize(char* newInput);
 
 	char serialbuffer[100];

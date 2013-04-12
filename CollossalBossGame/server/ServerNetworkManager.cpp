@@ -230,15 +230,38 @@ int ServerNetworkManager::receiveData(unsigned int c_id, char * recvbuf) {
     return 0;
 }
 
+char* ServerNetworkManager::getSendBuffer() {
+	send_buffer.clear();
+	return &(send_buffer.packet_data[0]);
+}
+
+void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int data_size) {
+	sendToAll(0, packet_type, 0, 0, data_size);
+}
+void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int data_size) {
+	sendToAll(0, packet_type, object_id, 0, data_size);
+}
+void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size) {
+	sendToAll(0, packet_type, object_id, command_type, data_size);
+}
+
 // send data to all clients
-void ServerNetworkManager::sendToAll(char * packets, int totalSize) {
+void ServerNetworkManager::sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size) {
+	char data[sizeof(Packet)];
+	send_buffer.iteration = iteration;
+	send_buffer.packet_type = packet_type;
+	send_buffer.object_id = object_id;
+	send_buffer.command_type = command_type;
+	send_buffer.data_size = data_size;
+	send_buffer.serialize(data);
+
     SOCKET currentSocket;
     std::map<unsigned int, SOCKET>::iterator iter;
     int iSendResult;
 
     for (iter = sessions.begin(); iter != sessions.end(); iter++) {
         currentSocket = iter->second;
-        iSendResult = NetworkServices::sendMessage(currentSocket, packets, totalSize);
+        iSendResult = NetworkServices::sendMessage(currentSocket, data, sizeof(Packet));
 
         if (iSendResult == SOCKET_ERROR) {
             DC::get()->print("send failed with error: %d\n", WSAGetLastError());
@@ -246,4 +269,5 @@ void ServerNetworkManager::sendToAll(char * packets, int totalSize) {
         }
     }
 }
+
 

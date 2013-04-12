@@ -141,4 +141,5 @@ bool ConfigurationManager::find_config_as_bool(string key) {
 		return false;
 	}
 	assert(false && "Invalid Configuration value as boolean.");
+	return false;
 }
