@@ -15,7 +15,7 @@ TestObject::TestObject(uint id) :
 		DC::get()->print("Error: Controller %d is not connected\n", id % 4);
 	}
 	*/
-	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI));
+	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI), "tiny.x");
 
 	// Initialize input status
 	/*istat.attack = false;

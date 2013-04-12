@@ -19,7 +19,7 @@
 class RenderModel
 {
 public:
-	RenderModel(Point_t pos, Rot_t rot);
+	RenderModel(Point_t pos, Rot_t rot, const char * filename);
 	virtual ~RenderModel(void);
 
 	virtual void render();
