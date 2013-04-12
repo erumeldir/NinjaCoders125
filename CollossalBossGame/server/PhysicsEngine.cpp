@@ -22,6 +22,10 @@ PhysicsEngine::~PhysicsEngine(void)
 bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	float dt = TIMESTEP;
 
+	//Apply additional forces, such as gravity and friction.
+	// We are ignoring both for now and applying a half-assed version of
+	// friction when we update the velocity.
+
 	//Update position
 	float dx = 0.5 * mdl->accel.x * dt * dt + mdl->vel.x * dt,
 		  dy = 0.5 * mdl->accel.y * dt * dt + mdl->vel.y * dt,
@@ -29,12 +33,21 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	mdl->ref->translate(Point_t(dx, dy, dz));
 
 	//Update velocity
-	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x;
-	mdl->vel.y = mdl->accel.y * dt + mdl->vel.y;
-	mdl->vel.z = mdl->accel.z * dt + mdl->vel.z;
+	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;
+	mdl->vel.y = mdl->accel.y * dt + mdl->vel.y / mdl->frictCoeff;
+	mdl->vel.z = mdl->accel.z * dt + mdl->vel.z / mdl->frictCoeff;
 
 	//Update acceleration
 	mdl->accel = Vec3f();
+
+	//Temporary collision check
+	dx = mdl->ref->getPos().x;
+	dy = mdl->ref->getPos().y;
+	dx = dx < 0 ? -dx : 0;
+	dy = dy < 0 ? -dy : 0;
+	mdl->ref->translate(Point_t(dx, dy, 0));
+
+
 	return true;	//We'll add a detection for has-moved later
 }
 

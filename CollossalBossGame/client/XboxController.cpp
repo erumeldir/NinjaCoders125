@@ -52,9 +52,15 @@ void XboxController::sendInput() {
 				y2 = gamepad.sThumbRY;
 
 		// Set position
-		istat.xDist = fabs(x) > DEADZONE ? x / DIV : 0;
-		istat.yDist = fabs(y) > DEADZONE ? y / DIV : 0;
-
+		//istat.xDist = fabs(x) > DEADZONE ? x / DIV : 0;
+		//istat.yDist = fabs(y) > DEADZONE ? y / DIV : 0;
+		if(fabs(x) > DEADZONE || fabs(y) > DEADZONE) {
+			istat.xDist = x / DIV;
+			istat.yDist = y / DIV;
+		} else {
+			istat.xDist = 0;
+			istat.yDist = 0;
+		}
 		// Set rotation
 		istat.rotAngle = 0;
 		if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
