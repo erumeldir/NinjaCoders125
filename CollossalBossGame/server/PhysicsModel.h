@@ -1,7 +1,7 @@
 #pragma once
 #include "defs.h"
 #include "Frame.h"
-#define AIR_FRICTION 1.3	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.3f	//A bit excessive, but it works for now
 
 //All physics data should be known to the frames
 struct PhysicsModel
