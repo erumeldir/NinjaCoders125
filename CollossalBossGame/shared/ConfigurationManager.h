@@ -1,6 +1,6 @@
 #include <string>
 
-#define MAX_CONFIG_ITEMS 5
+#define MAX_CONFIG_ITEMS 200
 #define MAX_KEY_LENGTH 32
 #define MAX_VALUE_LENGTH 256
 

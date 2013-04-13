@@ -20,6 +20,7 @@ ServerNetworkManager ServerNetworkManager::SNM;
  */
 ServerNetworkManager::ServerNetworkManager(void)
 {
+	char * PORT = CM::get()->find_config("PORT");
 	client_id = 0;
 	//0. Variable Initialization
 	// create WSADATA object
@@ -49,7 +50,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     hints.ai_flags = AI_PASSIVE;
 
 	 // Resolve the server address and port
-    iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
+    iResult = getaddrinfo(NULL, PORT, &hints, &result);
 
     if ( iResult != 0 ) {
         DC::get()->print("getaddrinfo failed with error: %d\n", iResult);
@@ -261,12 +262,25 @@ void ServerNetworkManager::sendToAll(unsigned int iteration, unsigned int packet
 
     for (iter = sessions.begin(); iter != sessions.end(); iter++) {
         currentSocket = iter->second;
-        iSendResult = NetworkServices::sendMessage(currentSocket, data, sizeof(Packet));
 
-        if (iSendResult == SOCKET_ERROR) {
-            DC::get()->print("send failed with error: %d\n", WSAGetLastError());
-            closesocket(currentSocket);
-        }
+		// http://bobobobo.wordpress.com/2008/11/09/resolving-winsock-error-10035-wsaewouldblock/
+		// Issue seems to be that the buffer on the client is full, so you need to wait until all of the packets are processed.
+		// Current fix is to keep attempting to send until it succeeds, with a max iterate count so it doesn't hang
+		// NOTE: iSendResult might be less than sizeof(Packet)! Find out if this case needs to be considered.
+			// Print out a debug statement at least.
+		int loopcount = 0;
+        while((iSendResult = NetworkServices::sendMessage(currentSocket, data, sizeof(Packet))) == SOCKET_ERROR) {
+			int err = WSAGetLastError();
+			if(loopcount > 50 ) {
+				DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
+				closesocket(currentSocket);
+			} else if(err == 10056 || err == 10035) {
+				loopcount++;
+			} else {
+				DC::get()->print("send failed with error: %d\n", WSAGetLastError());
+				closesocket(currentSocket);
+			}
+		}
     }
 }
 
