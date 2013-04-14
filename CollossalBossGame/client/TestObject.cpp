@@ -4,7 +4,7 @@
 #include <Windows.h>
 #define M_PI 3.14159
 
-TestObject::TestObject(uint id) :
+TestObject::TestObject(uint id, char *data) :
 	ClientObject(id)
 {
 	DC::get()->print("Created new TestObject %d\n", id);
@@ -14,7 +14,8 @@ TestObject::TestObject(uint id) :
 		DC::get()->print("Error: Controller %d is not connected\n", id % 4);
 	}
 	*/
-	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI));
+	rm = new RenderModel(Point_t(),Rot_t());
+	deserialize(data);
 
 	// Initialize input status
 	/*istat.attack = false;

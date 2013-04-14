@@ -236,17 +236,17 @@ char* ServerNetworkManager::getSendBuffer() {
 }
 
 void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int data_size) {
-	sendToAll(0, packet_type, 0, 0, data_size);
+	sendToAll(0, packet_type, 0, CMD_UPDATE, data_size);
 }
 void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int data_size) {
-	sendToAll(0, packet_type, object_id, 0, data_size);
+	sendToAll(0, packet_type, object_id, CMD_UPDATE, data_size);
 }
-void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size) {
+void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
 	sendToAll(0, packet_type, object_id, command_type, data_size);
 }
 
 // send data to all clients
-void ServerNetworkManager::sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size) {
+void ServerNetworkManager::sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
 	char data[sizeof(Packet)];
 	send_buffer.iteration = iteration;
 	send_buffer.packet_type = packet_type;

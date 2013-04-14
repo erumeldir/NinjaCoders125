@@ -1,7 +1,6 @@
 #include "ServerNetworkManager.h"
 #include "ServerObjectManager.h"
 #include "PhysicsEngine.h"
-#include "NetworkData.h"
 
 ServerObjectManager *ServerObjectManager::som;
 
@@ -21,7 +20,15 @@ ServerObjectManager::~ServerObjectManager(void)
 }
 
 /*
- * Performs logic updates
+ * Updates all objects
+ *  logic
+ *  physics
+ *  collision checks
+ *  deletes objects requesting deletion
+ *  removes objects requesting removal
+ *  adds objects requesting addtion
+ *  tracks objects removed but not deleted
+ *  adds changed objects to the server with appropriate commands
  */
 
 void ServerObjectManager::update() {
@@ -56,9 +63,10 @@ void ServerObjectManager::update() {
 	for(idIter = lsObjsToDelete.begin(); idIter != lsObjsToDelete.end(); ++idIter) {
 		map<uint, ServerObject *>::iterator itObj = mObjs.find(*idIter);
 		if(itObj != mObjs.end()) {
-			ServerObject *obj = itObj->second;
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,*objIter));
+			//ServerObject *obj = itObj->second;
 			mObjs.erase(itObj);
-			delete obj;
+			//delete obj;	We don't perform this until the object is sent
 		}
 	}
 	lsObjsToDelete.clear();
@@ -71,6 +79,7 @@ void ServerObjectManager::update() {
 			//When we reach the same object, we are done
 			if(it->first == (*objIter)->getId()) {
 				//Send this object to the server
+				lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_UPDATE,*objIter));
 				break;
 			} else {
 				PE::get()->applyPhysics(*objIter, it->second);
@@ -79,24 +88,54 @@ void ServerObjectManager::update() {
 	}
 
 	//Remove objects requested for removal, but not deletion
-	for(idIter = lsObjsRemoved.begin(); idIter != lsObjsRemoved.end(); ++idIter) {
+	for(idIter = lsObjsRemoveQueue.begin(); idIter != lsObjsRemoveQueue.end(); ++idIter) {
 		mObjs.erase(*idIter);
 	}
-	lsObjsToDelete.clear();
+	lsObjsRemoveQueue.clear();
 
 	//Add objects requested for addition
-	for(objIter = lsObjsAdded.begin(); objIter != lsObjsAdded.end(); ++objIter) {
+	for(objIter = lsObjsAddQueue.begin(); objIter != lsObjsAddQueue.end(); ++objIter) {
 		mObjs.insert(pair<uint,ServerObject*>((*objIter)->getId(),*objIter));
+		lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_CREATE,*objIter));
 	}
-	lsObjsAdded.clear();
+	lsObjsAddQueue.clear();
 }
 
 /**
  * Sends the object states to the clients.
  * Author: Haro
+ * Modified by: Nathan
  */
 void ServerObjectManager::sendState()
 {
+	char *buf;
+	int datalen;
+	for(list<pair<CommandTypes,ServerObject*> >::iterator it = lsObjsToSend.begin();
+			it != lsObjsToSend.end(); ++it) {
+		//Initialize the buffer with the object header
+		buf = SNM::get()->getSendBuffer();
+		switch(it->first) {
+		case CMD_UPDATE:
+			datalen = it->second->serialize(buf);
+			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
+			break;
+		case CMD_CREATE: {
+			//Fill out the header
+			CreateHeader *h = (CreateHeader*)buf;
+			h->type = it->second->getType();
+
+			datalen = it->second->serialize(buf + sizeof(CreateHeader)) + sizeof(CreateHeader);
+			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
+			break;
+			}
+		case CMD_DELETE:
+			datalen = 0;
+			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
+			delete it->second;	//We are finally done with this object
+		}
+	}
+	lsObjsToSend.clear();
+/*
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
 			++it) {
@@ -104,6 +143,7 @@ void ServerObjectManager::sendState()
 		int datalen = it->second->serialize(ServerNetworkManager::get()->getSendBuffer());
 		ServerNetworkManager::get()->sendToAll(ACTION_EVENT, it->second->getId(), datalen);
 	}
+*/
 }
 
 uint ServerObjectManager::genId() {
@@ -124,7 +164,7 @@ void ServerObjectManager::freeId(uint id) {
 
 void ServerObjectManager::add(ServerObject *obj) {
 	//mObjs.insert(pair<uint,ServerObject*>(obj->getId(), obj));
-	lsObjsAdded.push_back(obj);
+	lsObjsAddQueue.push_back(obj);
 }
 
 ServerObject *ServerObjectManager::find(uint id) {
@@ -137,5 +177,5 @@ ServerObject *ServerObjectManager::find(uint id) {
 
 void ServerObjectManager::remove(uint id) {
 	//mObjs.erase(id);
-	lsObjsRemoved.push_back(id);
+	lsObjsRemoveQueue.push_back(id);
 }

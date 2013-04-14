@@ -12,6 +12,7 @@ public:
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
 	void deserialize(char* newInput);
+	virtual ObjectType getType() { return OBJ_PLAYER; }
 
 	char serialbuffer[100];
 

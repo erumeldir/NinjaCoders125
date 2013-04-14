@@ -2,6 +2,7 @@
 #include "defs.h"
 #include "PhysicsModel.h"
 #include <assert.h>
+#include "NetworkData.h"
 
 class ServerObject
 {
@@ -13,6 +14,7 @@ public:
 	virtual bool update() = 0;
 	virtual PhysicsModel *getPhysicsModel() = 0;
 	virtual int serialize(char * buf) = 0;
+	virtual ObjectType getType() = 0;
 
 	// Can be overriden, but should be only used by objects that receive
 	// input from the client (a.k.a. playerobjects)

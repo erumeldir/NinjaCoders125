@@ -8,7 +8,7 @@
 class TestObject : public ClientObject
 {
 public:
-	TestObject(uint id);
+	TestObject(uint id, char *data);
 	virtual ~TestObject(void);
 
 	virtual bool update();

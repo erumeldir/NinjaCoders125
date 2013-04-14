@@ -30,8 +30,8 @@ public:
     // send data to all clients
 	void sendToAll(unsigned int packet_type, unsigned int data_size);
 	void sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int data_size);
-	void sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size);
-	void sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, unsigned int command_type, unsigned int data_size);
+	void sendToAll(unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size);
+	void sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size);
 
     SOCKET ListenSocket;	// Socket to listen for new connections
     SOCKET ClientSocket;	// Socket to give to the clients
@@ -40,4 +40,4 @@ public:
 	Packet send_buffer;
 	
 };
-
+typedef ServerNetworkManager SNM;

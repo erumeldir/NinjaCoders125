@@ -180,7 +180,8 @@ void ClientNetworkManager::update()
                 //DC::get()->print("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
-				COM::get()->find(packet.object_id)->deserialize(packet.packet_data);
+				//COM::get()->find(packet.object_id)->deserialize(packet.packet_data);
+				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
             default:
                 DC::get()->print("error in packet types\n");
