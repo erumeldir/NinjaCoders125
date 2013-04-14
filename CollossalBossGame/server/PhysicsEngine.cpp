@@ -40,14 +40,6 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	//Update acceleration
 	mdl->accel = Vec3f();
 
-	//Temporary collision check
-	dx = mdl->ref->getPos().x;
-	dy = mdl->ref->getPos().y;
-	dx = dx < 0 ? -dx : 0;
-	dy = dy < 0 ? -dy : 0;
-	mdl->ref->translate(Point_t(dx, dy, 0));
-
-
 	return true;	//We'll add a detection for has-moved later
 }
 

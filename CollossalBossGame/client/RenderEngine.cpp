@@ -18,6 +18,8 @@
 
 //Static Members
 RenderEngine *RenderEngine::re;
+IXAnimator* RenderEngine::xAnimator;
+D3DXMATRIX RenderEngine::world;
 
 /* create a window that we will render in
 *
@@ -71,19 +73,30 @@ void RenderEngine::renderInitalization()
 
 	ZeroMemory(&deviceInfo, sizeof(deviceInfo)); // clear out the struct for use
 	deviceInfo.Windowed = TRUE; // program windowed, not fullscreen
-	deviceInfo.SwapEffect = D3DSWAPEFFECT_DISCARD; // discard old frames
+	deviceInfo.SwapEffect = D3DSWAPEFFECT_DISCARD; // discard old frames	//D3DSWAPEFFECT_COPY
 	deviceInfo.hDeviceWindow = windowHandle; // set the window to be used by Direct3D
-	deviceInfo.BackBufferFormat = D3DFMT_X8R8G8B8; // set the back buffer format to 32-bit
+	deviceInfo.BackBufferFormat = D3DFMT_A8R8G8B8;//D3DFMT_X8R8G8B8; // set the back buffer format to 32-bit
 	deviceInfo.BackBufferWidth = SCREEN_WIDTH; // set the width of the buffer
 	deviceInfo.BackBufferHeight = SCREEN_HEIGHT; // set the height of the buffer
-
+	
+	deviceInfo.BackBufferCount = 1;
+	deviceInfo.MultiSampleType = D3DMULTISAMPLE_NONE;
+	deviceInfo.MultiSampleQuality = 0;
+	deviceInfo.hDeviceWindow = windowHandle;
+	deviceInfo.EnableAutoDepthStencil = TRUE;
+	deviceInfo.AutoDepthStencilFormat = D3DFMT_D24S8;
+	deviceInfo.Flags = 0;
+	deviceInfo.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+	deviceInfo.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	
 	// create a device class using this information and information from the deviceInfo stuct
-	direct3dInterface->CreateDevice(D3DADAPTER_DEFAULT,
-	D3DDEVTYPE_HAL,
-	windowHandle,
-	D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-	&deviceInfo,
-	&direct3dDevice);
+	direct3dInterface->CreateDevice(
+		D3DADAPTER_DEFAULT,
+		D3DDEVTYPE_HAL,
+		windowHandle,
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+		&deviceInfo,
+		&direct3dDevice);
 
 	
 	D3DXMATRIX matView;
@@ -93,7 +106,8 @@ void RenderEngine::renderInitalization()
 	D3DXMATRIX matProj;
 	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 200.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-
+	
+	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
 	direct3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_XRGB(80,80,80) );
 
 	// Fill in a light structure defining our light
@@ -115,7 +129,7 @@ void RenderEngine::renderInitalization()
 	direct3dDevice->LightEnable( 0, TRUE ); 
 
 	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-
+	
 }
 
 /*
@@ -125,9 +139,49 @@ RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
-	if (!xAnimator->LoadXFile("tiny.x",&skeletonGraphicId) )
-		printf("\n\n\n\nLoad ERRRRRRRRRR.\n\n\n\n");
+	
+	xpos = 10;
+	ypos = -200;
+	zpos = 200;
 
+	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
+
+	D3DXMatrixIdentity(&world);
+	D3DXMatrixIdentity(&xworld);
+	D3DXMatrixIdentity(&yworld);
+	D3DXMatrixIdentity(&zworld);
+	D3DXMatrixIdentity(&sworld);
+
+	D3DXMatrixScaling(&sworld, 0.01f, 0.01, 0.01);
+	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);//timeGetTime()%3600*0.00174533f);
+	D3DXMatrixRotationZ(&zworld, 3.1415);//timeGetTime()%3600*0.00174533f);
+	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
+	//moveCamera(0, 0, 10);
+	world = xworld * yworld * zworld * tworld *sworld;
+	direct3dDevice->SetTransform(D3DTS_WORLD, &world);
+
+}
+
+void RenderEngine::moveCamera(float x, float y, float z)
+{
+	
+	D3DXMATRIX tworld;
+	D3DXMatrixIdentity(&tworld);
+	D3DXMatrixTranslation(&tworld, 0, 0, 1);
+	//world = world * tworld;
+	//direct3dDevice->SetTransform(D3DTS_WORLD, &world);
+#if 0
+	DC::get()->print("Zpos: %f, YPos: %f, XPos: %f, x: %f, y: %f, z: %f\n", zpos, ypos, xpos, x, y, z);
+	D3DXMATRIX tworld;
+	D3DXMatrixIdentity(&tworld);
+	D3DXMatrixTranslation(&tworld, x - xpos, y - ypos, z - zpos);
+	world = world * tworld;
+	ypos = y;
+	xpos = x;
+	zpos = z;
+	
+	direct3dDevice->SetTransform(D3DTS_WORLD, &world);
+#endif
 }
 
 /*
@@ -143,13 +197,6 @@ RenderEngine::~RenderEngine() {
 * Bryan
 */
 void RenderEngine::sceneDrawing() {
-	
-	D3DXMatrixIdentity(&world);
-	
-	D3DXMatrixRotationY(&world, 0.f);//timeGetTime()%3600*0.00174533f);
-#define timeSinceLastUpdate 4
-	xAnimator->Render(skeletonGraphicId,world,timeSinceLastUpdate);
-
 	for(list<ClientObject *>::iterator it = lsObjs.begin();
 			it != lsObjs.end();
 			++it) {
@@ -169,7 +216,7 @@ void RenderEngine::renderThis(ClientObject *obj) {
 */
 void RenderEngine::render() {
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(40, 40, 40), 1.0f, 0);
+	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(40, 40, 40), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 

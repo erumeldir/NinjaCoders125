@@ -17,10 +17,11 @@ struct RENDERVERTEX
 	//rhw is a perspective flag. not sure why it's a float
 };
 
-RenderModel::RenderModel(Point_t pos, Rot_t rot)
+RenderModel::RenderModel(Point_t pos, Rot_t rot, const char * filename)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
+#if 0
 	verts[0] = Point_t(-100.f, -100.f, 0.f);
 	verts[1] = Point_t(100.f, -100.f, 0.0f);
 	verts[2] = Point_t(0.f, 100.f, 0.0f);
@@ -49,6 +50,9 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot)
 	vbuf->Lock(0, 0, (void**)&vertexInfo, 0); // lock the vertex buffer
 	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
 	vbuf->Unlock(); // unlock the vertex buffer
+#endif
+	if (!RenderEngine::loadModel("tiny.x", &skeletonGraphicId))
+		DC::get()->print("Didn't load the model!");
 }
 
 
@@ -56,7 +60,9 @@ RenderModel::~RenderModel(void)
 {
 }
 
+
 void RenderModel::render() {
+#if 0
 	//printf("Pos: %d, %d, %d                                       \r",ref->getPos().x, ref->getPos().y, ref->getPos().z); 
 		// select which vertex format we are using
 	RE::get()->direct3dDevice->SetFVF(CUSTOMFVF);
@@ -109,6 +115,9 @@ void RenderModel::render() {
 
 	// copy the vertex buffer to the back buffer
 	RE::get()->direct3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+#endif
+	//put in render call here
+	RenderEngine::animate(skeletonGraphicId);
 }
 
 /*#include "RenderModel.h"

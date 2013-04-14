@@ -99,6 +99,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="BONES.BMP" />
+    <None Include="bones_all.x" />
     <None Include="tiny.x" />
     <None Include="tiny_skin.bmp" />
   </ItemGroup>
