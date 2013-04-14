@@ -1,4 +1,5 @@
 #include "DebugConsole.h"
+#include "ConfigurationManager.h"
 #include <cstring>
 #include <Windows.h>
 

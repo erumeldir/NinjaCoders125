@@ -8,8 +8,6 @@
 #include "Action.h"
 
 ClientNetworkManager ClientNetworkManager::CNM;
-#define HOST "127.0.0.1"
-#define PORT DEFAULT_PORT
 
 /*
 	This object handles networking for the client
@@ -24,6 +22,9 @@ ClientNetworkManager ClientNetworkManager::CNM;
 
 */
 ClientNetworkManager::ClientNetworkManager(void) {
+	char * HOST = CM::get()->find_config("HOST");
+	char * PORT = CM::get()->find_config("PORT");
+
 	// 0. Inital Variables
     // create WSADATA object
     WSADATA wsaData;
@@ -87,7 +88,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
         {
             closesocket(ConnectSocket);
             ConnectSocket = INVALID_SOCKET;
-            DC::get()->print ("The server is down... did not connect.\n");
+            printf("The server is down... did not connect.\n");
         }
     }
 
@@ -98,7 +99,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
     // if connection failed
     if (ConnectSocket == INVALID_SOCKET) 
     {
-        DC::get()->print("Unable to connect to server!\n");
+        printf("Unable to connect to server!\n");
         WSACleanup();
 		system("pause");
         exit(1);
