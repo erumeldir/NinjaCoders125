@@ -51,7 +51,7 @@ public:
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
-	bool loadModel(char * filename, int * idAddr);
+	bool loadModel(const char * filename, int * idAddr);
 
 private:
 	void startWindow ();
@@ -60,8 +60,6 @@ private:
 
 	RenderEngine();
 	virtual ~RenderEngine();
-//LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
-
 
 	//Static members
 	static RenderEngine *re;

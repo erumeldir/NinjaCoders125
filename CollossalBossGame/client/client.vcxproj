@@ -99,10 +99,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="body.bmp" />
     <None Include="BONES.BMP" />
     <None Include="bones_all.x" />
+    <None Include="face.bmp" />
+    <None Include="rabbit.x" />
+    <None Include="renderC.jpg" />
     <None Include="tiny.x" />
     <None Include="tiny_skin.bmp" />
+    <None Include="wispwind.x" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
