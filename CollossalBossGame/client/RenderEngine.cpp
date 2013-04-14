@@ -241,6 +241,19 @@ bool RenderEngine::loadModel(const char * filename, int * idAddr) {
 	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
 }
 
+void RenderEngine::setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up) {
+	camPos.x = pos.x;
+	camPos.y = pos.y;
+	camPos.z = pos.z;
+	camLookAt.x = lookAt.x;
+	camLookAt.y = lookAt.y;
+	camLookAt.z = lookAt.z;
+	camUp.x = up.x;
+	camUp.y = up.y;
+	camUp.z = up.z;
+	D3DXMatrixLookAtLH( &camera, &camPos, &camLookAt, &camUp );
+}
+
 
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)

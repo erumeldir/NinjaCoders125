@@ -49,6 +49,8 @@ public:
 	
 	void setCameraPos(const Point_t &pos, const Point_t &rot);
 
+	void setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up);
+
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
 	bool loadModel(const char * filename, int * idAddr);
@@ -65,6 +67,7 @@ private:
 	static RenderEngine *re;
 	static IXAnimator* xAnimator;
 	D3DXMATRIX camera, world;
+	D3DXVECTOR3 camLookAt, camPos, camUp;
 
 	float xpos, ypos, zpos;
 
