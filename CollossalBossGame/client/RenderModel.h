@@ -25,5 +25,5 @@ public:
 	Frame *getFrameOfRef() { return ref; }
 private:
 	Frame *ref;	//The skeleton
-	int skeletonGraphicId;
+	int modelId;
 };

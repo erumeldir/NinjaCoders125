@@ -148,7 +148,7 @@ RenderEngine::RenderEngine() {
 	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
 
 	D3DXMatrixIdentity(&world);
-	D3DXMatrixIdentity(&xworld);
+	/*D3DXMatrixIdentity(&xworld);
 	D3DXMatrixIdentity(&yworld);
 	D3DXMatrixIdentity(&zworld);
 	D3DXMatrixIdentity(&sworld);
@@ -157,7 +157,7 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);
 	D3DXMatrixRotationZ(&zworld, 3.1415);
 	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
-	world = xworld * yworld * zworld * tworld *sworld;
+	world = xworld * yworld * zworld * tworld *sworld;*/
 }
 
 void RenderEngine::moveCamera(float x, float y, float z)
