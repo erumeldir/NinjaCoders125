@@ -17,7 +17,7 @@ struct RENDERVERTEX
 	//rhw is a perspective flag. not sure why it's a float
 };
 
-RenderModel::RenderModel(Point_t pos, Rot_t rot, const char * filename)
+RenderModel::RenderModel(Point_t pos, Rot_t rot, char * filename)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
@@ -50,7 +50,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, const char * filename)
 	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
 	vbuf->Unlock(); // unlock the vertex buffer
 	
-	if (!RenderEngine::loadModel("tiny.x", &skeletonGraphicId))
+	if (!RenderEngine::loadModel(filename, &skeletonGraphicId))
 		DC::get()->print("Didn't load the model!");
 }
 
