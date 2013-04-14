@@ -140,6 +140,7 @@ RenderEngine::RenderEngine() {
 	renderInitalization();	//start initialization
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 	
+	// Initial Positioning 
 	xpos = 10;
 	ypos = -200;
 	zpos = 200;
@@ -153,35 +154,18 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixIdentity(&sworld);
 
 	D3DXMatrixScaling(&sworld, 0.01f, 0.01, 0.01);
-	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);//timeGetTime()%3600*0.00174533f);
-	D3DXMatrixRotationZ(&zworld, 3.1415);//timeGetTime()%3600*0.00174533f);
+	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);
+	D3DXMatrixRotationZ(&zworld, 3.1415);
 	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
-	//moveCamera(0, 0, 10);
 	world = xworld * yworld * zworld * tworld *sworld;
-	direct3dDevice->SetTransform(D3DTS_WORLD, &world);
-
 }
 
 void RenderEngine::moveCamera(float x, float y, float z)
 {
-	
 	D3DXMATRIX tworld;
 	D3DXMatrixIdentity(&tworld);
 	D3DXMatrixTranslation(&tworld, 0, 0, 1);
-	//world = world * tworld;
-	//direct3dDevice->SetTransform(D3DTS_WORLD, &world);
-#if 0
-	DC::get()->print("Zpos: %f, YPos: %f, XPos: %f, x: %f, y: %f, z: %f\n", zpos, ypos, xpos, x, y, z);
-	D3DXMATRIX tworld;
-	D3DXMatrixIdentity(&tworld);
-	D3DXMatrixTranslation(&tworld, x - xpos, y - ypos, z - zpos);
 	world = world * tworld;
-	ypos = y;
-	xpos = x;
-	zpos = z;
-	
-	direct3dDevice->SetTransform(D3DTS_WORLD, &world);
-#endif
 }
 
 /*
