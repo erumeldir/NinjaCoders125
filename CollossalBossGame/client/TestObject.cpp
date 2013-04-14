@@ -35,29 +35,7 @@ TestObject::~TestObject(void)
 }
 
 bool TestObject::update() {
-	/*if (istat.quit) {
-		CE::get()->exit();
-	}
-	if (istat.attack) {
-		DC::get()->print("ATTACKING!!!                                               \r");
-	}
-	if (istat.jump) {
-		DC::get()->print("JUMPING!                                                   \r");
-	}
-	if (istat.specialPower) {
-		DC::get()->print("SPECIAL POWER!!!!!                                         \r");
-	}
-	
-	rm->getFrameOfRef()->setRot(Rot_t(0, 0, istat.rotAngle));
-	Point_t pos = rm->getFrameOfRef()->getPos();
-	rm->getFrameOfRef()->setPos(Point_t(pos.x + istat.xDist, pos.y - istat.yDist, 0));
-
-	// TODO Note: Should we vibrate the controller from here? like...from the player object? 
-	*/
-	// TODO: This should delete if the server told it to
-#define MYDIV 100
-	Point_t pt = rm->getFrameOfRef()->getPos();
-	RE::get()->moveCamera(pt.x / MYDIV, pt.z / MYDIV, pt.y / MYDIV);
+	RE::get()->setCameraPos(rm->getFrameOfRef()->getPos(), rm->getFrameOfRef()->getRot());
 	return false;
 }
 

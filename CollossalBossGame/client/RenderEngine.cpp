@@ -19,7 +19,6 @@
 //Static Members
 RenderEngine *RenderEngine::re;
 IXAnimator* RenderEngine::xAnimator;
-D3DXMATRIX RenderEngine::world;
 
 /* create a window that we will render in
 *
@@ -140,6 +139,7 @@ RenderEngine::RenderEngine() {
 	renderInitalization();	//start initialization
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 	
+
 	xpos = 10;
 	ypos = -200;
 	zpos = 200;
@@ -158,30 +158,25 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
 	//moveCamera(0, 0, 10);
 	world = xworld * yworld * zworld * tworld *sworld;
-	direct3dDevice->SetTransform(D3DTS_WORLD, &world);
+	camera = world;	//to start with
+	//direct3dDevice->SetTransform(D3DTS_WORLD, &world);
 
 }
 
-void RenderEngine::moveCamera(float x, float y, float z)
+void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
 {
-	
-	D3DXMATRIX tworld;
-	D3DXMatrixIdentity(&tworld);
-	D3DXMatrixTranslation(&tworld, 0, 0, 1);
-	//world = world * tworld;
-	//direct3dDevice->SetTransform(D3DTS_WORLD, &world);
-#if 0
-	DC::get()->print("Zpos: %f, YPos: %f, XPos: %f, x: %f, y: %f, z: %f\n", zpos, ypos, xpos, x, y, z);
-	D3DXMATRIX tworld;
-	D3DXMatrixIdentity(&tworld);
-	D3DXMatrixTranslation(&tworld, x - xpos, y - ypos, z - zpos);
-	world = world * tworld;
-	ypos = y;
-	xpos = x;
-	zpos = z;
-	
-	direct3dDevice->SetTransform(D3DTS_WORLD, &world);
-#endif
+	D3DXMATRIX trans, xrot, yrot, zrot;
+
+	D3DXMatrixIdentity(&trans);
+	D3DXMatrixIdentity(&xrot);
+	D3DXMatrixIdentity(&yrot);
+	D3DXMatrixIdentity(&zrot);
+
+	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
+	D3DXMatrixRotationY(&xrot, rot.x);
+	D3DXMatrixRotationY(&yrot, rot.y);
+	D3DXMatrixRotationY(&zrot, rot.z);
+	camera = world * trans * xrot * yrot * zrot;
 }
 
 /*
@@ -226,6 +221,15 @@ void RenderEngine::render() {
 	direct3dDevice->EndScene(); // ends the 3D scene
 
 	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+}
+
+#define TIME_SINCE_LAST_UPDATE 4
+void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
+	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
+}
+
+bool RenderEngine::loadModel(char * filename, int * idAddr) { 
+	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
 }
 
 

@@ -21,4 +21,5 @@ struct inputstatus {
 	bool quit; // Back
 	float xDist, yDist; // Left Joystick
 	float rotAngle; // Right Joystick
+	float rotVert, rotHoriz;
 };

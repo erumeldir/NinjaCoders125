@@ -43,18 +43,15 @@ public:
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
 
-	D3DXMATRIX getWorld() { return world; }
+	D3DXMATRIX getViewOffset() { return camera; }
 
 	void renderThis(ClientObject *obj);
 	
-	void moveCamera(float x, float y, float z);
+	void setCameraPos(const Point_t &pos, const Point_t &rot);
 
-	//put in loading here
-	#define timeSinceLastUpdate 4
-	static void animate(int id) { 	RenderEngine::xAnimator->Render(id,RenderEngine::world,timeSinceLastUpdate); }
-	static bool loadModel(char * filename, int * idAddr) { 
-		return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
-	}
+	//Models
+	void animate(int id, const D3DXMATRIX &pos);
+	bool loadModel(char * filename, int * idAddr);
 
 private:
 	void startWindow ();
@@ -69,7 +66,7 @@ private:
 	//Static members
 	static RenderEngine *re;
 	static IXAnimator* xAnimator;
-	static D3DXMATRIX world;
+	D3DXMATRIX camera, world;
 
 	float xpos, ypos, zpos;
 
