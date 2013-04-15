@@ -25,6 +25,8 @@ ClientNetworkManager::ClientNetworkManager(void) {
 	char * HOST = CM::get()->find_config("HOST");
 	char * PORT = CM::get()->find_config("PORT");
 
+	printf("Host: %s\nPort: %s\n", HOST, PORT);
+
 	// 0. Inital Variables
     // create WSADATA object
     WSADATA wsaData;

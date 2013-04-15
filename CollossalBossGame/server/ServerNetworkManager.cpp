@@ -21,6 +21,8 @@ ServerNetworkManager ServerNetworkManager::SNM;
 ServerNetworkManager::ServerNetworkManager(void)
 {
 	char * PORT = CM::get()->find_config("PORT");
+	printf("Listening at port %s\n", PORT);
+
 	client_id = 0;
 	//0. Variable Initialization
 	// create WSADATA object

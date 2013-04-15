@@ -84,6 +84,9 @@ void ConfigurationManager::init(ConfigurationManager * cm) {
 				valuelen[x] = value.size();
 				cout << "Line length 1) " << key.size() << endl;
 				cout << "Line length 2) " << value.size() << endl;
+
+printf(__FILE__" %d: (k,v) = (%s,%s)\n", __LINE__, &(keytable[x][0]), &(valuetable[x][0]));
+
 				x++;
 			}
 		}
@@ -103,7 +106,7 @@ ConfigurationManager * ConfigurationManager::get() {
 
 // Looks for a key and returns the value.
 char * ConfigurationManager::find_config(string key) {
-	return &(valuetable[0][find_config_index(key)]);
+	return &(valuetable[find_config_index(key)][0]);
 }
 
 int ConfigurationManager::find_config_index(string key) {
