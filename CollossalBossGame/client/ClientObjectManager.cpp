@@ -95,7 +95,7 @@ void ClientObjectManager::create(uint id, ObjectType type, char *data) {
 	switch(type) {
 	case OBJ_PLAYER:
 	default:	//OBJ_GENERAL
-		obj = new TestObject(id, data);
+		obj = new TestObject(id, data, "tiny.x");
 		break;
 	}
 	add(obj);

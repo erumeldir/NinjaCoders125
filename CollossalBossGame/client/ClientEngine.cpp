@@ -21,9 +21,9 @@ ClientEngine::ClientEngine() {
 	exitStatus = 0;
 
 	//Initialize engines
+	DC::init("clientLog.txt");
 	RE::init();
 	COM::init();
-	DC::init("clientLog.txt");
 	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 }
 
@@ -42,6 +42,7 @@ ClientEngine::~ClientEngine() {
  * End the game with an optional error message
  */
 void ClientEngine::exit(int i) {
+	DC::get()->print("Exiting with error code %d\n", i);
 	isRunning = false;
 	exitStatus = i;
 }
