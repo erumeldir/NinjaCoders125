@@ -46,6 +46,17 @@ struct Packet {
 
 
 /*
+ * Model info
+ * These enumerations are used for specifying models
+ */
+enum Models {
+    MDL_0,
+    MDL_1,
+    MDL_2,
+    NUM_MDLS
+};
+
+/*
  * Object types
  * These types exist to tell teh ClientObjectManager how to create an object
  * when the server declares a new object should be created

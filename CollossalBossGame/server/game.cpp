@@ -7,5 +7,12 @@
 #include "defs.h"
 #include "ServerObjectManager.h"
 
+//Objects we can build
+#include "TestSObj.h"
+
 void gameInit() {
+	//Create all non-player game objects
+	TestSObj *obj0 = new TestSObj(),
+			 *obj1 = new TestSObj();
+	SOM::get()->add(obj0);
 }
