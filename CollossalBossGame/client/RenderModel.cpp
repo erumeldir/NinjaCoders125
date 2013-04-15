@@ -6,54 +6,43 @@
  */
 #include "RenderModel.h"
 #include "RenderEngine.h"
+#include <CString>
 
-
-
-#define CUSTOMFVF (D3DFVF_XYZRHW)
-
-struct RENDERVERTEX
+/*RenderModel with const char
+ * On bryan's system, loadModel can't be directly fed a const char so this
+ * code converts a const char * to a char *, loads,
+ * and then safely removes the allocated array. 
+ *
+ * Author: Bryan
+ */
+RenderModel::RenderModel(Point_t pos, Rot_t rot, const char * filename)
 {
-	FLOAT x, y, z, rhw; // from the D3DFVF_XYZRHW flag
-	//rhw is a perspective flag. not sure why it's a float
-};
+	string name = filename;
+	char * nameAr = new char[name.size() + 1];
+	strcpy (nameAr, filename);
 
+	ref = new Frame(pos, rot);
+	if (!RenderEngine::loadModel(nameAr, &modelId))
+		DC::get()->print("Didn't load the model from a constant string!");
+
+	delete[] nameAr;
+}
+
+/* Render Model with char *
+ *  loads the model, a conversion from const char * to char * doesn't
+ *  work on bryan's system, but here's a version with the char *
+ *  incase that would be useful (reading the model locations
+ *  from a file for instance)
+ *
+ * Author: Bryan
+ */
 RenderModel::RenderModel(Point_t pos, Rot_t rot, char * filename)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
-	verts[0] = Point_t(-100.f, -100.f, 0.f);
-	verts[1] = Point_t(100.f, -100.f, 0.0f);
-	verts[2] = Point_t(0.f, 100.f, 0.0f);
-
-	//now initialize any models we want to have first
-	// create three vertices using the RENDERVERTEX struct built earlier
-	RENDERVERTEX vertices[] =
-	{
-		{ verts[0].x, verts[0].y, verts[0].z, 1.0f, },
-		{ verts[1].x, verts[1].y, verts[1].z, 1.0f, },
-		{ verts[2].x, verts[2].y, verts[2].z, 1.0f, },
-	};
-
-	// create the vertex and store the pointer into vertexBuffer, which is created globally
-	RE::get()->direct3dDevice->CreateVertexBuffer(
-		3*sizeof(RENDERVERTEX),
-		0,
-		CUSTOMFVF,
-		D3DPOOL_MANAGED,
-		&vbuf,
-		NULL
-	);
-
-	VOID* vertexInfo; // the void pointer
-
-	vbuf->Lock(0, 0, (void**)&vertexInfo, 0); // lock the vertex buffer
-	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
-	vbuf->Unlock(); // unlock the vertex buffer
-	
-	if (!RenderEngine::loadModel(filename, &skeletonGraphicId))
-		DC::get()->print("Didn't load the model!");
+	if (!RenderEngine::loadModel(filename, &modelId))
+		DC::get()->print("Didn't load the model from a char *!");
 }
-
 
 RenderModel::~RenderModel(void)
 {
@@ -61,79 +50,8 @@ RenderModel::~RenderModel(void)
 
 
 void RenderModel::render() {
-	//printf("Pos: %d, %d, %d                                       \r",ref->getPos().x, ref->getPos().y, ref->getPos().z); 
-		// select which vertex format we are using
-	RE::get()->direct3dDevice->SetFVF(CUSTOMFVF);
-
-	//while the queue has objects, update
-	//TODO: Object queue
-
-	//TODO: while queue has stuff, loop
-	//messy code: want to get the model info, then store that.
-	float cosT = cos(ref->getRot().z),
-		  sinT = sin(ref->getRot().z);
-	Point_t pt0, pt1, pt2;
-	
-	pt0.x = (verts[0].x) * cosT - (verts[0].y) * sinT + ref->getPos().x;
-	pt0.y = (verts[0].y) * cosT + (verts[0].x) * sinT + ref->getPos().y;
-	pt0.z = 0;
-	pt1.x = (verts[1].x) * cosT - (verts[1].y) * sinT + ref->getPos().x;
-	pt1.y = (verts[1].y) * cosT + (verts[1].x) * sinT + ref->getPos().y;
-	pt1.z = 0;
-	pt2.x = (verts[2].x) * cosT - (verts[2].y) * sinT + ref->getPos().x;
-	pt2.y = (verts[2].y) * cosT + (verts[2].x) * sinT + ref->getPos().y;
-	pt2.z = 0;
-
-	RENDERVERTEX vertices[] =
-	{
-		{ pt0.x, pt0.y, pt0.z, 1.0f, },
-		{ pt1.x, pt1.y, pt1.z, 1.0f, },
-		{ pt2.x, pt2.y, pt2.z, 1.0f, },
-	};
-
-	RE::get()->direct3dDevice->CreateVertexBuffer(
-		3*sizeof(RENDERVERTEX),
-		0,
-		CUSTOMFVF,
-		D3DPOOL_MANAGED,
-		&vbuf,
-		NULL
-	);
-
-	VOID* vertexInfo; // the void pointer
-
-	vbuf->Lock(0, 0, (void**)&vertexInfo, 0); // lock the vertex buffer
-	memcpy(vertexInfo, vertices, sizeof(vertices)); // copy the vertices to the locked buffer
-	vbuf->Unlock(); // unlock the vertex buffer
-
-	//end messy code
-
-	// select the vertex buffer to display
-	RE::get()->direct3dDevice->SetStreamSource(0, vbuf, 0, sizeof(RENDERVERTEX));
-
-	// copy the vertex buffer to the back buffer
-	RE::get()->direct3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
-
 	//put in render call here
-	RenderEngine::animate(skeletonGraphicId);
+	//TODO: change matrix
+	RenderEngine::animate(modelId);
 }
 
-/*#include "RenderModel.h"
-
-RenderModel::RenderModel
-//1. Needs to keep track of all vertices
-//2. 
-
-
-
-RenderModel::update()
-{
-	
-	vertices[] =
-	{
-		{ p0.x, p0.y, p0.z, 1.0f, },
-		{ p1.x, p1.y, p1.z, 1.0f, },
-		{ p2.x, p2.y, p2.z, 1.0f, },
-	};
-}
-*/

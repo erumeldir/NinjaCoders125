@@ -33,9 +33,9 @@ private:
 	static ServerObjectManager *som;
 
 	map<uint, ServerObject *> mObjs;
-	vector<uint> vFreeIds;
 	list<ServerObject *> lsObjsAdded;
 	list<uint> lsObjsRemoved;
+	vector<uint> vFreeIds;
 	int curId;
 };
 typedef ServerObjectManager SOM;

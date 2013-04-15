@@ -5,7 +5,7 @@
 #include "RenderEngine.h"
 #define M_PI 3.14159
 
-TestObject::TestObject(uint id) :
+TestObject::TestObject(uint id, const char * filename) :
 	ClientObject(id)
 {
 	DC::get()->print("Created new TestObject %d\n", id);
@@ -15,7 +15,7 @@ TestObject::TestObject(uint id) :
 		DC::get()->print("Error: Controller %d is not connected\n", id % 4);
 	}
 	*/
-	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI), "tiny.x");
+	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI), filename);
 
 	// Initialize input status
 	/*istat.attack = false;
@@ -57,7 +57,7 @@ bool TestObject::update() {
 	// TODO: This should delete if the server told it to
 #define MYDIV 100
 	Point_t pt = rm->getFrameOfRef()->getPos();
-	//RE::get()->moveCamera(pt.x / MYDIV, pt.y / MYDIV, pt.z / MYDIV);
+	//RE::get()->moveCamera(pt.x / MYDIV, pt.z / MYDIV, pt.y / MYDIV);
 	return false;
 }
 

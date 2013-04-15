@@ -1,101 +1,88 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ClientEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientObjectManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientNetworkManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="XboxController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerCObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="ClientEngine.cpp" />
+    <ClCompile Include="ClientNetworkManager.cpp" />
+    <ClCompile Include="ClientObject.cpp" />
+    <ClCompile Include="ClientObjectManager.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerCObj.cpp" />
+    <ClCompile Include="RenderEngine.cpp" />
+    <ClCompile Include="RenderModel.cpp" />
+    <ClCompile Include="TestObject.cpp" />
+    <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientObjectManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestObject.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="ClientNetworkManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="XboxController.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ClientObject.h">
+      <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="RenderModel.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ClientObjectManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCObj.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderEngine.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderModel.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="TestObject.h">
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="XAnimator\XAnimator_lib.h">
-      <Filter>Header Files</Filter>
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="XboxController.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="tiny.x">
-      <Filter>Resource Files</Filter>
+    <None Include="bones_all.x">
+      <Filter>Resources</Filter>
     </None>
-    <None Include="tiny_skin.bmp">
-      <Filter>Resource Files</Filter>
+    <None Include="body.bmp">
+      <Filter>Resources</Filter>
     </None>
     <None Include="BONES.BMP">
-      <Filter>Resource Files</Filter>
+      <Filter>Resources</Filter>
     </None>
-    <None Include="bones_all.x">
-      <Filter>Resource Files</Filter>
+    <None Include="face.bmp">
+      <Filter>Resources</Filter>
     </None>
+    <None Include="tiny_skin.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="tiny.x">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="rabbit.x">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="renderC.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="wispwind.x">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{f74a4ec0-306d-4bff-a83e-0b7d2bc12b97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{b890ba41-35e3-452c-a119-bc14a540a2d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

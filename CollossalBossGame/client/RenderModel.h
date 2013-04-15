@@ -19,14 +19,12 @@
 class RenderModel
 {
 public:
+	RenderModel(Point_t pos, Rot_t rot, const char * filename);
 	RenderModel(Point_t pos, Rot_t rot, char * filename);
 	virtual ~RenderModel(void);
-
 	virtual void render();
 	Frame *getFrameOfRef() { return ref; }
 private:
-	LPDIRECT3DVERTEXBUFFER9 vbuf;
 	Frame *ref;	//The skeleton
-	Point_t verts[3];
-	int skeletonGraphicId;
+	int modelId;
 };

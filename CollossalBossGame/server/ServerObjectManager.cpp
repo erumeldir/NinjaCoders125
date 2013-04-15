@@ -87,6 +87,7 @@ void ServerObjectManager::update() {
 	//Add objects requested for addition
 	for(objIter = lsObjsAdded.begin(); objIter != lsObjsAdded.end(); ++objIter) {
 		mObjs.insert(pair<uint,ServerObject*>((*objIter)->getId(),*objIter));
+		//Send this information to the server
 	}
 	lsObjsAdded.clear();
 }

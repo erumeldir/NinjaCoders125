@@ -51,6 +51,7 @@ public:
 
 	//put in loading here
 	#define timeSinceLastUpdate 4
+
 	static void animate(int id) { 	RenderEngine::xAnimator->Render(id,RenderEngine::world,timeSinceLastUpdate); }
 	static bool loadModel(char * filename, int * idAddr) { 
 		return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
@@ -63,8 +64,6 @@ private:
 
 	RenderEngine();
 	virtual ~RenderEngine();
-//LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
-
 
 	//Static members
 	static RenderEngine *re;
