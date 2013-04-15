@@ -107,6 +107,30 @@
     <None Include="renderC.jpg">
       <Filter>Resource Files</Filter>
     </None>
+<<<<<<< HEAD
+>>>>>>> 51857e06b5ade5ba6964214828275321ed7a6afa
+=======
+    <None Include="BONES.BMP">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bones_all.x">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="body.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="face.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wispwind.x">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rabbit.x">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="renderC.jpg">
+      <Filter>Resource Files</Filter>
+    </None>
 >>>>>>> 51857e06b5ade5ba6964214828275321ed7a6afa
   </ItemGroup>
 </Project>

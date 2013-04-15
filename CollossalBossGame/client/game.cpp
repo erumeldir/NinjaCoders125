@@ -8,8 +8,8 @@
 
 void gameInit() {
 	COM *com = COM::get();
-	TestObject   *obj0 = new TestObject(com->genId(), "tiny.x"),
-				 *obj1 = new TestObject(com->genId(), "bones_all.x");
+	TestObject   *obj0 = new TestObject(com->genId(), "smallBox.X"),
+				 *obj1 = new TestObject(com->genId(), "smallBox.X");
 			/*	 *obj2 = new TestObject(com->genId()),
 				 *obj3 = new TestObject(com->genId()),
 				 *obj4 = new TestObject(com->genId());*/
