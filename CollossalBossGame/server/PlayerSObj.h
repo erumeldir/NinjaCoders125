@@ -1,22 +1,23 @@
 #pragma once
 #include "ServerObject.h"
 #include "Action.h"
-#include "NetworkData.h"
 
-class TestSObj : public ServerObject {
+class PlayerSObj : public ServerObject
+{
 public:
-	TestSObj(uint id);
-	virtual ~TestSObj(void);
+	PlayerSObj(uint id);
+	virtual ~PlayerSObj(void);
 
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
-	inputstatus istat;
-	virtual ObjectType getType() { return OBJ_GENERAL; }
+	void deserialize(char* newInput);
+	virtual ObjectType getType() { return OBJ_PLAYER; }
 
 	char serialbuffer[100];
 
 private:
 	PhysicsModel *pm;
+	inputstatus istat;
 };
 

@@ -1,4 +1,5 @@
 #include "ClientNetworkManager.h"
+#include "ConfigurationManager.h"
 #include "ClientObjectManager.h"
 #include "TestObject.h"
 #include <iostream>
@@ -7,8 +8,6 @@
 #include "Action.h"
 
 ClientNetworkManager ClientNetworkManager::CNM;
-#define HOST "127.0.0.1"
-#define PORT DEFAULT_PORT
 
 /*
 	This object handles networking for the client
@@ -23,6 +22,9 @@ ClientNetworkManager ClientNetworkManager::CNM;
 
 */
 ClientNetworkManager::ClientNetworkManager(void) {
+	char * HOST = CM::get()->find_config("HOST");
+	char * PORT = CM::get()->find_config("PORT");
+
 	// 0. Inital Variables
     // create WSADATA object
     WSADATA wsaData;
@@ -41,7 +43,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 
     if (iResult != 0) {
-        printf("WSAStartup failed with error: %d\n", iResult);
+		DC::get()->print("WSAStartup failed with error: %d\n", iResult);
 		system("pause");
         exit(1);
     }
@@ -58,7 +60,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
 
     if( iResult != 0 ) 
     {
-        printf("getaddrinfo failed with error: %d\n", iResult);
+        DC::get()->print("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
 		system("pause");
         exit(1);
@@ -73,7 +75,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
             ptr->ai_protocol);
 
         if (ConnectSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
+            DC::get()->print("socket failed with error: %ld\n", WSAGetLastError());
             WSACleanup();
 			system("pause");
             exit(1);
@@ -86,7 +88,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
         {
             closesocket(ConnectSocket);
             ConnectSocket = INVALID_SOCKET;
-            printf ("The server is down... did not connect.\n");
+            printf("The server is down... did not connect.\n");
         }
     }
 
@@ -106,19 +108,25 @@ ClientNetworkManager::ClientNetworkManager(void) {
 	// 4. Set the mode of the socket to be nonblocking.
 	//  if we really want the server to block everything, we'd need to replace the next
 	//  10 lines of code
+
     u_long iMode = 1;
+	if(CM::get()->find_config_as_bool("NETWORK_CLIENT_USE_NONBLOCKING")) {
+		DC::get()->print("Setting Client Network to be non-blocking.");
+		iMode = 0;
+	}
 
     iResult = ioctlsocket(ConnectSocket, FIONBIO, &iMode);
+
     if (iResult == SOCKET_ERROR)
     {
-        printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
+        DC::get()->print("ioctlsocket failed with error: %d\n", WSAGetLastError());
         closesocket(ConnectSocket);
         WSACleanup();
 		system("pause");
         exit(1);        
     }
 
-	//5. disable nagle... don't know what it is, the tutorial said this was optional
+	//5. disable nagle... You want control over when your packets are sent.
     char value = 1;
     setsockopt( ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 }
@@ -129,11 +137,12 @@ ClientNetworkManager::~ClientNetworkManager(void) {
 
 int ClientNetworkManager::receivePackets(char * recvbuf) 
 {
+	// TODO: Check to see if MAX_PACKET_SIZE will cause problems here.
     iResult = NetworkServices::receiveMessage(ConnectSocket, recvbuf, MAX_PACKET_SIZE);
 
     if ( iResult == 0 )
     {
-        printf("Connection closed\n");
+        DC::get()->print("Connection closed\n");
         closesocket(ConnectSocket);
         WSACleanup();
         exit(1);
@@ -151,10 +160,12 @@ void ClientNetworkManager::update()
     Packet packet;
     int data_length = receivePackets(network_data);
 
-    if (data_length <= 0) 
+	// TODO All right, so this is in lock step right now, maybe change it?
+    while (data_length <= 0) 
     {
         //no data recieved
-        return;
+        //return;
+		data_length = receivePackets(network_data);
     }
 
     int i = 0;
@@ -163,28 +174,32 @@ void ClientNetworkManager::update()
     {
         packet.deserialize(&(network_data[i]));
         i += sizeof(Packet);
-
+		//cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
+		DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
         switch (packet.packet_type) {
             case ACTION_EVENT:
-                //printf("client received action event packet from server\n");
+                //DC::get()->print("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
-				COM::get()->find(0)->deserialize(packet.packet_data);
+				//COM::get()->find(packet.object_id)->deserialize(packet.packet_data);
+				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
             default:
-                printf("error in packet types\n");
+                DC::get()->print("error in packet types\n");
                 break;
         }
     }
 }
 
-void ClientNetworkManager::sendData(char * data, int datalen) {
+void ClientNetworkManager::sendData(char * data, int datalen, int objectID) {
 	std::cout << data << std::endl;
+	
 	const unsigned int packet_size = sizeof(Packet);
     char packet_data[packet_size];
 
     Packet packet;
     packet.packet_type = ACTION_EVENT;
+	packet.object_id = objectID;
 	memcpy(packet.packet_data, data, datalen);
     packet.serialize(packet_data);
 

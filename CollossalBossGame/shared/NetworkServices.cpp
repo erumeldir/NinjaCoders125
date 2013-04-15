@@ -1,4 +1,5 @@
 #include "NetworkServices.h"
+#include "NetworkData.h"
 
 /* this current object sends a message
 	curSocket: the socket we'll send the message through

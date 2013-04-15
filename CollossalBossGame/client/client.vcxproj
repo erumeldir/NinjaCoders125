@@ -40,16 +40,19 @@
     <IncludePath>C:\Program Files\FMOD SoundSystem\FMOD Programmers API Windows\api\inc;C:\Program Files\MyInstalls\Microsoft DirectX SDK %28June 2010%29\Include;C:\Program Files\Microsoft DirectX SDK %28June 2010%29\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>C:\Program Files\FMOD SoundSystem\FMOD Programmers API Windows\api\lib;C:\Program Files\MyInstalls\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\Program Files\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Program Files\FMOD SoundSystem\FMOD Programmers API Windows\api\lib;\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;C:\Program Files\MyInstalls\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\Program Files\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\shared;XAnimator;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CLIENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>XAnimator</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;XAnimator_debug.lib;dxerr.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -74,6 +77,7 @@
     <ClCompile Include="ClientObjectManager.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
     <ClCompile Include="TestObject.cpp" />
@@ -87,15 +91,28 @@
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
     <ClInclude Include="TestObject.h" />
+    <ClInclude Include="XAnimator\XAnimator_lib.h" />
     <ClInclude Include="XboxController.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">
       <Project>{4d1d7e97-288f-41bb-9d05-4aa21ace7ff4}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="body.bmp" />
+    <None Include="BONES.BMP" />
+    <None Include="bones_all.x" />
+    <None Include="face.bmp" />
+    <None Include="rabbit.x" />
+    <None Include="renderC.jpg" />
+    <None Include="tiny.x" />
+    <None Include="tiny_skin.bmp" />
+    <None Include="wispwind.x" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

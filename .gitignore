@@ -5,6 +5,11 @@
 *.suo
 *.user
 *.sln.docstates
+clientLog.txt
+serverLog.txt
+*.x
+*.bmp
+*.jpg
 
 # Build results
 

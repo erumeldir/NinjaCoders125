@@ -22,6 +22,7 @@ ClientEngine::ClientEngine() {
 	exitStatus = 0;
 
 	//Initialize engines
+	DC::init("clientLog.txt");
 	RE::init();
 	COM::init();
 	AE::init();
@@ -36,6 +37,7 @@ ClientEngine::~ClientEngine() {
 	RE::clean();
 	COM::clean();
 	AE::clean();
+	DC::clean();
 }
 
 
@@ -43,6 +45,7 @@ ClientEngine::~ClientEngine() {
  * End the game with an optional error message
  */
 void ClientEngine::exit(int i) {
+	DC::get()->print("Exiting with error code %d\n", i);
 	isRunning = false;
 	exitStatus = i;
 }

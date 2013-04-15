@@ -8,6 +8,7 @@ using namespace std;
 
 #include "defs.h"
 #include "ServerObject.h"
+#include "NetworkData.h"
 
 class ServerObjectManager
 {
@@ -34,8 +35,9 @@ private:
 
 	map<uint, ServerObject *> mObjs;
 	vector<uint> vFreeIds;
-	list<ServerObject *> lsObjsAdded;
-	list<uint> lsObjsRemoved;
+	list<ServerObject *> lsObjsAddQueue;
+	list<uint> lsObjsRemoveQueue;
+	list<pair<CommandTypes,ServerObject*> > lsObjsToSend;
 	int curId;
 };
 typedef ServerObjectManager SOM;

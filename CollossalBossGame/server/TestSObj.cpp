@@ -2,7 +2,7 @@
 
 
 TestSObj::TestSObj(uint id) : ServerObject(id) {
-	printf("Created new TestSObj %d\n", id);
+	DC::get()->print("Created new TestSObj %d\n", id);
 	pm = new PhysicsModel(Point_t(), Rot_t(), 500);
 
 	// Initialize input status
@@ -26,13 +26,13 @@ bool TestSObj::update() {
 	}
 	if (istat.attack) {
 		// Determine attack logic here
-		printf("SERVER KNOWS YOU'RE ATTACKING!!!                                               \r");
+		DC::get()->print("SERVER KNOWS YOU'RE ATTACKING!!!                                               \r");
 	}
 	if (istat.jump) {
-		printf("SERVER KNOWS YOU'RE JUMPING!                                                   \r");
+		DC::get()->print("SERVER KNOWS YOU'RE JUMPING!                                                   \r");
 	}
 	if (istat.specialPower) {
-		printf("SERVER KNOWS YOU'RE SPECIAL POWERING!!!!!                                      \r");
+		DC::get()->print("SERVER KNOWS YOU'RE SPECIAL POWERING!!!!!                                      \r");
 	}
 	
 	pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
@@ -42,6 +42,6 @@ bool TestSObj::update() {
 	return false;
 }
 
-pair<int, char*> TestSObj::serialize() {
-	return pm->ref->serialize();
+int TestSObj::serialize(char * buf) {
+	return pm->ref->serialize(buf);
 }

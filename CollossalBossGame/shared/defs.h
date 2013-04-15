@@ -7,6 +7,7 @@
 
 //Standard includes
 #include <stdio.h>
+#include "DebugConsole.h"
 
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
@@ -29,6 +30,9 @@ typedef struct Vec3f {
 } Point_t, Rot_t;
 
 //Enumerations
+/*
+ * Actions that are sent from the client to the server
+ */
 typedef enum ACTION {
 	ACT_MOVE_X,
 	ACT_MOVE_Y,

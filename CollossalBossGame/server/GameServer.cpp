@@ -23,6 +23,7 @@ int main()
 	// cout << CM::get()->find_config("asdf") << endl;
 	// system("pause");
 	SOM::init();
+	DC::init("serverLog.txt");
 
 	// Keep track of how long our updates take
 	time_t beginLoopTimer;
@@ -54,10 +55,11 @@ int main()
 		else
 		{
 			// TODO: Print to error console
-			printf("ERROR!!! total loop time %d is greater than tick time: %d\n", totalLoopTime, TICK);
+			DC::get()->print("ERROR!!! total loop time %d is greater than tick time: %d\n", totalLoopTime, TICK);
 		}
 		
     }
 
 	SOM::clean();
+	DC::clean();
 }
