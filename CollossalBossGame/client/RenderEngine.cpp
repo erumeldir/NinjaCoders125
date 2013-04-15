@@ -19,7 +19,6 @@
 //Static Members
 RenderEngine *RenderEngine::re;
 IXAnimator* RenderEngine::xAnimator;
-D3DXMATRIX RenderEngine::world;
 
 /* create a window that we will render in
 *
@@ -139,15 +138,17 @@ RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
-	
+
 	// Initial Positioning 
 	xpos = 10;
 	ypos = -200;
 	zpos = 200;
 
 	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
-
+	
 	D3DXMatrixIdentity(&world);
+	D3DXMatrixIdentity(&camera);
+#if 0
 	/*D3DXMatrixIdentity(&xworld);
 	D3DXMatrixIdentity(&yworld);
 	D3DXMatrixIdentity(&zworld);
@@ -157,26 +158,34 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);
 	D3DXMatrixRotationZ(&zworld, 3.1415);
 	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
+<<<<<<< HEAD
+	//moveCamera(0, 0, 10);
+	world = xworld * yworld * zworld * tworld *sworld;
+	camera = world;	//to start with
+	//direct3dDevice->SetTransform(D3DTS_WORLD, &world);
+
+=======
 	world = xworld * yworld * zworld * tworld *sworld;*/
+>>>>>>> bf0bc0d5c400f279e594d6777de9a033c111f468
+#endif
 }
 
-void RenderEngine::moveCamera(float x, float y, float z)
+void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
 {
-	D3DXMATRIX tworld;
-	D3DXMatrixIdentity(&tworld);
-	D3DXMatrixTranslation(&tworld, 0, 0, 1);
-	world = world * tworld;
-}
+#if 0
+	D3DXMATRIX trans, xrot, yrot, zrot;
 
-void RenderEngine::moveCamera(float x, float y, float z)
-{
-	DC::get()->print("Zpos: %f, YPos: %f, XPos: %f, x: %f, y: %f, z: %f\n", zpos, ypos, xpos, x, y, z);
-	D3DXMATRIX tworld;
-	D3DXMatrixIdentity(&tworld);
-	D3DXMatrixTranslation(&tworld, x - xpos, y - ypos, 0);
-	world = world * tworld;
-	ypos = y;
-	xpos = x;
+	D3DXMatrixIdentity(&trans);
+	D3DXMatrixIdentity(&xrot);
+	D3DXMatrixIdentity(&yrot);
+	D3DXMatrixIdentity(&zrot);
+
+	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
+	D3DXMatrixRotationY(&xrot, rot.x);
+	D3DXMatrixRotationY(&yrot, rot.y);
+	D3DXMatrixRotationY(&zrot, rot.z);
+	camera = world * trans * xrot * yrot * zrot;
+#endif
 }
 
 /*
@@ -221,6 +230,28 @@ void RenderEngine::render() {
 	direct3dDevice->EndScene(); // ends the 3D scene
 
 	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+}
+
+#define TIME_SINCE_LAST_UPDATE 4
+void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
+	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
+}
+
+bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
+	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
+}
+
+void RenderEngine::setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up) {
+	camPos.x = pos.x;
+	camPos.y = pos.y;
+	camPos.z = pos.z;
+	camLookAt.x = lookAt.x;
+	camLookAt.y = lookAt.y;
+	camLookAt.z = lookAt.z;
+	camUp.x = up.x;
+	camUp.y = up.y;
+	camUp.z = up.z;
+	D3DXMatrixLookAtLH( &camera, &camPos, &camLookAt, &camUp );
 }
 
 

@@ -22,7 +22,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, const char * filename)
 	strcpy (nameAr, filename);
 
 	ref = new Frame(pos, rot);
-	if (!RenderEngine::loadModel(nameAr, &modelId))
+	if (!RE::get()->loadModel(nameAr, &modelId))
 		DC::get()->print("Didn't load the model from a constant string!");
 
 	delete[] nameAr;
@@ -40,18 +40,31 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, char * filename)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
-	if (!RenderEngine::loadModel(filename, &modelId))
+	if (!RenderEngine::get()->loadModel(filename, &modelId))
 		DC::get()->print("Didn't load the model from a char *!");
 }
 
 RenderModel::~RenderModel(void)
 {
+	DC::get()->print("A model with no inputs was created");
 }
 
-
 void RenderModel::render() {
-	//put in render call here
-	//TODO: change matrix
-	RenderEngine::animate(modelId);
+	Point_t pos = ref->getPos();
+	Rot_t rot = ref->getRot();
+	//Get translation/rotation matrix
+	D3DXMATRIX trans, rotX, rotY, rotZ;
+	D3DXMatrixIdentity(&trans);
+	D3DXMatrixIdentity(&rotX);
+	D3DXMatrixIdentity(&rotY);
+	D3DXMatrixIdentity(&rotZ);
+
+	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
+	D3DXMatrixRotationY(&rotX, rot.x);
+	D3DXMatrixRotationY(&rotY, rot.y);
+	D3DXMatrixRotationY(&rotZ, rot.z);
+
+	//Render
+	RE::get()->animate(modelId, RE::get()->getViewOffset() * trans * rotX * rotY * rotZ);
 }
 
