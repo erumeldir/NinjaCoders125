@@ -1,19 +1,26 @@
 #pragma once
 #include "ClientObject.h"
 #include "Frame.h"
+#include "Action.h"
 #include "XboxController.h"
 
 
 class TestObject : public ClientObject
 {
 public:
-	TestObject(uint id, Frame newCenter);
+	TestObject(uint id, char *data);
 	virtual ~TestObject(void);
 
 	virtual bool update();
 
+	virtual RenderModel* getRenderModel() { return rm; }
+
+	virtual void deserialize(char* newState);
+
+	//inputstatus istat;
+
 private:
-	Frame center;
-	XboxController *xctrl;
+	RenderModel *rm;
+	// XboxController *xctrl;
 };
 

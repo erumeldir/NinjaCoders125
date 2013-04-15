@@ -7,6 +7,7 @@ using namespace std;
 
 #include "defs.h"
 #include "ClientObject.h"
+#include "NetworkData.h"
 
 class ClientObjectManager
 {
@@ -18,13 +19,19 @@ public:
 	void update();
 
 	//Object handling
+	ClientObject *find(uint id);
+	void serverUpdate(uint id, CommandTypes cmd, char *data);
+/*  Needs to receive a server update
 	uint genId();
 	void freeId(uint id);
-	void add(ClientObject *obj);
+	void remove(uint id);
+*/
 
 private:
 	ClientObjectManager(void);
 	virtual ~ClientObjectManager(void);
+	void create(uint id, ObjectType type, char *data);
+	void add(ClientObject *obj);
 
 	static ClientObjectManager *com;
 

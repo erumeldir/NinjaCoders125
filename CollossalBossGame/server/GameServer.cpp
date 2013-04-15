@@ -1,53 +1,17 @@
 #include "GameServer.h"
+#include "ConfigurationManager.h"
+#include "ServerObjectManager.h"
+#include <Windows.h>
+#include <assert.h>
 #include <iostream>
+#include <time.h> 
 using namespace std;
 
-unsigned int GameServer::client_id; 
+#define TICK 1000/30 // 30 times per second (in ms)
 
 GameServer::GameServer(void)
 {
-    // id's to assign clients for our table
-    client_id = 0;
 
-    // set up the server network to listen 
-    network = new ServerNetworkManager(); 
-}
-
-void GameServer::update() 
-{
-    // get new clients
-    if(network->acceptNewClient(client_id))
-    {
-        printf("client %d has been connected to the server\n",client_id); 
-
-        client_id++;
-    }
-
-    receiveFromClients();
-	char data[100];
-
-	cin >> data;
-	cout << data << " sent to Clients" << endl;
-	const unsigned int packet_size = sizeof(Packet);
-    char packet_data[packet_size];
-    Packet packet;
-    packet.packet_type = ACTION_EVENT;
-	memcpy(packet.packet_data, data, 100);
-    packet.serialize(packet_data);
-    network->sendToAll(packet_data,packet_size);
-}
-
-GameServer * server;
-
-/* Answers the question "What does the server do every cycle?"
-
-*/
-void serverLoop()
-{
-    while(true) 
-    {
-        server->update();
-    }
 }
 
 /* the main function on the server side, initalizes the server loop
@@ -55,61 +19,47 @@ void serverLoop()
 */
 int main()
 {
-	server = new GameServer();
-	serverLoop();
-}
+	// CM::get();
+	// cout << CM::get()->find_config("asdf") << endl;
+	// system("pause");
+	SOM::init();
+	DC::init("serverLog.txt");
 
-void GameServer::receiveFromClients()
-{
+	// Keep track of how long our updates take
+	time_t beginLoopTimer;
+	time_t endLoopTimer;
+	double totalLoopTime;
 
-    Packet packet;
-
-    // go through all clients
-    std::map<unsigned int, SOCKET>::iterator iter;
-
-    for(iter = network->sessions.begin(); iter != network->sessions.end(); iter++)
+	while(true) 
     {
-        int data_length = network->receiveData(iter->first, network_data);
+		// Get timestamp
+		time(&beginLoopTimer);
 
-        if (data_length <= 0) 
-        {
-            //no data recieved
-            continue;
-        }
+		// Get input from client
+        ServerNetworkManager::get()->update();
 
-        int i = 0;
-        while ((unsigned int)i < (unsigned int)data_length) 
-        {
-            packet.deserialize(&(network_data[i]));
-            i += sizeof(Packet);
+		// Update state
+		SOM::get()->update();
 
-            switch (packet.packet_type) {
-                case INIT_CONNECTION:
-                    printf("server received init packet from client %d\n", iter->first);
-                    // sendActionPackets();
-                    break;
-                case ACTION_EVENT:
-                    printf("server received action event packet from client %d\n", iter->first);
-                    // sendActionPackets();
-                    break;
-                default:
-                    printf("error in packet types\n");
-                    break;
-            }
-        }
+		// Send state to client
+		SOM::get()->sendState();
+
+		// Wait until next clock tick
+		time(&endLoopTimer);
+		totalLoopTime = difftime(endLoopTimer, beginLoopTimer)  * 1000; // in ms
+
+		// Be sure to set debug to the right thing!
+		if (totalLoopTime < TICK) {
+			Sleep(TICK - totalLoopTime);
+		}
+		else
+		{
+			// TODO: Print to error console
+			DC::get()->print("ERROR!!! total loop time %d is greater than tick time: %d\n", totalLoopTime, TICK);
+		}
+		
     }
-}
 
-void GameServer::sendActionPackets()
-{
-    // send action packet
-    const unsigned int packet_size = sizeof(Packet);
-    char packet_data[packet_size];
-
-    Packet packet;
-    packet.packet_type = ACTION_EVENT;
-
-    packet.serialize(packet_data);
-
-    network->sendToAll(packet_data,packet_size);
+	SOM::clean();
+	DC::clean();
 }

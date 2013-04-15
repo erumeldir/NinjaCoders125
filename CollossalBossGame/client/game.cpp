@@ -6,8 +6,9 @@
 #include "ClientObjectManager.h"
 
 void gameInit() {
+#if 0
 	COM *com = COM::get();
-	TestObject   *obj0 = new TestObject(com->genId(), Frame(Point_t(), Rot_t()));
+	TestObject   *obj0 = new TestObject(com->genId());
 				/* *obj1 = new TestObject(com->genId()),
 				 *obj2 = new TestObject(com->genId()),
 				 *obj3 = new TestObject(com->genId()),
@@ -17,6 +18,7 @@ void gameInit() {
 	com->add(obj4);
 	com->add(obj3);
 	com->add(obj2);*/
+#endif
 }
 
 void gameClean() {

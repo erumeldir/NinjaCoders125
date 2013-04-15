@@ -1,0 +1,56 @@
+#include "PhysicsEngine.h"
+#define TIMESTEP 5
+
+//Static members
+PhysicsEngine *PhysicsEngine::pe;
+
+PhysicsEngine::PhysicsEngine(void)
+{
+}
+
+
+PhysicsEngine::~PhysicsEngine(void)
+{
+}
+
+
+/*
+ * applyPhysics(PhysicsModel *mdl)
+ * Updates the physical position of the model and returns true if this object
+ * should have collision physics applied.
+ */
+bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
+	float dt = TIMESTEP;
+
+	//Apply additional forces, such as gravity and friction.
+	// We are ignoring both for now and applying a half-assed version of
+	// friction when we update the velocity.
+
+	//Update position
+	float dx = 0.5 * mdl->accel.x * dt * dt + mdl->vel.x * dt,
+		  dy = 0.5 * mdl->accel.y * dt * dt + mdl->vel.y * dt,
+		  dz = 0.5 * mdl->accel.z * dt * dt + mdl->vel.z * dt;
+	mdl->ref->translate(Point_t(dx, dy, dz));
+
+	//Update velocity
+	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;
+	mdl->vel.y = mdl->accel.y * dt + mdl->vel.y / mdl->frictCoeff;
+	mdl->vel.z = mdl->accel.z * dt + mdl->vel.z / mdl->frictCoeff;
+
+	//Update acceleration
+	mdl->accel = Vec3f();
+
+	//Temporary collision check
+	dx = mdl->ref->getPos().x;
+	dy = mdl->ref->getPos().y;
+	dx = dx < 0 ? -dx : 0;
+	dy = dy < 0 ? -dy : 0;
+	mdl->ref->translate(Point_t(dx, dy, 0));
+
+
+	return true;	//We'll add a detection for has-moved later
+}
+
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
+	//Collision checks/inter-object physics
+}

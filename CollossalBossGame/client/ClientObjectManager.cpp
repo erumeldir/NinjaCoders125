@@ -1,4 +1,8 @@
 #include "ClientObjectManager.h"
+#include "RenderEngine.h"
+
+//Objects the COM can create
+#include "TestObject.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
@@ -7,8 +11,13 @@ ClientObjectManager::ClientObjectManager(void) {
 }
 
 
-ClientObjectManager::~ClientObjectManager(void)
-{
+ClientObjectManager::~ClientObjectManager(void) {
+	for(map<uint, ClientObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+		delete it->second;
+	}
+	mObjs.clear();
 }
 
 /*
@@ -28,10 +37,10 @@ void ClientObjectManager::update() {
 			continue;
 		}
 
-		//Update physics
-
-		//Perform initial layer of collision checks
+		//Give objects to the render engine for rendering
+		RE::get()->renderThis(it->second);
 	}
+
 	//Remove objects queued for deleting BEFORE collision checks occur
 	for(list<uint>::iterator itDel = lsObjsToDelete.begin();
 			itDel != lsObjsToDelete.end();
@@ -42,15 +51,61 @@ void ClientObjectManager::update() {
 		delete obj;
 	}
 	lsObjsToDelete.clear();
-
-	//Perform final layer of collision checks
-
-	//Remove objects requested for removal, but not deletion
-
-	//Add objects requested for addition
-
 }
 
+ClientObject *ClientObjectManager::find(uint id) {
+	map<uint, ClientObject*>::iterator res = mObjs.find(id);
+	if(res != mObjs.end()) {
+		return res->second;
+	}
+	return NULL;
+}
+
+void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
+	map<uint,ClientObject*>::iterator it;
+	CreateHeader *h;
+	switch(cmd) {
+	case CMD_CREATE:
+		h = (CreateHeader*)data;
+		create(id, h->type, data);
+		break;
+	case CMD_UPDATE:
+		//In case a packet gets dropped, I'm lumping these two together.
+		it = mObjs.find(id);
+		if(it != mObjs.end()) {
+			it->second->deserialize(data);
+		}
+		break;
+	case CMD_DELETE:
+		it = mObjs.find(id);
+		if(it != mObjs.end()) {
+			ClientObject *cobj = it->second;
+			mObjs.erase(it);
+			delete cobj;
+		}
+		break;
+	}
+}
+
+/*
+ * Creates the specified object and adds it to the list
+ */
+void ClientObjectManager::create(uint id, ObjectType type, char *data) {
+	ClientObject *obj;
+	switch(type) {
+	case OBJ_PLAYER:
+	default:	//OBJ_GENERAL
+		obj = new TestObject(id, data);
+		break;
+	}
+	add(obj);
+}
+
+void ClientObjectManager::add(ClientObject *obj) {
+	mObjs.insert(pair<uint,ClientObject*>(obj->getId(), obj));
+}
+
+#if 0
 uint ClientObjectManager::genId() {
 	if(vFreeIds.size() == 0) {
 		return curId++;
@@ -67,6 +122,9 @@ void ClientObjectManager::freeId(uint id) {
 	vFreeIds.push_back(id);
 }
 
-void ClientObjectManager::add(ClientObject *obj) {
-	mObjs.insert(pair<uint,ClientObject*>(obj->getId(), obj));
+
+void ClientObjectManager::remove(uint id) {
+	mObjs.erase(id);
 }
+#endif
+

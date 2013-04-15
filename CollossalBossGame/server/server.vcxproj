@@ -47,6 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -67,12 +68,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="PlayerSObj.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
+    <ClCompile Include="ServerObject.cpp" />
+    <ClCompile Include="ServerObjectManager.cpp" />
+    <ClCompile Include="TestSObj.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="game.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="PhysicsModel.h" />
+    <ClInclude Include="PlayerSObj.h" />
     <ClInclude Include="ServerNetworkManager.h" />
+    <ClInclude Include="ServerObject.h" />
+    <ClInclude Include="ServerObjectManager.h" />
+    <ClInclude Include="TestSObj.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">

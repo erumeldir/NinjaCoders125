@@ -1,6 +1,7 @@
 // Networking libraries
-#include <winsock2.h>
-#include <Windows.h>
+#ifndef CLIENT_NETWORK_MANAGER_H
+#define CLIENT_NETWORK_MANAGER_H
+
 #include "NetworkServices.h"
 #include "NetworkData.h"
 #include <ws2tcpip.h>
@@ -20,16 +21,21 @@ class ClientNetworkManager
 {
 
 public:
+    int iResult;			// for error checking function calls in Winsock library
+    SOCKET ConnectSocket;	// socket for client to connect to server
+	char network_data[MAX_PACKET_SIZE];
 
-    // for error checking function calls in Winsock library
-    int iResult;
-
-    // socket for client to connect to server
-    SOCKET ConnectSocket;
-
-    // ctor/dtor
+	static ClientNetworkManager * get();
+	int receivePackets(char *);
+	void update();
+	void sendData(char * data, int datalen, int objectID);
+private:
+	// ctor/dtor
     ClientNetworkManager(void);
     ~ClientNetworkManager(void);
 
-	int receivePackets(char *);
+	static ClientNetworkManager CNM;
+	static unsigned int exper;
 };
+
+#endif
