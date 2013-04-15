@@ -40,7 +40,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, char * filename)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
-	if (!RenderEngine::get()->loadModel(filename, &modelId))
+	if (!RE::get()->loadModel(filename, &modelId))
 		DC::get()->print("Didn't load the model from a char *!");
 }
 
