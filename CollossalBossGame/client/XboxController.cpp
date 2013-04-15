@@ -63,10 +63,18 @@ void XboxController::sendInput() {
 		}
 		// Set rotation
 		istat.rotAngle = 0;
+		istat.rotHoriz = 0;
+		istat.rotVert = 0;
+		float angle, magnitude;
 		if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
-			istat.rotAngle = (float)(M_PI + atan2(x2 / DEADZONE, y2 / DEADZONE));
-		} else if(fabs(x) > DEADZONE || fabs(y) > DEADZONE) {
-			istat.rotAngle = (float)(M_PI + atan2(x / DEADZONE, y / DEADZONE));
+			istat.rotAngle = -atan2(x2 / DEADZONE, y2 / DEADZONE);
+		}
+		if(x2 * x2 + y2 * y2 < DEADZONE * DEADZONE) {
+			angle = atan2(x2, y2);
+			magnitude = (M_PI / 12) * (sqrt(x2 * x2 + y2 * y2) - DEADZONE) / DEADZONE;
+
+			istat.rotHoriz = magnitude * cos(angle);
+			istat.rotVert  = magnitude * sin(angle);
 		}
 		 
 		// I don't think we need this extra memcpy...?

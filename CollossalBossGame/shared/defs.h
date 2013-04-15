@@ -30,6 +30,9 @@ typedef struct Vec3f {
 } Point_t, Rot_t;
 
 //Enumerations
+/*
+ * Actions that are sent from the client to the server
+ */
 typedef enum ACTION {
 	ACT_MOVE_X,
 	ACT_MOVE_Y,

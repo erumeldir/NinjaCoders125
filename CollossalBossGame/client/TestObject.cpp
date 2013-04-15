@@ -2,9 +2,11 @@
 #include "ClientEngine.h"
 #include <math.h>
 #include <Windows.h>
+#include "RenderEngine.h"
 #define M_PI 3.14159
 
-TestObject::TestObject(uint id, char *data) :
+
+TestObject::TestObject(uint id, char *data, const char * filename) :
 	ClientObject(id)
 {
 	DC::get()->print("Created new TestObject %d\n", id);
@@ -14,7 +16,7 @@ TestObject::TestObject(uint id, char *data) :
 		DC::get()->print("Error: Controller %d is not connected\n", id % 4);
 	}
 	*/
-	rm = new RenderModel(Point_t(),Rot_t());
+	rm = new RenderModel(Point_t(),Rot_t(), filename);
 	deserialize(data);
 
 	// Initialize input status
@@ -35,26 +37,13 @@ TestObject::~TestObject(void)
 }
 
 bool TestObject::update() {
-	/*if (istat.quit) {
-		CE::get()->exit();
+	if(getId() == 0) {
+	//RE::get()->setCameraPos(rm->getFrameOfRef()->getPos(), rm->getFrameOfRef()->getRot());
+	Point_t objPos = rm->getFrameOfRef()->getPos();
+	Rot_t objDir = rm->getFrameOfRef()->getRot();
+	Point_t camPos(objPos.x, objPos.y, objPos.z+100);
+	RE::get()->setCameraInfo(objPos, camPos, Point_t(0, 1, 0));
 	}
-	if (istat.attack) {
-		DC::get()->print("ATTACKING!!!                                               \r");
-	}
-	if (istat.jump) {
-		DC::get()->print("JUMPING!                                                   \r");
-	}
-	if (istat.specialPower) {
-		DC::get()->print("SPECIAL POWER!!!!!                                         \r");
-	}
-	
-	rm->getFrameOfRef()->setRot(Rot_t(0, 0, istat.rotAngle));
-	Point_t pos = rm->getFrameOfRef()->getPos();
-	rm->getFrameOfRef()->setPos(Point_t(pos.x + istat.xDist, pos.y - istat.yDist, 0));
-
-	// TODO Note: Should we vibrate the controller from here? like...from the player object? 
-	*/
-	// TODO: This should delete if the server told it to
 	return false;
 }
 
