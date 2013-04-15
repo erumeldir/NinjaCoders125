@@ -103,7 +103,7 @@ ConfigurationManager * ConfigurationManager::get() {
 
 // Looks for a key and returns the value.
 char * ConfigurationManager::find_config(string key) {
-	return &(valuetable[0][find_config_index(key)]);
+	return &(valuetable[find_config_index(key)][0]);
 }
 
 int ConfigurationManager::find_config_index(string key) {
