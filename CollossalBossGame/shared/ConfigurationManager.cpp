@@ -8,9 +8,10 @@
 #include <assert.h>
 #include <algorithm>
 
-using namespace std;
-
 #define CONFIGFILEPATH "../config.ini"
+#define USERCONFIGFILEPATH "../config_dev.ini"
+
+#pragma region Helper Functions.
 
 /* Split - Takes in a string, a delimiter, and a vector.
  * returns the vector with the string split by the delimiter.
@@ -44,6 +45,8 @@ bool comp(string s, char * c, int length) {
 	return true;
 }
 
+#pragma endregion split, stripSpaces, and comp[are]
+
 // Constructor - zeros out memory and sets initialized to false.
 ConfigurationManager::ConfigurationManager() {
 	SecureZeroMemory(&keytable, sizeof(keytable));
@@ -54,36 +57,36 @@ ConfigurationManager::ConfigurationManager() {
 }
 
 // Initializes the Configuration Manager. Parses the file and stores data.
-void ConfigurationManager::init(ConfigurationManager * cm) {
-	ifstream conf(CONFIGFILEPATH, ios::in);
+void ConfigurationManager::initializefile(char * filepath) {
+	ifstream conf(filepath, ios::in);
 	string line;
 	int x = 0;
 	vector<string> chunk;
 	if(conf.is_open()) {
-		cout << "Begin Configuration File Parsing..." << endl;
+		// cout << "Begin Configuration File Parsing..." << endl;
 		while(conf.good()) {
 			getline(conf,line);
 			if(!(line.length() == 0) && !(line.at(0) == '#')) {
-				cout << "Parsing line: " << line << endl;
+				// cout << "Parsing line: " << line << endl;
 				chunk.clear();
 				split(line, '=', chunk);
-				cout << "Number of Chunks: " << chunk.size() << endl;
+				// cout << "Number of Chunks: " << chunk.size() << endl;
 				// Assert. If the configuration file fails, it should fail hard.
 				assert(chunk.size() == 2 && "Config file must have 1 key=value pair per line. All spaces are ignored. Comment with leading # symbol(no spaces before #).");
 				string key = chunk[0];
 				string value = chunk[1];
-				cout << "Line split by = 1) " << key << " with length :" << key.length() << endl;
-				cout << "Line split by = 2) " << value << " with length :" << value.length() << endl;
+				// cout << "Line split by = 1) " << key << " with length :" << key.length() << endl;
+				// cout << "Line split by = 2) " << value << " with length :" << value.length() << endl;
 				stripSpaces(key);
 				stripSpaces(value);
-				cout << "Line split, trimmed, and stored 1) " << key << " with length : " << key.length() << endl;
-				cout << "Line split, trimmed, and stored 2) " << value << " with length : " << value.length() << endl;
+				// cout << "Line split, trimmed, and stored 1) " << key << " with length : " << key.length() << endl;
+				// cout << "Line split, trimmed, and stored 2) " << value << " with length : " << value.length() << endl;
 				memcpy(&(keytable[x][0]), key.c_str(), key.size());
 				memcpy(&(valuetable[x][0]), value.c_str(), value.size());
 				keylen[x] = key.size();
 				valuelen[x] = value.size();
-				cout << "Line length 1) " << key.size() << endl;
-				cout << "Line length 2) " << value.size() << endl;
+				// cout << "Line length 1) " << key.size() << endl;
+				// cout << "Line length 2) " << value.size() << endl;
 				x++;
 			}
 		}
@@ -91,15 +94,33 @@ void ConfigurationManager::init(ConfigurationManager * cm) {
 	}
 }
 
+// Initializes the static Configuration Manager.
+void ConfigurationManager::init() {
+	ifstream ifile(USERCONFIGFILEPATH);
+	if (!ifile) {	// If config.user doesn't exist, we should copy config.ini and make one.
+		ifile.close();
+		ifstream inFile(CONFIGFILEPATH, ios::binary);
+		ofstream outFile(USERCONFIGFILEPATH, ios::binary);
+		while (inFile.good()) { 
+			outFile.put(inFile.get());
+		}
+		inFile.close();
+		outFile.close();
+	}
+	initializefile(USERCONFIGFILEPATH);
+}
+
 // Fetches the singleton Configuration Manager object
 ConfigurationManager * ConfigurationManager::get() {
 	static ConfigurationManager ConfigManager;
 	if (ConfigManager.initialized == false) {
-		ConfigManager.init(&ConfigManager);
+		ConfigManager.init();
 		ConfigManager.initialized = true;
 	}
 	return &ConfigManager;
 }
+
+#pragma region Functions to find a configuration value given a key
 
 // Looks for a key and returns the value.
 char * ConfigurationManager::find_config(string key) {
@@ -143,3 +164,17 @@ bool ConfigurationManager::find_config_as_bool(string key) {
 	assert(false && "Invalid Configuration value as boolean.");
 	return false;
 }
+
+Vec3f ConfigurationManager::find_config_as_point(string key) {
+	vector<string> chunk;
+	string point = find_config_as_string(key);
+	split(point, ',', chunk);
+	assert(chunk.size() == 3 && "Config Error: Points are represented as <floatx> , <floaty> , <floatz>. Spaces will ignored.");
+	string x = chunk[0], y = chunk[1], z = chunk[2];
+	stripSpaces(x); stripSpaces(y); stripSpaces(z);
+	float fx = (float)atof(x.c_str()), fy = (float)atof(y.c_str()), fz = (float)atof(z.c_str());
+	return Vec3f(fx, fy, fz);
+}
+
+#pragma endregion
+
