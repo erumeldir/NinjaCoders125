@@ -13,12 +13,13 @@
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d9.lib")
-
+#pragma comment (lib, "d3dx9d.lib")
 #include <d3dx9.h>
 
 #include <list>
 #include <stdio.h>
 #include "ClientObject.h"
+#include "XAnimator_lib.h"
 using namespace std;
 
 
@@ -42,8 +43,17 @@ public:
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
 
-	void renderThis(ClientObject *obj);
+	D3DXMATRIX getViewOffset() { return camera; }
 
+	void renderThis(ClientObject *obj);
+	
+	void setCameraPos(const Point_t &pos, const Point_t &rot);
+
+	void setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up);
+
+	//Models
+	void animate(int id, const D3DXMATRIX &pos);
+	bool loadModel(const char * filename, int * idAddr);
 
 private:
 	void startWindow ();
@@ -52,10 +62,14 @@ private:
 
 	RenderEngine();
 	virtual ~RenderEngine();
-//LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
 
 	//Static members
 	static RenderEngine *re;
+	static IXAnimator* xAnimator;
+	D3DXMATRIX camera, world;
+	D3DXVECTOR3 camLookAt, camPos, camUp;
+
+	float xpos, ypos, zpos;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;

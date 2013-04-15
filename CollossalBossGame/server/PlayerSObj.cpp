@@ -3,7 +3,7 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(300,500,0), Rot_t(0,0,M_PI), 5);
+	pm = new PhysicsModel(Point_t(), Rot_t(), 5);
 
 	// Initialize input status
 	istat.attack = false;
@@ -35,10 +35,17 @@ bool PlayerSObj::update() {
 		DC::get()->print("SERVER KNOWS YOU'RE SPECIAL POWERING!!!!!                                      \r");
 	}
 	
+	Rot_t rt = pm->ref->getRot();
+	//rt.z += istat.rotHoriz;
+	//rt.y += istat.rotVert;
+	//pm->ref->setRot(rt);
 	pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
+	
+	//pm->ref->setRot(Rot_t(0, istat.rotVert, istat.rotHoriz));
+#define DIV 100
 	//Point_t pos = pm->ref->getPos();
 	//pm->ref->setPos(Point_t(pos.x + istat.xDist, pos.y - istat.yDist, 0));
-	pm->applyForce(Vec3f(istat.xDist, -istat.yDist, 0));
+	pm->applyForce(Vec3f(-istat.xDist / DIV, 0, -istat.yDist / DIV));
 	
 
 	return false;
