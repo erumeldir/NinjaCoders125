@@ -3,6 +3,7 @@
 
 //Objects the COM can create
 #include "TestObject.h"
+#include "PlayerCObj.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
@@ -63,17 +64,15 @@ ClientObject *ClientObjectManager::find(uint id) {
 
 void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
 	map<uint,ClientObject*>::iterator it;
-	CreateHeader *h;
 	switch(cmd) {
-	case CMD_CREATE:
-		h = (CreateHeader*)data;
-		create(id, h->type, data);
-		break;
 	case CMD_UPDATE:
-		//In case a packet gets dropped, I'm lumping these two together.
+	case CMD_CREATE:
+		//The client may connect AFTER all the objects have been created.
 		it = mObjs.find(id);
 		if(it != mObjs.end()) {
-			it->second->deserialize(data);
+			it->second->deserialize(data + sizeof(CreateHeader));
+		} else {
+			create(id, data);
 		}
 		break;
 	case CMD_DELETE:
@@ -90,20 +89,18 @@ void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
 /*
  * Creates the specified object and adds it to the list
  */
-void ClientObjectManager::create(uint id, ObjectType type, char *data) {
+void ClientObjectManager::create(uint id, char *data) {
 	ClientObject *obj;
-	ClientObject *obj1;
-	switch(type) {
+	CreateHeader *h = (CreateHeader*)data;
+	switch(h->type) {
 	case OBJ_PLAYER:
+		obj = new PlayerCObj(id, data + sizeof(CreateHeader));
+		break;
 	default:	//OBJ_GENERAL
-		//TODO: Add more logic
-		obj = new TestObject(id, data, "smallBox.x");
-		obj1 = new TestObject(id+1, data, "smallBox.x");
-		obj1->getRenderModel()->getFrameOfRef()->setPos(Point_t(20, 0, 10));
+		obj = new TestObject(id, data + sizeof(CreateHeader));
 		break;
 	}
 	add(obj);
-	add(obj1);
 }
 
 void ClientObjectManager::add(ClientObject *obj) {

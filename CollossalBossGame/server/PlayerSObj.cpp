@@ -3,7 +3,7 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(0,0,0), Rot_t(), 5);
+	pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 
 	// Initialize input status
 	istat.attack = false;
@@ -58,20 +58,13 @@ bool PlayerSObj::update() {
 }
 
 int PlayerSObj::serialize(char * buf) {
-	return pm->ref->serialize(buf);
+	ObjectState *state = (ObjectState*)buf;
+	state->modelNum = MDL_0;
+	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
 }
 
 void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
-	/*istat.attack = newStatus->attack;
-	istat.jump = newStatus->jump;
-	istat.specialPower = newStatus->specialPower;
-	istat.quit = newStatus->quit;
-	istat.rotAngle = newStatus->rotAngle;
-	istat.rotHoriz = newStatus->rotHoriz;
-	istat.rotVert = newStatus->rotVert;
-	istat.xDist = newStatus->xDist;
-	istat.yDist = newStatus->yDist;*/
 }

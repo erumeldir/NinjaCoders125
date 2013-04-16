@@ -16,10 +16,13 @@
 #pragma comment (lib, "d3d9.lib")
 
 #include <d3dx9.h>
+#include "NetworkData.h"
+
+
 class RenderModel
 {
 public:
-	RenderModel(Point_t pos, Rot_t rot, const char * filename);
+	RenderModel(Point_t pos, Rot_t rot, Model modelNum);
 	virtual ~RenderModel(void);
 	virtual void render();
 	Frame *getFrameOfRef() { return ref; }

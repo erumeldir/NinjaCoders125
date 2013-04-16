@@ -1,4 +1,5 @@
 #include "ClientNetworkManager.h"
+#include "ClientObjectManager.h"
 #include "XboxController.h"
 #include "Action.h"
 #include <stdio.h>
@@ -92,7 +93,7 @@ void XboxController::sendInput() {
 		// TODO: Should be the player object id, which we'll get from the server after connecting
 	}
 	//Send the input data, zero'd if nothing is there
-	ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus), 0);
+	ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus), COM::get()->player_id);
 }
 
 bool XboxController::isConnected()

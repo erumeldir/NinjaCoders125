@@ -46,6 +46,17 @@ struct Packet {
 
 
 /*
+ * Model info
+ * These enumerations are used for specifying models
+ */
+enum Model {
+    MDL_0,
+    MDL_1,
+    MDL_2,
+    NUM_MDLS
+};
+
+/*
  * Object types
  * These types exist to tell teh ClientObjectManager how to create an object
  * when the server declares a new object should be created
@@ -69,24 +80,6 @@ enum ObjectType {
  * memory-access safety reasons.
  */
 
-#if 0
-/*
- * General world state information not encoded in a specific object
- */
-struct WorldState {
-	int flags;	//Paused? Menu? Still running?
-};
-
-/*
- * Header information that prepends each object
- */
-struct ObjectHeader {
-	unsigned int id;	//Object id
-	CommandTypes cmd;	//Command for the client about this object
-	unsigned int size;	//Size does not include header size
-};
-#endif
-
 /*
  * This header provides information necessary for creating an
  * object.  For now it will be applied to all objects, in case
@@ -100,10 +93,12 @@ struct CreateHeader {
  * State information for the player not encoded by the position
  */
 struct PlayerState {
+    Model modelNum;
 };
 
 /*
  * State information for more general objects that might not be encoded
  */
 struct ObjectState {
+    Model modelNum;
 };

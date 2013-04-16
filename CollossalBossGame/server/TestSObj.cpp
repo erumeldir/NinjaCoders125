@@ -1,18 +1,12 @@
 #include "TestSObj.h"
+#include <math.h>
 
-
-TestSObj::TestSObj(uint id) : ServerObject(id) {
+TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject(id) {
 	DC::get()->print("Created new TestSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(), Rot_t(), 500);
-
-	// Initialize input status
-	istat.attack = false;
-	istat.jump = false;
-	istat.quit = false;
-	istat.specialPower = false;
-	istat.rotAngle = 0.0;
-	istat.xDist = 0.0;
-	istat.yDist = 0.0;
+	pm = new PhysicsModel(pos, Rot_t(), 500);
+	this->dir = dir;
+	this->modelNum = modelNum;
+	t = 0;
 }
 
 
@@ -20,28 +14,37 @@ TestSObj::~TestSObj(void) {
 }
 
 bool TestSObj::update() {
-	if (istat.quit) {
-		// Send Client quit event
-		return true; // delete me!
+#define MOVE_AMT 1
+#define DIV 25
+	/*
+	 * North = +Z (away from player start)
+	 * East  = +X (right of player start)
+	 * South = -Z (towards player start)
+	 * West  = -X (left of player start)
+	 */
+	switch(dir) {
+	case TEST_NORTH:
+		pm->applyForce(Vec3f(0, 0, MOVE_AMT * sin((double)t / DIV)));
+		break;
+	case TEST_EAST:
+		pm->applyForce(Vec3f(MOVE_AMT * sin((double)t / DIV), 0, 0));
+		break;
+	case TEST_SOUTH:
+		pm->applyForce(Vec3f(0, 0, -MOVE_AMT * sin((double)t / DIV)));
+		break;
+	case TEST_WEST:
+		pm->applyForce(Vec3f(-MOVE_AMT * sin((double)t / DIV), 0, 0));
+		break;
+	default:
+		break;
 	}
-	if (istat.attack) {
-		// Determine attack logic here
-		DC::get()->print("SERVER KNOWS YOU'RE ATTACKING!!!                                               \r");
-	}
-	if (istat.jump) {
-		DC::get()->print("SERVER KNOWS YOU'RE JUMPING!                                                   \r");
-	}
-	if (istat.specialPower) {
-		DC::get()->print("SERVER KNOWS YOU'RE SPECIAL POWERING!!!!!                                      \r");
-	}
-	
-	pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
-	Point_t pos = pm->ref->getPos();
-	pm->ref->setPos(Point_t(pos.x + istat.xDist, pos.y - istat.yDist, 0));
+	++t;
 
 	return false;
 }
 
 int TestSObj::serialize(char * buf) {
-	return pm->ref->serialize(buf);
+	ObjectState *state = (ObjectState*)buf;
+	state->modelNum = modelNum;
+	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
 }
