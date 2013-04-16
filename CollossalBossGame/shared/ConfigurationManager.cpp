@@ -66,12 +66,13 @@ void ConfigurationManager::initializefile(char * filepath) {
 		// cout << "Begin Configuration File Parsing..." << endl;
 		while(conf.good()) {
 			getline(conf,line);
-			if(!(line.length() == 0) && !(line.at(0) == '#')) {
+			if(!(line.length() < 2) && !(line.at(0) == '#')) {
 				// cout << "Parsing line: " << line << endl;
 				chunk.clear();
 				split(line, '=', chunk);
 				// cout << "Number of Chunks: " << chunk.size() << endl;
 				// Assert. If the configuration file fails, it should fail hard.
+                printf("Chunk size = %d, len = %d (%s)\n", chunk.size(), line.length(), line.c_str());
 				assert(chunk.size() == 2 && "Config file must have 1 key=value pair per line. All spaces are ignored. Comment with leading # symbol(no spaces before #).");
 				string key = chunk[0];
 				string value = chunk[1];

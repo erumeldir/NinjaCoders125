@@ -30,7 +30,7 @@ public:
 private:
 	ClientObjectManager(void);
 	virtual ~ClientObjectManager(void);
-	void create(uint id, ObjectType type, char *data);
+	void create(uint id, char *data);
 	void add(ClientObject *obj);
 
 	static ClientObjectManager *com;

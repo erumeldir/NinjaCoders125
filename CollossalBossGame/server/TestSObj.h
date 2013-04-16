@@ -5,7 +5,7 @@
 
 class TestSObj : public ServerObject {
 public:
-	TestSObj(uint id);
+	TestSObj(uint id, Model modelNum, Point_t pos);
 	virtual ~TestSObj(void);
 
 	virtual bool update();
@@ -18,5 +18,6 @@ public:
 
 private:
 	PhysicsModel *pm;
+	Model modelNum;
 };
 

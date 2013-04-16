@@ -1,9 +1,9 @@
 #include "TestSObj.h"
 
 
-TestSObj::TestSObj(uint id) : ServerObject(id) {
+TestSObj::TestSObj(uint id, Model modelNum, Point_t pos) : ServerObject(id) {
 	DC::get()->print("Created new TestSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(), Rot_t(), 500);
+	pm = new PhysicsModel(pos, Rot_t(), 500);
 
 	// Initialize input status
 	istat.attack = false;
@@ -13,6 +13,8 @@ TestSObj::TestSObj(uint id) : ServerObject(id) {
 	istat.rotAngle = 0.0;
 	istat.xDist = 0.0;
 	istat.yDist = 0.0;
+
+	this->modelNum = modelNum;
 }
 
 
@@ -43,5 +45,7 @@ bool TestSObj::update() {
 }
 
 int TestSObj::serialize(char * buf) {
-	return pm->ref->serialize(buf);
+	ObjectState *state = (ObjectState*)buf;
+	state->modelNum = modelNum;
+	return pm->ref->serialize(buf + sizeof(ObjectState));
 }

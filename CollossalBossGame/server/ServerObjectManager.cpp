@@ -116,14 +116,12 @@ void ServerObjectManager::sendState()
 		buf = SNM::get()->getSendBuffer();
 		switch(it->first) {
 		case CMD_UPDATE:
-			datalen = it->second->serialize(buf);
-			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
-			break;
 		case CMD_CREATE: {
 			//Fill out the header
 			CreateHeader *h = (CreateHeader*)buf;
 			h->type = it->second->getType();
 
+			//Serialize the object
 			datalen = it->second->serialize(buf + sizeof(CreateHeader)) + sizeof(CreateHeader);
 			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
 			break;
