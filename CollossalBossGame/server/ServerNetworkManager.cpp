@@ -119,25 +119,56 @@ ServerNetworkManager * ServerNetworkManager::get() {
 	return &SNM;
 }
 
+SOCKET ServerNetworkManager::getSocketById(int cid) {
+	std::map<unsigned int, SOCKET>::iterator iter;
+    for(iter = sessions.begin(); iter != sessions.end(); iter++) {
+		if(iter->first == cid) {
+			return iter->second;
+		}
+	}
+	return -1;
+}
+
 // Update loop - accepts new connections
 // Collects and stores data 
 void ServerNetworkManager::update() {
 	// get new clients
 	do {
-    if(acceptNewClient(client_id)) {
-        DC::get()->print("client %d has been connected to the server\n",client_id);
+		if(acceptNewClient(client_id)) {
+			//DC::get()->print("client %d has been connected to the server\n",client_id);
 
-		// Create a Test Server Object for them (for now)
-		SOM *som = SOM::get();
-		// Ok, since we should only have one object on both sides, the id's will match
-		// but how do we get them matching later? maybe the server should send
-		// the client the id back or something?
-		som->add(new PlayerSObj(som->genId()));
+			// Create a Test Server Object for them (for now)
+			SOM *som = SOM::get();
+			// Ok, since we should only have one object on both sides, the id's will match
+			// but how do we get them matching later? maybe the server should send
+			// the client the id back or something?
+			PlayerSObj * o = new PlayerSObj(som->genId());
+			som->add(o);
 
-		// TODO Send generated player id back to client
+			// TODO Send generated player id back to client
+			char data[sizeof(Packet)];
+			SOCKET currentSocket = getSocketById(client_id);
+			Packet packet;
+			packet.packet_type = INIT_CONNECTION;
+			packet.object_id = o->getId();//client_id;
+			packet.serialize(data);
+			int loopcount = 0;
+			while(NetworkServices::sendMessage(currentSocket, data, sizeof(Packet)) == SOCKET_ERROR) {
+				int err = WSAGetLastError();
+				if(loopcount > 50 ) {
+					DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
+					closesocket(currentSocket);
+				} else if(err == 10056 || err == 10035) {
+					loopcount++;
+				} else {
+					DC::get()->print("send failed with error: %d\n", WSAGetLastError());
+					closesocket(currentSocket);
+				}
+			}
+			
 
-        client_id++;
-    }
+			client_id++;
+		}
 	} while (client_id == 0);
 	// Collect data from clients
     receiveFromClients();
@@ -171,7 +202,7 @@ void ServerNetworkManager::receiveFromClients() {
                     DC::get()->print("server received init packet from client %d\n", iter->first);
                     break;
                 case ACTION_EVENT:
-                    DC::get()->print("server received action event packet from client %d\n", iter->first);
+					DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
 					//inputstatus is;
 					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 

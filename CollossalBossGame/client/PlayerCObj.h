@@ -5,7 +5,7 @@
 class PlayerCObj : public ClientObject
 {
 public:
-	PlayerCObj(uint id);
+	PlayerCObj(uint id, char *data);
 	virtual ~PlayerCObj(void);
 
 	virtual bool update();

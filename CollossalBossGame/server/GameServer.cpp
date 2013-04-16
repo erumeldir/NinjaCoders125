@@ -1,6 +1,7 @@
 #include "GameServer.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
+#include "game.h"
 #include <Windows.h>
 #include <assert.h>
 #include <iostream>
@@ -32,6 +33,10 @@ int main()
 	
 	DC::get()->print("%s %d: Made it here\n",__FILE__,__LINE__);
 
+	//Create game objects
+	gameInit();
+
+	//Main server loop
 	while(true) 
     {
 		// Get timestamp

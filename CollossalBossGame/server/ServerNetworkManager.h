@@ -15,6 +15,8 @@ private:
 	ServerNetworkManager(void);
     ~ServerNetworkManager(void);
 
+	SOCKET getSocketById(int client_id);
+
 	static ServerNetworkManager SNM;	// Class Singleton
 	static unsigned int client_id;		// Unique Client Ids for each connecting client
 	char network_data[MAX_PACKET_SIZE];	// data buffer
