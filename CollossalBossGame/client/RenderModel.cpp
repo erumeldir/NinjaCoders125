@@ -28,8 +28,11 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 	}
 
 	if(filename != NULL) {
-		if (!RE::get()->loadModel(filename, &modelId))
-			DC::get()->print("Didn't load the model!");
+		if (!RE::get()->loadModel(filename, &modelId)) {
+			DC::get()->print("Didn't load the model!\n");
+		} else {
+			DC::get()->print("Successfully loaded model %d\n",modelNum);
+		}
 	}
 }
 
@@ -51,6 +54,8 @@ void RenderModel::render() {
 	D3DXMatrixRotationY(&rotX, rot.x);
 	D3DXMatrixRotationY(&rotY, rot.y);
 	D3DXMatrixRotationY(&rotZ, rot.z);
+
+	DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 	//Render
 	RE::get()->animate(modelId, RE::get()->getViewOffset() * trans * rotX * rotY * rotZ);

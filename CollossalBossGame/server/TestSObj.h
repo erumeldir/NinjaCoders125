@@ -11,7 +11,6 @@ public:
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
-	inputstatus istat;
 	virtual ObjectType getType() { return OBJ_GENERAL; }
 
 	char serialbuffer[100];

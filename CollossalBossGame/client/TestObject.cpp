@@ -13,6 +13,7 @@ TestObject::TestObject(uint id, char *serializedData) :
 	DC::get()->print("Created new TestObject %d\n", id);
 
 	ObjectState *state = (ObjectState*)serializedData;
+
 	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum);
 	deserialize(serializedData);
 }

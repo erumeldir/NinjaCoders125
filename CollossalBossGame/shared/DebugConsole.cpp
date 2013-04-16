@@ -46,6 +46,12 @@ void DebugConsole::printAll(int flags, const char *szFormat, va_list vl) {
 		print(flags, ':');
 		print(flags, st.wMilliseconds);
 		print(flags, ' ');
+		if(st.wMilliseconds < 100) {
+			print(flags, ' ');
+			if(st.wMilliseconds < 10) {
+				print(flags, ' ');
+			}
+		}
 	}
 
 	//Process the format string
