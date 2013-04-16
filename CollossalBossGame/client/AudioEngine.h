@@ -14,7 +14,7 @@
 #define FMOD_ERRCHECK(val_check) \
 	if(val_check != FMOD_OK) { \
 		DC::get()->print("[Audio] FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(val_check)); \
-		exit(-1); \
+		fmodErrThrown = true; \
 	}
 
 class AudioEngine {
@@ -30,6 +30,9 @@ private:
 
 	static AudioEngine *ae;	//instance
 
+	//FMOD init
+	int startFMOD();
+
 	//FMOD objects
 	FMOD::System	 *system;
 	FMOD_RESULT		 result;
@@ -37,9 +40,7 @@ private:
 	int				 numdrivers;
 	FMOD_SPEAKERMODE speakermode; //number of channels
 	FMOD_CAPS	     caps;
-	char			 name[256];
-
-
+	char			 drivername[256];
 };
 typedef AudioEngine AE;
 #endif
