@@ -67,25 +67,6 @@
     <None Include="tiny.x">
       <Filter>Resources</Filter>
     </None>
-<<<<<<< HEAD
-    <None Include="rabbit.x">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include="renderC.jpg">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include="wispwind.x">
-      <Filter>Resources</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{f74a4ec0-306d-4bff-a83e-0b7d2bc12b97}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{b890ba41-35e3-452c-a119-bc14a540a2d7}</UniqueIdentifier>
-    </Filter>
-=======
     <None Include="BONES.BMP">
       <Filter>Resource Files</Filter>
     </None>
@@ -107,54 +88,5 @@
     <None Include="renderC.jpg">
       <Filter>Resource Files</Filter>
     </None>
-<<<<<<< HEAD
->>>>>>> 51857e06b5ade5ba6964214828275321ed7a6afa
-=======
-    <None Include="BONES.BMP">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="bones_all.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="body.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="face.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="wispwind.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="rabbit.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="renderC.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
-<<<<<<< HEAD
->>>>>>> 51857e06b5ade5ba6964214828275321ed7a6afa
-=======
-    <None Include="BONES.BMP">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="bones_all.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="body.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="face.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="wispwind.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="rabbit.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="renderC.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
->>>>>>> 51857e06b5ade5ba6964214828275321ed7a6afa
   </ItemGroup>
 </Project>
