@@ -24,6 +24,7 @@ ServerNetworkManager::ServerNetworkManager(void)
 	printf("Listening at port %s\n", PORT);
 
 	client_id = 0;
+	iteration = 0;
 	//0. Variable Initialization
 	// create WSADATA object
     WSADATA wsaData;
@@ -40,7 +41,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
-        DC::get()->print("WSAStartup failed with error: %d\n", iResult);
+        printf("WSAStartup failed with error: %d\n", iResult);
         exit(1);
     }
 
@@ -55,7 +56,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = getaddrinfo(NULL, PORT, &hints, &result);
 
     if ( iResult != 0 ) {
-        DC::get()->print("getaddrinfo failed with error: %d\n", iResult);
+        printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
         exit(1);
     }
@@ -65,7 +66,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
     if (ListenSocket == INVALID_SOCKET) {
-        DC::get()->print("socket failed with error: %ld\n", WSAGetLastError());
+        printf("socket failed with error: %ld\n", WSAGetLastError());
         freeaddrinfo(result);
         WSACleanup();
         exit(1);
@@ -73,14 +74,14 @@ ServerNetworkManager::ServerNetworkManager(void)
 
     // 3. Set the mode of the socket to be nonblocking
     u_long iMode = 1;	
-	if(CM::get()->find_config_as_bool("NETWORK_SERVER_USE_NONBLOCKING")) {
-		DC::get()->print("Setting Server Network to be non-blocking.");
+	if(!CM::get()->find_config_as_bool("NETWORK_SERVER_USE_NONBLOCKING")) {
+		printf("Setting Server Network to be blocking.");
 		iMode = 0;
 	}
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);
 
     if (iResult == SOCKET_ERROR) {
-        DC::get()->print("ioctlsocket failed with error: %d\n", WSAGetLastError());
+        printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
         closesocket(ListenSocket);
         WSACleanup();
         exit(1);
@@ -90,7 +91,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 
     if (iResult == SOCKET_ERROR) {
-        DC::get()->print("bind failed with error: %d\n", WSAGetLastError());
+        printf("bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(result);
         closesocket(ListenSocket);
         WSACleanup();
@@ -104,7 +105,7 @@ ServerNetworkManager::ServerNetworkManager(void)
     iResult = listen(ListenSocket, SOMAXCONN);
 
     if (iResult == SOCKET_ERROR) {
-        DC::get()->print("listen failed with error: %d\n", WSAGetLastError());
+        printf("listen failed with error: %d\n", WSAGetLastError());
         closesocket(ListenSocket);
         WSACleanup();
         exit(1);
@@ -135,7 +136,7 @@ void ServerNetworkManager::update() {
 	// get new clients
 	do {
 		if(acceptNewClient(client_id)) {
-			//DC::get()->print("client %d has been connected to the server\n",client_id);
+			DC::get()->print("client %d has been connected to the server\n",client_id);
 
 			// Create a Test Server Object for them (for now)
 			SOM *som = SOM::get();
@@ -166,12 +167,13 @@ void ServerNetworkManager::update() {
 				}
 			}
 			
-
+			DC::get()->print("client %d has been assigned client_id... Moving onto the rest of the loop.\n",client_id);
 			client_id++;
 		}
 	} while (client_id == 0);
 	// Collect data from clients
     receiveFromClients();
+	iteration++;
 }
 
 // Loop through each client and checks messages sent from them.
@@ -270,13 +272,13 @@ char* ServerNetworkManager::getSendBuffer() {
 }
 
 void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int data_size) {
-	sendToAll(0, packet_type, 0, CMD_UPDATE, data_size);
+	sendToAll(iteration, packet_type, 0, CMD_UPDATE, data_size);
 }
 void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int data_size) {
-	sendToAll(0, packet_type, object_id, CMD_UPDATE, data_size);
+	sendToAll(iteration, packet_type, object_id, CMD_UPDATE, data_size);
 }
 void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
-	sendToAll(0, packet_type, object_id, command_type, data_size);
+	sendToAll(iteration, packet_type, object_id, command_type, data_size);
 }
 
 // send data to all clients
@@ -287,7 +289,10 @@ void ServerNetworkManager::sendToAll(unsigned int iteration, unsigned int packet
 	send_buffer.object_id = object_id;
 	send_buffer.command_type = command_type;
 	send_buffer.data_size = data_size;
+	send_buffer.packet_number = p_count;
 	send_buffer.serialize(data);
+
+	p_count++;
 
     SOCKET currentSocket;
     std::map<unsigned int, SOCKET>::iterator iter;

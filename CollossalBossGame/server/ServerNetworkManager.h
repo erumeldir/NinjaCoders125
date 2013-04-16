@@ -7,8 +7,6 @@
 using namespace std; 
 #pragma comment (lib, "Ws2_32.lib")
 
-#define DEFAULT_BUFLEN 512
-
 class ServerNetworkManager
 {
 private:
@@ -37,6 +35,8 @@ public:
     SOCKET ListenSocket;	// Socket to listen for new connections
     SOCKET ClientSocket;	// Socket to give to the clients
     int iResult;			// for error checking return values
+	unsigned int iteration;	// The iteration count of the server
+	unsigned int p_count;	// The number assigned to each individual packet
     std::map<unsigned int, SOCKET> sessions; // table to keep track of each client's socket
 	Packet send_buffer;
 	
