@@ -6,7 +6,6 @@
 #include "defs.h"
 #include "RenderEngine.h"
 #include "ClientObjectManager.h"
-#include "game.h"
 
 //Static members
 ClientEngine *ClientEngine::ce;
@@ -51,9 +50,6 @@ void ClientEngine::exit(int i) {
  * The main game loop of the engine.  Initializes and runs the game.
  */
 void ClientEngine::run() {
-	//Initialize the client side game information
-	gameInit();
-
 	while(isRunning) {
 		
 		//Send event information to the server
@@ -73,5 +69,4 @@ void ClientEngine::run() {
 
 		Sleep(10);
 	}
-	gameClean();
 }
