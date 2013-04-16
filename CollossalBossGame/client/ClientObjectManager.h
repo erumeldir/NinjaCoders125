@@ -21,6 +21,8 @@ public:
 	//Object handling
 	ClientObject *find(uint id);
 	void serverUpdate(uint id, CommandTypes cmd, char *data);
+
+	int player_id;
 /*  Needs to receive a server update
 	uint genId();
 	void freeId(uint id);
