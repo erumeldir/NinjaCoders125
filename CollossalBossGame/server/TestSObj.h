@@ -3,9 +3,15 @@
 #include "Action.h"
 #include "NetworkData.h"
 
+#define TEST_NORTH 0
+#define TEST_SOUTH 1
+#define TEST_EAST  2
+#define TEST_WEST  3
+#define TEST_STILL 4
+
 class TestSObj : public ServerObject {
 public:
-	TestSObj(uint id, Model modelNum, Point_t pos);
+	TestSObj(uint id, Model modelNum, Point_t pos, int dir = TEST_STILL);
 	virtual ~TestSObj(void);
 
 	virtual bool update();
@@ -18,5 +24,7 @@ public:
 private:
 	PhysicsModel *pm;
 	Model modelNum;
+	int dir;
+	int t;
 };
 
