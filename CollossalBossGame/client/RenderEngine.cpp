@@ -148,26 +148,8 @@ RenderEngine::RenderEngine() {
 	
 	D3DXMatrixIdentity(&world);
 	D3DXMatrixIdentity(&camera);
-#if 0
-	/*D3DXMatrixIdentity(&xworld);
-	D3DXMatrixIdentity(&yworld);
-	D3DXMatrixIdentity(&zworld);
-	D3DXMatrixIdentity(&sworld);
 
-	D3DXMatrixScaling(&sworld, 0.01f, 0.01, 0.01);
-	D3DXMatrixRotationX(&xworld, 0.5 * 3.1415f);
-	D3DXMatrixRotationZ(&zworld, 3.1415);
-	D3DXMatrixTranslation(&tworld, xpos, ypos, zpos);
-<<<<<<< HEAD
-	//moveCamera(0, 0, 10);
-	world = xworld * yworld * zworld * tworld *sworld;
-	camera = world;	//to start with
-	//direct3dDevice->SetTransform(D3DTS_WORLD, &world);
-
-=======
-	world = xworld * yworld * zworld * tworld *sworld;*/
->>>>>>> bf0bc0d5c400f279e594d6777de9a033c111f468
-#endif
+	cam = new Camera(100); // TODO config!!
 }
 
 void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
@@ -188,6 +170,14 @@ void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
 #endif
 }
 
+void RenderEngine::updateCamera()
+{
+	// Update the camera view matrix
+	cam->viewTarget();
+	// Tell D3D to set the view matrix
+	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
+}
+
 /*
 * Clean up DrectX and any other rendering libraries that we may have.
 * Bryan
@@ -195,6 +185,7 @@ void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
+	delete cam;
 }
 
 /*where we actually draw a scene

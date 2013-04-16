@@ -68,7 +68,7 @@ void XboxController::sendInput() {
 
 		if (fabs(x2) > DEADZONE)
 		{
-			istat.rotHoriz = atan(x2 / DIV);
+			istat.rotHoriz = atan(x2 / (JOY_MAX * 16));
 		}
 
 		/*istat.rotHoriz = 0;

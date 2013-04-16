@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
+#include "Camera.h"
 using namespace std;
 
 
@@ -47,6 +48,9 @@ public:
 
 	void renderThis(ClientObject *obj);
 	
+	Camera * getCamera() { return cam; }
+	void updateCamera();
+
 	void setCameraPos(const Point_t &pos, const Point_t &rot);
 
 	void setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up);
@@ -73,6 +77,8 @@ private:
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
+
+	Camera* cam;
 };
 typedef RenderEngine RE;
 

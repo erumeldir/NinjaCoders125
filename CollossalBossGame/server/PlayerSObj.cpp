@@ -3,7 +3,7 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(0,0,50), Rot_t(), 5);
+	pm = new PhysicsModel(Point_t(0,0,0), Rot_t(), 5);
 
 	// Initialize input status
 	istat.attack = false;
@@ -42,7 +42,10 @@ bool PlayerSObj::update() {
 	//rt.y += istat.rotVert;
 	//pm->ref->setRot(rt);
 	//pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
-	pm->ref->setRot(Rot_t(0, rt.y + istat.rotHoriz, 0));
+	float newAngle = rt.y + istat.rotHoriz;
+	if (newAngle > 6.2832 || newAngle < -6.2832) newAngle = 0; // TODO DEFINE then defs 
+	printf("New angle is %f                                                            \r", newAngle);
+	pm->ref->setRot(Rot_t(0, newAngle, 0));
 	
 	//pm->ref->setRot(Rot_t(0, istat.rotVert, istat.rotHoriz));
 #define DIV 100

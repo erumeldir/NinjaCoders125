@@ -3,7 +3,7 @@
 #include <math.h>
 #include <Windows.h>
 #include "RenderEngine.h"
-#define M_PI 3.14159
+#define M_PI 3.14159 // TODO defs!
 
 
 TestObject::TestObject(uint id, char *data, const char * filename) :
@@ -37,13 +37,19 @@ TestObject::~TestObject(void)
 }
 
 bool TestObject::update() {
+	// TODO if getId() == playerId
 	if(getId() == 0) {
-	//RE::get()->setCameraPos(rm->getFrameOfRef()->getPos(), rm->getFrameOfRef()->getRot());
-	Point_t objPos = rm->getFrameOfRef()->getPos();
-	Rot_t objDir = rm->getFrameOfRef()->getRot();
-	int factor = 100;
-	Point_t camPos(objPos.x, objPos.y, objPos.z - factor);
-	RE::get()->setCameraInfo(objPos, camPos, Point_t(0, 1, 0));
+		Point_t objPos = rm->getFrameOfRef()->getPos();
+		Rot_t objDir = rm->getFrameOfRef()->getRot();
+		/*int factor = 100;
+		Point_t camPos(objPos.x, objPos.y, objPos.z - factor);
+		RE::get()->setCameraInfo(objPos, camPos, Point_t(0, 1, 0));*/
+		//RE::get()->getCamera()->forward(objPos.z);
+		RE::get()->getCamera()->setZ(objPos.z);
+		RE::get()->getCamera()->setX(objPos.x);
+		RE::get()->getCamera()->yaw(objDir.y);
+		
+		RE::get()->updateCamera();
 	}
 	return false;
 }

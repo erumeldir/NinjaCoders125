@@ -4,7 +4,6 @@
 #include "Action.h"
 #include "XboxController.h"
 
-
 class TestObject : public ClientObject
 {
 public:
