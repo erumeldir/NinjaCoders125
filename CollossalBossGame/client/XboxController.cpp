@@ -65,6 +65,14 @@ void XboxController::sendInput() {
 		istat.rotAngle = 0;
 		istat.rotHoriz = 0;
 		istat.rotVert = 0;
+
+		if (fabs(x2) > DEADZONE)
+		{
+			istat.rotHoriz = atan(x2 / DIV);
+		}
+
+		/*istat.rotHoriz = 0;
+		istat.rotVert = 0;
 		float angle, magnitude;
 		if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
 			istat.rotAngle = -atan2(x2 / DEADZONE, y2 / DEADZONE);
@@ -75,7 +83,7 @@ void XboxController::sendInput() {
 
 			istat.rotHoriz = magnitude * cos(angle);
 			istat.rotVert  = magnitude * sin(angle);
-		}
+		}*/
 		 
 		// I don't think we need this extra memcpy...?
 		//controllerstatus cs;

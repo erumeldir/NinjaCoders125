@@ -41,7 +41,8 @@ bool TestObject::update() {
 	//RE::get()->setCameraPos(rm->getFrameOfRef()->getPos(), rm->getFrameOfRef()->getRot());
 	Point_t objPos = rm->getFrameOfRef()->getPos();
 	Rot_t objDir = rm->getFrameOfRef()->getRot();
-	Point_t camPos(objPos.x, objPos.y, objPos.z+100);
+	int factor = 10;
+	Point_t camPos(objPos.x - (objDir.x * factor), objPos.y - (objDir.y * factor), objPos.z - (objDir.z * factor));
 	RE::get()->setCameraInfo(objPos, camPos, Point_t(0, 1, 0));
 	}
 	return false;

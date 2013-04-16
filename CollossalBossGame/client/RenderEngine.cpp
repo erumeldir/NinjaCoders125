@@ -234,6 +234,8 @@ void RenderEngine::render() {
 
 #define TIME_SINCE_LAST_UPDATE 4
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
+
+	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
 
@@ -242,16 +244,22 @@ bool RenderEngine::loadModel(const char * filename, int * idAddr) {
 }
 
 void RenderEngine::setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up) {
-	camPos.x = pos.x;
-	camPos.y = pos.y;
-	camPos.z = pos.z;
-	camLookAt.x = lookAt.x;
-	camLookAt.y = lookAt.y;
-	camLookAt.z = lookAt.z;
-	camUp.x = up.x;
-	camUp.y = up.y;
-	camUp.z = up.z;
+	
+
+	camPos = pos;
+	//camPos.x = pos.x;
+	//camPos.y = pos.y;
+	//camPos.z = pos.z;
+	camLookAt = lookAt;
+	//camLookAt.x = lookAt.x;
+	//camLookAt.y = lookAt.y;
+	//camLookAt.z = lookAt.z;
+	camUp = up;
+	//camUp.x = up.x;
+	//camUp.y = up.y;
+	//camUp.z = up.z;
 	D3DXMatrixLookAtLH( &camera, &camPos, &camLookAt, &camUp );
+	RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &camera);
 }
 
 

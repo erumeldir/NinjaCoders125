@@ -92,13 +92,18 @@ void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
  */
 void ClientObjectManager::create(uint id, ObjectType type, char *data) {
 	ClientObject *obj;
+	ClientObject *obj1;
 	switch(type) {
 	case OBJ_PLAYER:
 	default:	//OBJ_GENERAL
-		obj = new TestObject(id, data, "tiny.x");
+		//TODO: Add more logic
+		obj = new TestObject(id, data, "smallBox.x");
+		obj1 = new TestObject(id+1, data, "smallBox.x");
+		obj1->getRenderModel()->getFrameOfRef()->setPos(Point_t(0, 0, 10));
 		break;
 	}
 	add(obj);
+	add(obj1);
 }
 
 void ClientObjectManager::add(ClientObject *obj) {

@@ -3,7 +3,7 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(), Rot_t(), 5);
+	pm = new PhysicsModel(Point_t(0,0,50), Rot_t(), 5);
 
 	// Initialize input status
 	istat.attack = false;
@@ -11,6 +11,8 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	istat.quit = false;
 	istat.specialPower = false;
 	istat.rotAngle = 0.0;
+	istat.rotHoriz = 0.0;
+	istat.rotVert = 0.0;
 	istat.xDist = 0.0;
 	istat.yDist = 0.0;
 }
@@ -39,13 +41,14 @@ bool PlayerSObj::update() {
 	//rt.z += istat.rotHoriz;
 	//rt.y += istat.rotVert;
 	//pm->ref->setRot(rt);
-	pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
+	//pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
+	pm->ref->setRot(Rot_t(0, rt.y + istat.rotHoriz, 0));
 	
 	//pm->ref->setRot(Rot_t(0, istat.rotVert, istat.rotHoriz));
 #define DIV 100
 	//Point_t pos = pm->ref->getPos();
 	//pm->ref->setPos(Point_t(pos.x + istat.xDist, pos.y - istat.yDist, 0));
-	pm->applyForce(Vec3f(-istat.xDist / DIV, 0, -istat.yDist / DIV));
+	pm->applyForce(Vec3f(istat.xDist / DIV, 0, istat.yDist / DIV));
 	
 
 	return false;
@@ -58,11 +61,14 @@ int PlayerSObj::serialize(char * buf) {
 void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
-	istat.attack = newStatus->attack;
+	istat = *newStatus;
+	/*istat.attack = newStatus->attack;
 	istat.jump = newStatus->jump;
 	istat.specialPower = newStatus->specialPower;
 	istat.quit = newStatus->quit;
 	istat.rotAngle = newStatus->rotAngle;
+	istat.rotHoriz = newStatus->rotHoriz;
+	istat.rotVert = newStatus->rotVert;
 	istat.xDist = newStatus->xDist;
-	istat.yDist = newStatus->yDist;
+	istat.yDist = newStatus->yDist;*/
 }

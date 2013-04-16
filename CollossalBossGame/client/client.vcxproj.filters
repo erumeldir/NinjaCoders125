@@ -112,5 +112,11 @@
     <None Include="renderC.jpg">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="pyramidofDOOM.X">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="smallBox.X">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
