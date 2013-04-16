@@ -148,7 +148,7 @@ void ServerNetworkManager::update() {
 			SOCKET currentSocket = getSocketById(client_id);
 			Packet packet;
 			packet.packet_type = INIT_CONNECTION;
-			packet.object_id = client_id;
+			packet.object_id = o->getId();//client_id;
 			packet.serialize(data);
 			int loopcount = 0;
 			while(NetworkServices::sendMessage(currentSocket, data, sizeof(Packet)) == SOCKET_ERROR) {
@@ -200,7 +200,7 @@ void ServerNetworkManager::receiveFromClients() {
                     DC::get()->print("server received init packet from client %d\n", iter->first);
                     break;
                 case ACTION_EVENT:
-                    DC::get()->print("server received action event packet from client %d\n", iter->first);
+					DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
 					//inputstatus is;
 					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
