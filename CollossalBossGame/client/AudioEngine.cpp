@@ -12,12 +12,20 @@ AudioEngine *AudioEngine::ae;
  * Engine constructor.Initialize the FMOD engine
  */
 AudioEngine::AudioEngine() {
-	std::cout << "Initializing Audio" << std::endl;
+	DC::get()->print("[Audio] Initializing Audio Engine\n");
+	//create our fmod system
+	result = FMOD::System_Create(&system);
+	FMOD_ERRCHECK(result);
+
+	result = system->getVersion(&version);
+	FMOD_ERRCHECK(result);
+
+	DC::get()->print("[Audio] Using FMOD %d\n", version);
 }
 
 /*
  * Engine destructor. Deletes all audio assets and cleans all buffers.
  */
 AudioEngine::~AudioEngine() {
-
+	
 }

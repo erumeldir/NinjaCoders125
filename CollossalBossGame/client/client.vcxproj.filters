@@ -1,27 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="AudioEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ClientEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderEngine.cpp">
+    <ClCompile Include="ClientNetworkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClientObject.cpp">
@@ -33,33 +19,36 @@
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientNetworkManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="XboxController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioEngine.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RenderEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XboxController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ClientEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderEngine.h">
+    <ClInclude Include="ClientObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClientObject.h">
+    <ClInclude Include="ClientNetworkManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClientObjectManager.h">
@@ -68,58 +57,45 @@
     <ClInclude Include="game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestObject.h">
+    <ClInclude Include="PlayerCObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClientNetworkManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="XboxController.h">
+    <ClInclude Include="RenderEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="AudioEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-=======
-    <ClInclude Include="PlayerCObj.h">
+    <ClInclude Include="TestObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XAnimator\XAnimator_lib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="XboxController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FMOD\inc\fmod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="tiny.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="tiny_skin.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="BONES.BMP">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="bones_all.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="body.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="face.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="wispwind.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="rabbit.x">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="renderC.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
->>>>>>> develop
+    <None Include="body.bmp" />
+    <None Include="BONES.BMP" />
+    <None Include="bones_all.x" />
+    <None Include="face.bmp" />
+    <None Include="rabbit.x" />
+    <None Include="renderC.jpg" />
+    <None Include="tiny.x" />
+    <None Include="tiny_skin.bmp" />
+    <None Include="wispwind.x" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9275f72d-96e6-445d-a007-82d85a546692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{a16ecec4-bca2-4a20-a7b8-1b4a32e3e8bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
