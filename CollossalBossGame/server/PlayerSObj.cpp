@@ -3,7 +3,7 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(-1000,0,700), Rot_t(), 5);
+	pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 
 	// Initialize input status
 	istat.attack = false;

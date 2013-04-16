@@ -55,7 +55,7 @@ void RenderModel::render() {
 	D3DXMatrixRotationY(&rotY, rot.y);
 	D3DXMatrixRotationY(&rotZ, rot.z);
 
-	DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
+	//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 	//Render
 	RE::get()->animate(modelId, RE::get()->getViewOffset() * trans * rotX * rotY * rotZ);
