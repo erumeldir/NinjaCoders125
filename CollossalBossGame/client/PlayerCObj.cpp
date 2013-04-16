@@ -25,9 +25,10 @@ bool PlayerCObj::update() {
 		Point_t camPos(objPos.x, objPos.y, objPos.z - factor);
 		RE::get()->setCameraInfo(objPos, camPos, Point_t(0, 1, 0));*/
 		//RE::get()->getCamera()->forward(objPos.z);
+		RE::get()->getCamera()->setYaw(objDir.y);
 		RE::get()->getCamera()->setZ(objPos.z);
 		RE::get()->getCamera()->setX(objPos.x);
-		RE::get()->getCamera()->yaw(objDir.y);
+		//RE::get()->getCamera()->yaw(objDir.y);
 		
 		RE::get()->updateCamera();
 	}

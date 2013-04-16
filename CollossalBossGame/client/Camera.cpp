@@ -34,26 +34,28 @@ void Camera::yaw(float angle)
 	D3DXMatrixRotationAxis(&yaw, &tarUp, angle);
 
 	// Update the view vectors of both the target and camera based on the rotation represented in our yaw matrix
-	//D3DXVec3TransformCoord(&camView, &camView, &yaw);
-	//D3DXVec3TransformCoord(&tarView, &tarView, &yaw);
+	D3DXVec3TransformCoord(&camView, &camView, &yaw);
+	D3DXVec3TransformCoord(&tarView, &tarView, &yaw);
 	// This next part is so the rotation is absolute and not relative
-	D3DXVECTOR3 newCamView = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	D3DXVECTOR3 newTarView = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	D3DXVec3TransformCoord(&camView, &newCamView, &yaw);
-	D3DXVec3TransformCoord(&tarView, &newTarView, &yaw);
+	//D3DXVECTOR3 newCamView = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	//D3DXVECTOR3 newTarView = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	//D3DXVec3TransformCoord(&camView, &newCamView, &yaw);
+	//D3DXVec3TransformCoord(&tarView, &newTarView, &yaw);
 
 	// Also update the right vectors of the target and camera
-	/*D3DXVec3TransformCoord(&camRight, &camRight, &yaw);
-	D3DXVec3TransformCoord(&tarRight, &tarRight, &yaw);*/
-	D3DXVECTOR3 newCamRight = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	D3DXVec3TransformCoord(&camRight, &camRight, &yaw);
+	D3DXVec3TransformCoord(&tarRight, &tarRight, &yaw);
+	/*D3DXVECTOR3 newCamRight = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 newTarRight = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 	D3DXVec3TransformCoord(&camRight, &newCamRight, &yaw);
-	D3DXVec3TransformCoord(&tarRight, &newTarRight, &yaw);
+	D3DXVec3TransformCoord(&tarRight, &newTarRight, &yaw);*/
 }
 
 void Camera::setYaw(float angle)
 {
-
+	static float lastYaw = 0;
+	yaw(angle - lastYaw);
+	lastYaw = angle;
 }
 
 /**

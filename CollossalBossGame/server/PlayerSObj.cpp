@@ -3,7 +3,8 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
-	pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
+	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
+	pm = new PhysicsModel(Point_t(0,0,0), Rot_t(), 5);
 
 	// Initialize input status
 	istat.attack = false;
@@ -51,7 +52,11 @@ bool PlayerSObj::update() {
 #define DIV 100
 	//Point_t pos = pm->ref->getPos();
 	//pm->ref->setPos(Point_t(pos.x + istat.xDist, pos.y - istat.yDist, 0));
-	pm->applyForce(Vec3f(istat.xDist / DIV, 0, istat.yDist / DIV));
+	//pm->applyForce(Vec3f(istat.xDist / DIV, 0, istat.yDist / DIV));
+	float rawX = istat.xDist / DIV;
+	float rawY = istat.yDist / DIV;
+	// TODO Check math...please xD
+	pm->applyForce(Vec3f( (rawX * cos(newAngle)) - (rawY * sin(newAngle)), 0,(rawX * sin(newAngle)) + (rawY * cos(newAngle))));
 	
 
 	return false;
