@@ -35,6 +35,16 @@ bool PlayerCObj::update() {
 					cameraPitch = -M_PI / 4;
 				}
 			}
+
+			// This is horrendous, server should tell us
+			if (xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+			{
+				RE::get()->hudText = "PEW! PEW!";
+			}
+			else
+			{
+				RE::get()->hudText = "You are not pew pew-ing!";
+			}
 		}
 		Point_t objPos = rm->getFrameOfRef()->getPos();
 		Rot_t objDir = rm->getFrameOfRef()->getRot();
