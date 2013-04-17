@@ -139,18 +139,18 @@ void RenderEngine::renderInitalization()
  * Author(s): Suman, Haro
  */
 void RenderEngine::HUDInitialization() {
-	HRESULT hr = D3DXCreateFont(this->direct3dDevice,     //D3D Device
-				                22,                       //Font height
-								0,					      //Font width
-								FW_NORMAL,                //Font Weight
-								1,                        //MipLevels
-								false,                    //Italic
-								DEFAULT_CHARSET,          //CharSet
-								OUT_DEFAULT_PRECIS,       //OutputPrecision
-								ANTIALIASED_QUALITY,      //Quality
-								DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
-								"Arial",                  //pFacename,
-								&this->direct3dText);     //ppFont
+	D3DXCreateFont(	this->direct3dDevice,     //D3D Device
+				    22,                       //Font height
+					0,					      //Font width
+					FW_NORMAL,                //Font Weight
+					1,                        //MipLevels
+					false,                    //Italic
+					DEFAULT_CHARSET,          //CharSet
+					OUT_DEFAULT_PRECIS,       //OutputPrecision
+					ANTIALIASED_QUALITY,      //Quality
+					DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
+					"Georgia",                //pFacename,
+					&this->direct3dText);     //ppFont
 }
 
 /*
@@ -205,7 +205,7 @@ void RenderEngine::drawHUD() {
    SetRect(&font_rect,10,10,SCREEN_WIDTH,SCREEN_HEIGHT);
 
    this->direct3dText->DrawText(NULL,        //pSprite
-                                hudText,	 //pString
+								hudText.c_str(),	 //pString
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
