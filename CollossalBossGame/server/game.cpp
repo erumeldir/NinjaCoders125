@@ -19,4 +19,5 @@ void gameInit() {
 	som->add(obj0);
 	som->add(obj1);
 	som->add(obj2);
+
 }

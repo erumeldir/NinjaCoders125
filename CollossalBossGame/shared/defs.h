@@ -27,6 +27,19 @@ typedef struct Vec3f {
 		this->z = z;
 	}
 	float x, y, z;
+
+	Vec3f operator-	(Vec3f rhs) {
+		return Vec3f(this->x - rhs.x, 
+			this->y - rhs.y, 
+			this->z - rhs.z);
+	}
+
+	Vec3f operator/	(float rhs) {
+		return Vec3f(this->x / rhs, 
+			this->y / rhs, 
+			this->z / rhs);
+	}
+
 } Point_t, Rot_t;
 
 //Enumerations
