@@ -71,24 +71,88 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	float distX = first.x - second.x;
 	float distY = first.y - second.y;
 	float distZ = first.z - second.z;
+
+	float squareDist = distX * distX + distY * distY + distZ * distZ;
 	
 	//4. find if we collided
 	bool collidedX = distX * distX < (r1 + r2) * (r1 + r2);
 	bool collidedY = distY * distY < (r1 + r2) * (r1 + r2);
 	bool collidedZ = distZ * distZ < (r1 + r2) * (r1 + r2);
 
-	/*General principle: conservation of momentum 
-		*	If we were to have this be absolutely accurate, we would need
-		*   a gauge of elasticity for both objects. However since we don't
-		*   have elasticity, we will instead use a difference of mass as 
-		*   a factor.
-		*
-		*/
+	bool collided = squareDist < (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2);
 
 
 	//Dealing with collisions!
-	if (collidedX)
+	if (collided)
 	{
+		float m21 = obj2->getPhysicsModel()->mass / obj1->getPhysicsModel()->mass;
+		float x21 = obj2->getPhysicsModel()->ref->getPos().x - obj1->getPhysicsModel()->ref->getPos().x;
+		float y21 = obj2->getPhysicsModel()->ref->getPos().y - obj1->getPhysicsModel()->ref->getPos().y;
+		float z21 = obj2->getPhysicsModel()->ref->getPos().z - obj1->getPhysicsModel()->ref->getPos().z;
+		
+		float vx1 = obj1->getPhysicsModel()->vel.x;
+		float vx2 = obj2->getPhysicsModel()->vel.x;
+		
+		float vy1 = obj1->getPhysicsModel()->vel.y;
+		float vy2 = obj2->getPhysicsModel()->vel.y;
+
+		float vx21 = obj2->getPhysicsModel()->vel.x - obj1->getPhysicsModel()->vel.x;
+		float vy21 = obj2->getPhysicsModel()->vel.y - obj1->getPhysicsModel()->vel.y;
+		float vz21 = obj2->getPhysicsModel()->vel.z - obj1->getPhysicsModel()->vel.z;
+
+		float m1 = obj1->getPhysicsModel()->mass;
+		float m2 = obj2->getPhysicsModel()->mass;
+
+		float vx_cm = (m1*vx1+m2*vx2)/(m1+m2) ;
+		float vy_cm = (m1*vy1+m2*vy2)/(m1+m2) ;   
+
+
+//     *** return old velocities if balls are not approaching ***
+       if ( (vx21*x21 + vy21*y21) >= 0) cout<<"bouncing"<<endl;
+
+
+//     *** I have inserted the following statements to avoid a zero divide; 
+//         (for single precision calculations, 
+//          1.0E-12 should be replaced by a larger value). **************  
+  
+       float fy21=1.0E-12*fabs(y21);
+	   float sign;
+       if ( fabs(x21)<fy21 ) {  
+                   if (x21<0) { sign=-1; } else { sign=1;}  
+                   x21=fy21*sign; 
+        } 
+
+	   float a, dvx2;
+//     ***  update velocities ***
+       a=y21/x21;
+       dvx2= -2*(vx21 +a*vy21)/((1+a*a)*(1+m21)) ;
+       vx2=vx2+dvx2;
+       vy2=vy2+a*dvx2;
+       vx1=vx1-m21*dvx2;
+       vy1=vy1-a*m21*dvx2;
+
+	   float R = r1;
+//     ***  velocity correction for inelastic collisions ***
+       vx1=(vx1-vx_cm)*R + vx_cm;
+       vy1=(vy1-vy_cm)*R + vy_cm;
+       vx2=(vx2-vx_cm)*R + vx_cm;
+       vy2=(vy2-vy_cm)*R + vy_cm;
+
+	   obj1->getPhysicsModel()->vel = Vec3f(vx1, vy1, obj1->getPhysicsModel()->vel.z);
+	   obj2->getPhysicsModel()->vel = Vec3f(vx2, vy2, obj2->getPhysicsModel()->vel.z);
+//		cout << "squareDist: " << squareDist << ", things: " << (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2)<< endl;
+		/*General principle: conservation of momentum 
+		 *	If we were to have this be absolutely accurate, we would need
+		 *   a gauge of elasticity for both objects. However since we don't
+		 *   have elasticity, we will instead use a difference of mass as 
+		 *   a factor.
+		 *
+		 */
+
+	/*	//0. set acceleration
+		obj1->getPhysicsModel()->accel = Vec3f(0, 0, 0);
+		obj2->getPhysicsModel()->accel = Vec3f(0, 0, 0);
+
 		//1. calculate momentum. 
 		Vec3f moment = Vec3f(obj1->getPhysicsModel()->mass * obj1->getPhysicsModel()->vel.x
 								+ obj2->getPhysicsModel()->mass * obj2->getPhysicsModel()->vel.x,
@@ -133,27 +197,6 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		//Overriding crazy! Also storing the final velocity in it
 		obj2->getPhysicsModel()->applyForce(moment);
 		*/
-	}
-
-	if (collidedY)
-	{
-
-
-	} 
-
-	if (collidedZ)
-	{
-
-
-
-	}
-
-
-	if (collidedX || collidedY || collidedZ) 
-	{
-		//0. set acceleration
-		obj1->getPhysicsModel()->accel = Vec3f(0, 0, 0);
-		obj2->getPhysicsModel()->accel = Vec3f(0, 0, 0);
 	}
 
 }
