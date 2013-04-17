@@ -43,10 +43,12 @@ bool PlayerSObj::update() {
 	//rt.y += istat.rotVert;
 	//pm->ref->setRot(rt);
 	//pm->ref->setRot(Rot_t(0, 0, istat.rotAngle));
-	float newAngle = rt.y + istat.rotHoriz;
-	if (newAngle > 6.2832 || newAngle < -6.2832) newAngle = 0; // TODO DEFINE then defs 
-	printf("New angle is %f                                                            \r", newAngle);
-	pm->ref->setRot(Rot_t(0, newAngle, 0));
+	float yaw = rt.y + istat.rotHoriz,
+		  pitch = rt.x + istat.rotVert;
+	if (yaw > 6.2832 || yaw < -6.2832) yaw = 0; // TODO DEFINE then defs 
+	if (pitch > 6.2832 || pitch < -6.2832) pitch = 0; // TODO DEFINE then defs 
+	printf("New angle is %f,%f                                                            \r", yaw, pitch);
+	pm->ref->setRot(Rot_t(0, yaw, 0));
 	
 	//pm->ref->setRot(Rot_t(0, istat.rotVert, istat.rotHoriz));
 #define DIV 100
@@ -57,7 +59,7 @@ bool PlayerSObj::update() {
 	float rawY = istat.yDist / DIV;
 	// TODO Check math...please xD
 //	pm->applyForce(Vec3f( (rawX * cos(newAngle)) - (rawY * sin(newAngle)), 0,(rawX * sin(newAngle)) + (rawY * cos(newAngle))));
-	pm->applyForce(Vec3f( (rawY * sin(newAngle)) + (rawX * sin(newAngle + M_PI / 2)), 0, (rawY * cos(newAngle)) + (rawX * cos(newAngle + M_PI / 2)) ));
+	pm->applyForce(Vec3f( (rawY * sin(yaw)) + (rawX * sin(yaw + M_PI / 2)), 0, (rawY * cos(yaw)) + (rawX * cos(yaw + M_PI / 2)) ));
 	
 
 	return false;

@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "DebugConsole.h"
+#define M_PI 3.14159
 
 Camera::Camera(float distance)
 {
@@ -58,6 +59,14 @@ void Camera::setYaw(float angle)
 	lastYaw = angle;
 }
 
+void Camera::setPitch(float angle)
+{
+	static float lastPitch = 0;
+	pitch(angle - lastPitch);
+	lastPitch = angle;
+}
+
+
 /**
  * Rotates up and down
   * TODO Radians PI/2
@@ -65,11 +74,11 @@ void Camera::setYaw(float angle)
 void Camera::pitch(float angle)
 {
 	// Make sure our angle is within bounds
-	if (currentPitch + angle > - 45 && currentPitch + angle < 90)
+	if (currentPitch + angle > -M_PI / 4 && currentPitch + angle < M_PI / 2)
 	{
 		// Perform a rotation around the right vector of the target
 		D3DXMATRIX pitch; // create a matrix to hold the rotation
-		D3DXMatrixRotationAxis(&pitch, &tarRight, D3DXToRadian(angle));
+		D3DXMatrixRotationAxis(&pitch, &tarRight, angle);
 
 		// Update the view vector of the camera to reflect the rotation
 		D3DXVec3TransformCoord(&camView, &camView, &pitch);
@@ -107,6 +116,7 @@ void Camera::left(float distance)
 
 void Camera::setTargetPosAndRot(const Point_t &pos, const Rot_t &rot) {
 	setYaw(rot.y);
+	setPitch(rot.x);
 	tarPos.x = pos.x;
 	tarPos.y = pos.y;
 	tarPos.z = pos.z;

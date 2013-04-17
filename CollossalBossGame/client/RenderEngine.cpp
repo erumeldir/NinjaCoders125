@@ -103,11 +103,12 @@ void RenderEngine::renderInitalization()
 	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 	D3DXMATRIX matProj;
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 200.0f );
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 1000.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
 	direct3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_XRGB(80,80,80) );
+	direct3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 
 	// Fill in a light structure defining our light
 	D3DLIGHT9 light;

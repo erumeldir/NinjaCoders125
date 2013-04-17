@@ -33,6 +33,7 @@ public:
 
 	// Absolute position/rotation
 	void setYaw(float angle); // left-right rotation
+	void setPitch(float angle);
 	void setTargetPosAndRot(const Point_t &pos, const Rot_t &rot);	//Sets position and rotation of the target
 
 	D3DXMATRIX* getViewMatrix() { return &viewMatrix; }
