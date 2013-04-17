@@ -43,6 +43,7 @@ public:
 
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
+	ID3DXFont* direct3dText; // the pointer to the device class
 
 	D3DXMATRIX getViewOffset() { return camera; }
 
@@ -50,6 +51,8 @@ public:
 	
 	Camera * getCamera() { return cam; }
 	void updateCamera(const Point_t &pos, const Rot_t &rot);
+
+	const char* hudText;
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
@@ -59,6 +62,8 @@ private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
+	void drawHUD();
+	void HUDInitialization();
 
 	RenderEngine();
 	virtual ~RenderEngine();
