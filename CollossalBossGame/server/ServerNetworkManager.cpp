@@ -135,20 +135,25 @@ SOCKET ServerNetworkManager::getSocketById(int cid) {
 void ServerNetworkManager::update() {
 	// get new clients
 	do {
-		if(acceptNewClient(client_id)) {
+		unsigned int temp_c_id = client_id;
+		if(acceptNewClient(temp_c_id)) {
 			DC::get()->print("client %d has been connected to the server\n",client_id);
-
-			// Create a Test Server Object for them (for now)
-			SOM *som = SOM::get();
-			// Ok, since we should only have one object on both sides, the id's will match
-			// but how do we get them matching later? maybe the server should send
-			// the client the id back or something?
-			PlayerSObj * o = new PlayerSObj(som->genId());
-			som->add(o);
-
+			PlayerSObj * o;
+			if(temp_c_id == client_id) {
+				// Create a Test Server Object for them (for now)
+				SOM *som = SOM::get();
+				// Ok, since we should only have one object on both sides, the id's will match
+				// but how do we get them matching later? maybe the server should send
+				// the client the id back or something?
+				o = new PlayerSObj(som->genId());
+				som->add(o);
+				sessionsobjid.insert( pair<unsigned int, unsigned int>(temp_c_id, o->getId()) );
+			} else {
+				o = reinterpret_cast<PlayerSObj *>(SOM::get()->find(sessionsobjid.find(temp_c_id)->second));
+			}
 			// TODO Send generated player id back to client
 			char data[sizeof(Packet)];
-			SOCKET currentSocket = getSocketById(client_id);
+			SOCKET currentSocket = getSocketById(temp_c_id);
 			Packet packet;
 			packet.packet_type = INIT_CONNECTION;
 			packet.object_id = o->getId();//client_id;
@@ -168,9 +173,11 @@ void ServerNetworkManager::update() {
 			}
 			
 			DC::get()->print("client %d has been assigned client_id... Moving onto the rest of the loop.\n",client_id);
-			client_id++;
+			if(temp_c_id == client_id) {
+				client_id++;
+			}
 		}
-	} while (client_id == 0);
+	} while (sessions.empty());
 	// Collect data from clients
     receiveFromClients();
 	iteration++;
@@ -181,15 +188,23 @@ void ServerNetworkManager::receiveFromClients() {
     Packet packet;
     // go through all clients
     std::map<unsigned int, SOCKET>::iterator iter;
-    for(iter = sessions.begin(); iter != sessions.end(); iter++) {
+    for(iter = sessions.begin(); iter != sessions.end(); ) {
         int data_length = receiveData(iter->first, network_data);
 
 		// TODO FOR NOW: CHANGE? loop until you get data from a client....
         while (data_length <= 0) { //no data recieved
             //continue;
 			data_length = receiveData(iter->first, network_data);
+			if(data_length == CUSTOM_CLIENT_CRASH_ERROR_CODE) {
+				break;
+			}
         }
-
+		if(data_length == CUSTOM_CLIENT_CRASH_ERROR_CODE) {
+			int cli_id = iter->first;
+			iter++;
+			sessions.erase(sessions.find(cli_id));
+			continue;
+		}
         int i = 0;
         while ((unsigned int)i < (unsigned int)data_length) {
             packet.deserialize(&(network_data[i]));
@@ -229,6 +244,7 @@ void ServerNetworkManager::receiveFromClients() {
                     break;
             }
         }
+		iter++;
     }
 }
 
@@ -239,15 +255,26 @@ void ServerNetworkManager::receiveFromClients() {
 */
 bool ServerNetworkManager::acceptNewClient(unsigned int & id) {
     // if client waiting, accept the connection and save the socket
-    ClientSocket = accept(ListenSocket,NULL,NULL);
-
+	int socklen = sizeof(sockaddr_in);
+	sockaddr_in service;
+	SecureZeroMemory(&service, socklen);
+    ClientSocket = accept(ListenSocket, reinterpret_cast<sockaddr *>(&service), &socklen);
     if (ClientSocket != INVALID_SOCKET) {
+		// cout << (int)service.sin_addr.S_un.S_un_b.s_b1 << (int)service.sin_addr.S_un.S_un_b.s_b2 << (int)service.sin_addr.S_un.S_un_b.s_b3 << (int)service.sin_addr.S_un.S_un_b.s_b4 << endl;
+		// cout << service.sin_addr.S_un.S_addr << endl;
         //disable nagle on the client's socket
         char value = 1;
         setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 
-        // insert new client into session id table
-        sessions.insert( pair<unsigned int, SOCKET>(id, ClientSocket) );
+		// Reconnection Logic
+		if(sessionsip.count(service.sin_addr.S_un.S_addr) > 0){
+			id = sessionsip.find(service.sin_addr.S_un.S_addr)->second;
+			sessions.insert( pair<unsigned int, SOCKET>(id, ClientSocket) );
+		} else {
+			// insert new client into session id table
+			sessions.insert( pair<unsigned int, SOCKET>(id, ClientSocket) );
+			sessionsip.insert( pair<long, unsigned int>(service.sin_addr.S_un.S_addr, id) );
+		}
         return true;
     }
     return false;
@@ -262,6 +289,16 @@ int ServerNetworkManager::receiveData(unsigned int c_id, char * recvbuf) {
             DC::get()->print("Connection closed\n");
             closesocket(currentSocket);
         }
+		if(iResult == SOCKET_ERROR) {
+			int err = WSAGetLastError();
+			if(err == 10056 || err == 10035) {
+				// Do Nothing
+			} else {
+				DC::get()->print("Client %d dropped.\n", c_id);
+				closesocket(currentSocket);
+				return CUSTOM_CLIENT_CRASH_ERROR_CODE;
+			}
+		}
         return iResult;
     }
     return 0;
