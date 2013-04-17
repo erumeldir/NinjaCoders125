@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include "DebugConsole.h"
 
+//Constants (that we don't want to change, if we might, they should go in the config file)
+#define M_PI 3.14159
+
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
 #define SET_FLAG(flags, flag, val)   ((val) ? (flags | (1 << flag)) : (flags & ~(1 << flag)))

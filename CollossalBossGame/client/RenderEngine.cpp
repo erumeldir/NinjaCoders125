@@ -103,11 +103,12 @@ void RenderEngine::renderInitalization()
 	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 	D3DXMATRIX matProj;
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 200.0f );
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 1000.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
 	direct3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_XRGB(80,80,80) );
+	direct3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 
 	// Fill in a light structure defining our light
 	D3DLIGHT9 light;
@@ -131,12 +132,34 @@ void RenderEngine::renderInitalization()
 	
 }
 
+/**
+ * Initializes a HUD, which right now is just text, so we're 
+ * using DirectX Fonts, tutorial/explanation from here:
+ * http://www.drunkenhyena.com/cgi-bin/view_cpp_article.pl?chapter=3;article=17
+ * Author(s): Suman, Haro
+ */
+void RenderEngine::HUDInitialization() {
+	HRESULT hr = D3DXCreateFont(this->direct3dDevice,     //D3D Device
+				                22,                       //Font height
+								0,					      //Font width
+								FW_NORMAL,                //Font Weight
+								1,                        //MipLevels
+								false,                    //Italic
+								DEFAULT_CHARSET,          //CharSet
+								OUT_DEFAULT_PRECIS,       //OutputPrecision
+								ANTIALIASED_QUALITY,      //Quality
+								DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
+								"Arial",                  //pFacename,
+								&this->direct3dText);     //ppFont
+}
+
 /*
  * Initialize DirectX and any other rendering libraries that we may have.
  */
 RenderEngine::RenderEngine() {
 	startWindow();
 	renderInitalization();	//start initialization
+	HUDInitialization();
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
 	// Initial Positioning 
@@ -150,28 +173,13 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixIdentity(&camera);
 
 	cam = new Camera(100); // TODO config!!
+	hudText = "DEFAULT";
 }
 
-void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
+
+void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
 {
-#if 0
-	D3DXMATRIX trans, xrot, yrot, zrot;
-
-	D3DXMatrixIdentity(&trans);
-	D3DXMatrixIdentity(&xrot);
-	D3DXMatrixIdentity(&yrot);
-	D3DXMatrixIdentity(&zrot);
-
-	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
-	D3DXMatrixRotationY(&xrot, rot.x);
-	D3DXMatrixRotationY(&yrot, rot.y);
-	D3DXMatrixRotationY(&zrot, rot.z);
-	camera = world * trans * xrot * yrot * zrot;
-#endif
-}
-
-void RenderEngine::updateCamera()
-{
+	cam->setTargetPosAndRot(pos, rot);
 	// Update the camera view matrix
 	cam->viewTarget();
 	// Tell D3D to set the view matrix
@@ -185,7 +193,23 @@ void RenderEngine::updateCamera()
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
+	direct3dText->Release(); // close and release the Text
 	delete cam;
+}
+
+void RenderEngine::drawHUD() {
+	RECT font_rect;
+
+   //A pre-formatted string showing the current frames per second
+	// TODO Coordinates config
+   SetRect(&font_rect,10,10,SCREEN_WIDTH,SCREEN_HEIGHT);
+
+   this->direct3dText->DrawText(NULL,        //pSprite
+                                hudText,	 //pString
+                                -1,          //Count
+                                &font_rect,  //pRect
+                                DT_LEFT|DT_NOCLIP,//Format,
+                                0xFF000000); //Color
 }
 
 /*where we actually draw a scene
@@ -217,10 +241,13 @@ void RenderEngine::render() {
 
 	// do 3D rendering on the back buffer here
 	sceneDrawing();
+	drawHUD();
 
 	direct3dDevice->EndScene(); // ends the 3D scene
 
-	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+	HRESULT hr=direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+
+	hr = direct3dDevice->TestCooperativeLevel();
 }
 
 #define TIME_SINCE_LAST_UPDATE 4
@@ -233,26 +260,6 @@ void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
 	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
 }
-
-void RenderEngine::setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up) {
-	
-
-	//camPos = pos;
-	camPos.x = pos.x;
-	camPos.y = pos.y;
-	camPos.z = pos.z;
-	//camLookAt = lookAt;
-	camLookAt.x = lookAt.x;
-	camLookAt.y = lookAt.y;
-	camLookAt.z = lookAt.z;
-	//camUp = up;
-	camUp.x = up.x;
-	camUp.y = up.y;
-	camUp.z = up.z;
-	D3DXMatrixLookAtLH( &camera, &camPos, &camLookAt, &camUp );
-	RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &camera);
-}
-
 
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)

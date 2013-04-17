@@ -16,5 +16,6 @@ public:
 
 private:
 	RenderModel *rm;
+	float cameraPitch;
 };
 

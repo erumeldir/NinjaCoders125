@@ -1,7 +1,7 @@
 #pragma once
 #include "defs.h"
 #include "Frame.h"
-#define AIR_FRICTION 1.3f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.1f	//A bit excessive, but it works for now
 #define UNITOFHALFLENGTH 25		//as in half the length of a box
 
 /* Bounding Enum

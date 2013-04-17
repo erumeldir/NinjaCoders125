@@ -18,6 +18,8 @@ public:
 	void run();
 	void exit(int i = 0);
 
+	static XboxController *getController() { return ce->xctrl; }
+
 private:
 	//Constructors/destructors are private
 	ClientEngine();

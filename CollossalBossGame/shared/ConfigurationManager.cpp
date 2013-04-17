@@ -158,10 +158,10 @@ bool ConfigurationManager::find_config_as_bool(string key) {
 	int index = find_config_index(key);
 	string boolean((const char *)&(valuetable[index][0]), valuelen[index]);
 	std::transform(boolean.begin(), boolean.end(), boolean.begin(), ::tolower);
-	if(boolean.compare("true")) {
+	if(comp(boolean, "true", 4)) {
 		return true;
 	}
-	if(boolean.compare("false")) {
+	if(comp(boolean, "false", 5)) {
 		return false;
 	}
 	assert(false && "Invalid Configuration value as boolean.");

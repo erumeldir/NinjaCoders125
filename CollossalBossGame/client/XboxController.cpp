@@ -2,10 +2,9 @@
 #include "ClientObjectManager.h"
 #include "XboxController.h"
 #include "Action.h"
+#include "defs.h"
 #include <stdio.h>
 #include <math.h>
-
-#define M_PI 3.14159
 
 /*
  * XBOX Controller
@@ -70,6 +69,10 @@ void XboxController::sendInput() {
 		if (fabs(x2) > DEADZONE)
 		{
 			istat.rotHoriz = atan(x2 / (JOY_MAX * 16));
+		}
+		if (fabs(y2) > DEADZONE)
+		{
+			istat.rotVert = atan(y2 / (JOY_MAX * 16));
 		}
 
 		/*istat.rotHoriz = 0;

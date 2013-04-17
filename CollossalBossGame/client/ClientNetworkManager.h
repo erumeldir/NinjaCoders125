@@ -36,6 +36,8 @@ private:
 
 	static ClientNetworkManager CNM;
 	static unsigned int exper;
+	unsigned int iteration_count;
+	unsigned int response_packet_number;
 };
 
 #endif
