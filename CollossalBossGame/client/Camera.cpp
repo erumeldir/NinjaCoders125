@@ -1,5 +1,5 @@
 #include "Camera.h"
-
+#include "DebugConsole.h"
 
 Camera::Camera(float distance)
 {
@@ -105,17 +105,13 @@ void Camera::left(float distance)
 	tarPos += movVec;
 }
 
-void Camera::setX(float x)
-{
-	float oldX = D3DXVec3Dot(&tarPos, &tarRight);
-	right(x - oldX);
+void Camera::setTargetPosAndRot(const Point_t &pos, const Rot_t &rot) {
+	setYaw(rot.y);
+	tarPos.x = pos.x;
+	tarPos.y = pos.y;
+	tarPos.z = pos.z;
 }
 
-void Camera::setZ(float z)
-{
-	float oldZ = D3DXVec3Dot(&tarPos, &tarView);
-	forward(z - oldZ);
-}
 
 /**
  * Updates view matrix
@@ -141,6 +137,8 @@ void Camera::viewTarget()
 	D3DXVec3Normalize(&camRight, &camRight);
 
 	// Calculate camera position
+	//DC::get()->print("camView: %f , %f , %f \n", camView.x, camView.y, camView.z);
+	//DC::get()->print("camPos: (%f , %f , %f)\tarPos: (%f, %f, %f) \n", camPos.x, camPos.y, camPos.z, tarPos.x, tarPos.y, tarPos.z);
 	camPos = tarPos - (viewDistance * camView);
 
 	// Construct the matrix based on the matrix defined in the first section

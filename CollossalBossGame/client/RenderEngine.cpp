@@ -152,26 +152,10 @@ RenderEngine::RenderEngine() {
 	cam = new Camera(100); // TODO config!!
 }
 
-void RenderEngine::setCameraPos(const Point_t &pos, const Rot_t &rot)
+
+void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
 {
-#if 0
-	D3DXMATRIX trans, xrot, yrot, zrot;
-
-	D3DXMatrixIdentity(&trans);
-	D3DXMatrixIdentity(&xrot);
-	D3DXMatrixIdentity(&yrot);
-	D3DXMatrixIdentity(&zrot);
-
-	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
-	D3DXMatrixRotationY(&xrot, rot.x);
-	D3DXMatrixRotationY(&yrot, rot.y);
-	D3DXMatrixRotationY(&zrot, rot.z);
-	camera = world * trans * xrot * yrot * zrot;
-#endif
-}
-
-void RenderEngine::updateCamera()
-{
+	cam->setTargetPosAndRot(pos, rot);
 	// Update the camera view matrix
 	cam->viewTarget();
 	// Tell D3D to set the view matrix
@@ -233,26 +217,6 @@ void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
 	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
 }
-
-void RenderEngine::setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up) {
-	
-
-	//camPos = pos;
-	camPos.x = pos.x;
-	camPos.y = pos.y;
-	camPos.z = pos.z;
-	//camLookAt = lookAt;
-	camLookAt.x = lookAt.x;
-	camLookAt.y = lookAt.y;
-	camLookAt.z = lookAt.z;
-	//camUp = up;
-	camUp.x = up.x;
-	camUp.y = up.y;
-	camUp.z = up.z;
-	D3DXMatrixLookAtLH( &camera, &camPos, &camLookAt, &camUp );
-	RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &camera);
-}
-
 
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)

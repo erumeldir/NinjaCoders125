@@ -56,7 +56,8 @@ bool PlayerSObj::update() {
 	float rawX = istat.xDist / DIV;
 	float rawY = istat.yDist / DIV;
 	// TODO Check math...please xD
-	pm->applyForce(Vec3f( (rawX * cos(newAngle)) - (rawY * sin(newAngle)), 0,(rawX * sin(newAngle)) + (rawY * cos(newAngle))));
+//	pm->applyForce(Vec3f( (rawX * cos(newAngle)) - (rawY * sin(newAngle)), 0,(rawX * sin(newAngle)) + (rawY * cos(newAngle))));
+	pm->applyForce(Vec3f( (rawY * sin(newAngle)) + (rawX * sin(newAngle + M_PI / 2)), 0, (rawY * cos(newAngle)) + (rawX * cos(newAngle + M_PI / 2)) ));
 	
 
 	return false;

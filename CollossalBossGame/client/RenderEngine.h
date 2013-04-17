@@ -49,11 +49,7 @@ public:
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
-	void updateCamera();
-
-	void setCameraPos(const Point_t &pos, const Point_t &rot);
-
-	void setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up);
+	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);

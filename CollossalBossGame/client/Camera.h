@@ -4,6 +4,7 @@
 #pragma comment (lib, "d3d9.lib")
 #pragma comment (lib, "d3dx9d.lib")
 #include <d3dx9.h>
+#include "defs.h"
 
 /**
  * Camera that follows player around
@@ -31,9 +32,8 @@ public:
 	void right(float distance); // Move right
 
 	// Absolute position/rotation
-	void setX(float x);
-	void setZ(float z);
 	void setYaw(float angle); // left-right rotation
+	void setTargetPosAndRot(const Point_t &pos, const Rot_t &rot);	//Sets position and rotation of the target
 
 	D3DXMATRIX* getViewMatrix() { return &viewMatrix; }
 

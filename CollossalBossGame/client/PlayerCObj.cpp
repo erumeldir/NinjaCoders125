@@ -21,16 +21,8 @@ bool PlayerCObj::update() {
 	if(COM::get()->player_id == getId()) {
 		Point_t objPos = rm->getFrameOfRef()->getPos();
 		Rot_t objDir = rm->getFrameOfRef()->getRot();
-		/*int factor = 100;
-		Point_t camPos(objPos.x, objPos.y, objPos.z - factor);
-		RE::get()->setCameraInfo(objPos, camPos, Point_t(0, 1, 0));*/
-		//RE::get()->getCamera()->forward(objPos.z);
-		RE::get()->getCamera()->setYaw(objDir.y);
-		RE::get()->getCamera()->setZ(objPos.z);
-		RE::get()->getCamera()->setX(objPos.x);
-		//RE::get()->getCamera()->yaw(objDir.y);
-		
-		RE::get()->updateCamera();
+
+		RE::get()->updateCamera(objPos, objDir);
 	}
 	return false;
 }
