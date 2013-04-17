@@ -2,10 +2,9 @@
 #include "ClientObjectManager.h"
 #include "XboxController.h"
 #include "Action.h"
+#include "defs.h"
 #include <stdio.h>
 #include <math.h>
-
-#define M_PI 3.14159
 
 /*
  * XBOX Controller

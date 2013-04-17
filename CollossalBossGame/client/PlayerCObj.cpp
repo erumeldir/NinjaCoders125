@@ -3,8 +3,8 @@
 #include "NetworkData.h"
 #include "ClientObjectManager.h"
 #include "ClientEngine.h"
+#include "defs.h"
 #include <math.h>
-#define M_PI 3.14159 // TODO We should move this out somewhere
 
 PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id)

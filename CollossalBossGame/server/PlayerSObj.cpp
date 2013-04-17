@@ -1,5 +1,5 @@
 #include "PlayerSObj.h"
-#define M_PI 3.14159
+#include "defs.h"
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);

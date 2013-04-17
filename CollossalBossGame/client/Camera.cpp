@@ -1,6 +1,5 @@
 #include "Camera.h"
 #include "DebugConsole.h"
-#define M_PI 3.14159
 
 Camera::Camera(float distance)
 {
