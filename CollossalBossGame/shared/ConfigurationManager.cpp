@@ -175,7 +175,7 @@ int ConfigurationManager::find_config_index(string key) {
 		}
 	}
 	cout << key << endl;
-	assert(false && "Could not find configuration key specified.");
+	assert(false && "Could not find configuration key specified. DELETE YOUR Config_dev.ini FILE TO USE THE LATEST CONFIGS!");
 	return NULL;
 }
 
