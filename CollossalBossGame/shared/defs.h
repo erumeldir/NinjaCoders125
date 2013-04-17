@@ -33,11 +33,35 @@ typedef struct Vec3f {
 			this->y - rhs.y, 
 			this->z - rhs.z);
 	}
+	
+	Vec3f operator+	(Vec3f rhs) {
+		return Vec3f(this->x + rhs.x, 
+			this->y + rhs.y, 
+			this->z + rhs.z);
+	}
+
+	Vec3f operator*	(float rhs) {
+		return Vec3f(this->x * rhs, 
+			this->y * rhs, 
+			this->z * rhs);
+	}
 
 	Vec3f operator/	(float rhs) {
 		return Vec3f(this->x / rhs, 
 			this->y / rhs, 
 			this->z / rhs);
+	}
+
+	Vec3f operator*	(Vec3f rhs) {
+		return Vec3f(this->x * rhs.x, 
+			this->y * rhs.y, 
+			this->z * rhs.z);
+	}
+
+	Vec3f operator/	(Vec3f rhs) {
+		return Vec3f(this->x / rhs.x, 
+			this->y / rhs.y, 
+			this->z / rhs.z);
 	}
 
 } Point_t, Rot_t;

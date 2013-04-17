@@ -96,11 +96,22 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		float direction = (obj1->getPhysicsModel()->mass - obj2->getPhysicsModel()->mass) 
 								/(obj1->getPhysicsModel()->mass + obj2->getPhysicsModel()->mass);
 
-		//Note: if direction is 0, then half of obj1's momentum is transferred to obj2.
-		// this forms our anchor point. we got the percent difference of mass as an
-		// easy way to adjust this number..
-		direction = direction + .5f;
+		//Now we have two tasks: set the positions of the objects appropriately (A) and 
+		// setting the velocities appropriately (B)
 
+		//A. Set the positions, which we'll base on the difference.
+		//1. We need the difference that we need to make up. 
+		Vec3f dif = Vec3f (r1+r2 - distX, r1+r2 - distY, r1+r2 - distZ);
+
+		//2. the amounts that we need to move
+		Vec3f move1 = (obj1->getPhysicsModel()->vel / (obj1->getPhysicsModel()->vel + obj2->getPhysicsModel()->vel)) * dif;
+		Vec3f move2 = (obj2->getPhysicsModel()->vel / (obj1->getPhysicsModel()->vel + obj2->getPhysicsModel()->vel)) * dif;
+
+		//3. do the movement
+		obj1->getPhysicsModel()->vel = obj1->getPhysicsModel()->vel - move1;
+		obj2->getPhysicsModel()->vel = obj2->getPhysicsModel()->vel - move2;
+
+		//B. Set the velocities
 		obj1->getPhysicsModel()->vel.x = obj1->getPhysicsModel()->vel.x * direction;
 		obj1->getPhysicsModel()->vel.y = obj1->getPhysicsModel()->vel.y * direction;
 		obj1->getPhysicsModel()->vel.z = obj1->getPhysicsModel()->vel.z * direction;
@@ -115,7 +126,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		//Overriding crazy! Also storing the final velocity in it
 		obj2->getPhysicsModel()->vel = moment/obj1->getPhysicsModel()->mass;
 
-
 	}
+
 }
 
