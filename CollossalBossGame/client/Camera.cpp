@@ -68,7 +68,6 @@ void Camera::setPitch(float angle)
 
 /**
  * Rotates up and down
-  * TODO Radians PI/2
  */
 void Camera::pitch(float angle)
 {

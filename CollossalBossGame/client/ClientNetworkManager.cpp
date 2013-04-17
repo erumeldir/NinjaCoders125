@@ -140,7 +140,6 @@ ClientNetworkManager::~ClientNetworkManager(void) {
 
 int ClientNetworkManager::receivePackets(char * recvbuf) 
 {
-	// TODO: Check to see if MAX_PACKET_SIZE will cause problems here.
     iResult = NetworkServices::receiveMessage(ConnectSocket, recvbuf, MAX_PACKET_SIZE);
 
     if ( iResult == 0 )
@@ -163,7 +162,6 @@ void ClientNetworkManager::update()
     Packet packet;
     int data_length = receivePackets(network_data);
 
-	// TODO All right, so this is in lock step right now, maybe change it?
     while (data_length <= 0) 
     {
         //no data recieved

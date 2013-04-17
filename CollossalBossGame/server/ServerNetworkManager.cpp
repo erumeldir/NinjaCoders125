@@ -151,7 +151,7 @@ void ServerNetworkManager::update() {
 			} else {
 				o = reinterpret_cast<PlayerSObj *>(SOM::get()->find(sessionsobjid.find(temp_c_id)->second));
 			}
-			// TODO Send generated player id back to client
+
 			this->getSendBuffer();	// Need to call this before each send, regardless of whether or not you have a message.
 			this->sendToClient(sessions[temp_c_id], INIT_CONNECTION, o->getId(), 0);			
 			DC::get()->print("client %d has been assigned client_id... Moving onto the rest of the loop.\n",client_id);
@@ -173,7 +173,6 @@ void ServerNetworkManager::receiveFromClients() {
     for(iter = sessions.begin(); iter != sessions.end(); ) {
         int data_length = receiveData(iter->first, network_data);
 
-		// TODO FOR NOW: CHANGE? loop until you get data from a client....
         while (data_length <= 0) { //no data recieved
             //continue;
 			data_length = receiveData(iter->first, network_data);
@@ -209,17 +208,10 @@ void ServerNetworkManager::receiveFromClients() {
 					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
 					destObject = SOM::get()->find(packet.object_id);
 
-					// TODO handshake to set up player object, so this shouldn't happen after that
 					if (destObject != NULL) {
 						destObject->deserialize(packet.packet_data);
 					}
-					//memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 
-					// Re-send what you gave me xD (wow, we're a useful server =P)
-					/*char packet_data[sizeof(Packet)];
-					packet.serialize(packet_data);
-					sendToAll(packet_data, sizeof(packet));*/
-                    // sendActionPackets();
                     break;
                 default:
                     DC::get()->print("error in packet types\n");

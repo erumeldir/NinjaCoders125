@@ -11,6 +11,7 @@
 
 //Constants (that we don't want to change, if we might, they should go in the config file)
 #define M_PI 3.14159
+#define M_TAU 6.2832
 
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
