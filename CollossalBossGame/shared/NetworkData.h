@@ -66,6 +66,7 @@ enum Model {
 enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
+	OBJ_ARENA,
 	NUM_OBJS
 };
 

@@ -79,6 +79,7 @@
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
     <ClCompile Include="TestObject.cpp" />
+    <ClCompile Include="WallCObj.cpp" />
     <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +92,7 @@
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
     <ClInclude Include="TestObject.h" />
+    <ClInclude Include="WallCObj.h" />
     <ClInclude Include="XAnimator\XAnimator_lib.h" />
     <ClInclude Include="XboxController.h" />
   </ItemGroup>

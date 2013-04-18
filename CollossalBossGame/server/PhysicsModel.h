@@ -6,13 +6,14 @@
 //All physics data should be known to the frames
 struct PhysicsModel
 {
-	PhysicsModel(Point_t pos, Rot_t rot, float mass) {
+	PhysicsModel(Point_t pos, Rot_t rot, float mass, bool isStatic = false) {
 		ref = new Frame(pos,rot);
 //		appliedAccel = Vec3f();
 		vel = Vec3f();
 		accel = Vec3f();
 		this->mass = mass;
 		frictCoeff = GROUND_FRICTION;
+		this->isStatic = isStatic;
 	}
 
 	virtual ~PhysicsModel() {
@@ -38,4 +39,5 @@ struct PhysicsModel
 	float frictCoeff;	//Friction coefficient
 	Vec3f frictNorm;	//Normal on which the friction will be applied
 	bool onGround;
+	bool isStatic;
 };

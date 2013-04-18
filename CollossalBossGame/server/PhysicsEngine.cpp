@@ -25,6 +25,8 @@ PhysicsEngine::~PhysicsEngine(void)
 bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	float dt = TIMESTEP;
 
+	if(mdl->isStatic) return true;
+
 	//Apply additional forces, such as gravity and friction.
 	// We are ignoring both for now and applying a half-assed version of
 	// friction when we update the velocity.
