@@ -3,6 +3,10 @@
 #include "defs.h"
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
+	// Configuration options
+	jumpDist = CM::get()->find_config_as_int("JUMP_DIST");
+	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
+
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	pm = new PhysicsModel(Point_t(0,0,0), Rot_t(), CM::get()->find_config_as_int("PLAYER_MASS"));
@@ -33,7 +37,7 @@ bool PlayerSObj::update() {
 		// Determine attack logic here
 	}
 	if (istat.jump && pm->onGround) {
-		yDist = CM::get()->find_config_as_int("JUMP_DIST");
+		yDist = jumpDist;
 	}
 	if (istat.specialPower) {
 		// Determine special power logic here
@@ -46,7 +50,7 @@ bool PlayerSObj::update() {
 	if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
 	pm->ref->setRot(Rot_t(0, yaw, 0));
 	
-	int divBy = CM::get()->find_config_as_int("MOV_DAMP");
+	int divBy = movDamp;
 	float rawRight = istat.rightDist / divBy;
 	float rawForward = istat.forwardDist / divBy;
 

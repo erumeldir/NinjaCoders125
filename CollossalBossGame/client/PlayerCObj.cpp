@@ -20,6 +20,7 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 PlayerCObj::~PlayerCObj(void)
 {
 	delete rm;
+	CE::get()->exit();
 }
 
 void PlayerCObj::showStatus()

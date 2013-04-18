@@ -26,7 +26,7 @@ void gameInit() {
 
 	for (int i=0; i< 10; i++)
 	{
-	//	som->add(new TestSObj(som->genId(), MDL_1, Point_t(), TEST_WEST));
+		som->add(new TestSObj(som->genId(), MDL_1, Point_t(), TEST_WEST));
 	}
 
 	// Build arena (todo maybe these should be planeObjects? ArenaObjects?)

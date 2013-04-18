@@ -158,22 +158,19 @@ void RenderEngine::HUDInitialization() {
  * Initialize DirectX and any other rendering libraries that we may have.
  */
 RenderEngine::RenderEngine() {
+	// Set configuration options
+	cameraDist = CM::get()->find_config_as_int("CAM_DIST");
+	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
+	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
+
 	startWindow();
 	renderInitalization();	//start initialization
 	HUDInitialization();
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
-	// Initial Positioning 
-	xpos = 10;
-	ypos = -200;
-	zpos = 200;
-
-	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
-	
 	D3DXMatrixIdentity(&world);
-	D3DXMatrixIdentity(&camera);
 
-	cam = new Camera(CM::get()->find_config_as_int("CAM_DIST"));
+	cam = new Camera(cameraDist);
 	hudText = "DEFAULT";
 }
 
@@ -203,8 +200,8 @@ void RenderEngine::drawHUD() {
 
    //A pre-formatted string showing the current frames per second
 	SetRect(&font_rect,
-			CM::get()->find_config_as_int("HUD_TOP_X"),
-			CM::get()->find_config_as_int("HUD_TOP_Y"),
+			hudTopX,
+			hudTopY,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
 
