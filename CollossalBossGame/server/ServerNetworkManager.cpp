@@ -135,7 +135,7 @@ SOCKET ServerNetworkManager::getSocketById(int cid) {
 void ServerNetworkManager::update() {
 	// get new clients
 	do {
-		unsigned int temp_c_id = client_id;
+		unsigned int temp_c_id = client_id, obj_id = 0;
 		if(acceptNewClient(temp_c_id)) {
 			DC::get()->print("client %d has been connected to the server\n",client_id);
 			PlayerSObj * o;
@@ -146,17 +146,21 @@ void ServerNetworkManager::update() {
 				// but how do we get them matching later? maybe the server should send
 				// the client the id back or something?
 				o = new PlayerSObj(som->genId());
+				obj_id = o->getId();
 				som->add(o);
-				sessionsobjid.insert( pair<unsigned int, unsigned int>(temp_c_id, o->getId()) );
+				sessionsobjid.insert( pair<unsigned int, unsigned int>(temp_c_id, obj_id) );
 			} else {
 				o = reinterpret_cast<PlayerSObj *>(SOM::get()->find(sessionsobjid.find(temp_c_id)->second));
+				if(o != NULL) {
+					obj_id = o->getId();
+				}
 			}
 			// TODO Send generated player id back to client
 			char data[sizeof(Packet)];
 			SOCKET currentSocket = getSocketById(temp_c_id);
 			Packet packet;
 			packet.packet_type = INIT_CONNECTION;
-			packet.object_id = o->getId();//client_id;
+			packet.object_id = obj_id;
 			packet.serialize(data);
 			int loopcount = 0;
 			while(NetworkServices::sendMessage(currentSocket, data, sizeof(Packet)) == SOCKET_ERROR) {

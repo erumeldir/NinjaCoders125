@@ -63,7 +63,7 @@ void ServerObjectManager::update() {
 	for(idIter = lsObjsToDelete.begin(); idIter != lsObjsToDelete.end(); ++idIter) {
 		map<uint, ServerObject *>::iterator itObj = mObjs.find(*idIter);
 		if(itObj != mObjs.end()) {
-			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,*objIter));
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,itObj->second));
 			//ServerObject *obj = itObj->second;
 			mObjs.erase(itObj);
 			//delete obj;	We don't perform this until the object is sent

@@ -17,6 +17,9 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 PlayerCObj::~PlayerCObj(void)
 {
 	delete rm;
+
+	//Quit the game
+	CE::get()->exit();
 }
 
 bool PlayerCObj::update() {

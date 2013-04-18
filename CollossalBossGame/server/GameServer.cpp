@@ -1,6 +1,7 @@
 #include "GameServer.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
+#include "PhysicsEngine.h"
 #include "game.h"
 #include <Windows.h>
 #include <assert.h>
@@ -25,6 +26,7 @@ int main()
 	// system("pause");
 	DC::init("serverLog.txt");
 	SOM::init();
+	PE::init();
 
 	// Keep track of how long our updates take
 	time_t beginLoopTimer;
@@ -65,5 +67,6 @@ int main()
     }
 
 	SOM::clean();
+	PE::clean();
 	DC::clean();
 }
