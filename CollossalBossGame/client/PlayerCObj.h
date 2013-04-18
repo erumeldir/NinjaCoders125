@@ -8,6 +8,8 @@ public:
 	PlayerCObj(uint id, char *data);
 	virtual ~PlayerCObj(void);
 
+	void showStatus();
+
 	virtual bool update();
 
 	virtual RenderModel* getRenderModel() { return rm; }
@@ -15,6 +17,7 @@ public:
 	virtual void deserialize(char* newState);
 
 private:
+	int health;
 	RenderModel *rm;
 	float cameraPitch;
 };

@@ -110,6 +110,7 @@ void ServerObjectManager::sendState()
 {
 	char *buf;
 	int datalen;
+	int totalData = 0;
 	for(list<pair<CommandTypes,ServerObject*> >::iterator it = lsObjsToSend.begin();
 			it != lsObjsToSend.end(); ++it) {
 		//Initialize the buffer with the object header
@@ -123,6 +124,7 @@ void ServerObjectManager::sendState()
 
 			//Serialize the object
 			datalen = it->second->serialize(buf + sizeof(CreateHeader)) + sizeof(CreateHeader);
+			totalData += datalen;
 			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
 			break;
 			}
@@ -133,6 +135,9 @@ void ServerObjectManager::sendState()
 		}
 	}
 	lsObjsToSend.clear();
+	//DC::get()->print("Total data sent to client is %d\n", totalData);
+	SNM::get()->getSendBuffer();
+	SNM::get()->sendToAll(COMPLETE, 0);
 /*
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();

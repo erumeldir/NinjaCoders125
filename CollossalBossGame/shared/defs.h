@@ -9,6 +9,10 @@
 #include <stdio.h>
 #include "DebugConsole.h"
 
+//Constants (that we don't want to change, if we might, they should go in the config file)
+#define M_PI 3.14159
+#define M_TAU 6.2832
+
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
 #define SET_FLAG(flags, flag, val)   ((val) ? (flags | (1 << flag)) : (flags & ~(1 << flag)))
@@ -25,6 +29,9 @@ typedef struct Vec3f {
 		this->x = x;
 		this->y = y;
 		this->z = z;
+	}
+	Vec3f operator*(float rhs) {
+		return Vec3f(this->x*rhs, this->y*rhs, this->z*rhs);
 	}
 	float x, y, z;
 } Point_t, Rot_t;

@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "RenderModel.h"
 #include "ClientObjectManager.h"
+#include "ConfigurationManager.h"
 #include <mmsystem.h>
 
 #if defined(DEBUG) | defined(_DEBUG)
@@ -132,25 +133,45 @@ void RenderEngine::renderInitalization()
 	
 }
 
+/**
+ * Initializes a HUD, which right now is just text, so we're 
+ * using DirectX Fonts, tutorial/explanation from here:
+ * http://www.drunkenhyena.com/cgi-bin/view_cpp_article.pl?chapter=3;article=17
+ * Author(s): Suman, Haro
+ */
+void RenderEngine::HUDInitialization() {
+	D3DXCreateFont(	this->direct3dDevice,     //D3D Device
+				    22,                       //Font height
+					0,					      //Font width
+					FW_NORMAL,                //Font Weight
+					1,                        //MipLevels
+					false,                    //Italic
+					DEFAULT_CHARSET,          //CharSet
+					OUT_DEFAULT_PRECIS,       //OutputPrecision
+					ANTIALIASED_QUALITY,      //Quality
+					DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
+					"Georgia",                //pFacename,
+					&this->direct3dText);     //ppFont
+}
+
 /*
  * Initialize DirectX and any other rendering libraries that we may have.
  */
 RenderEngine::RenderEngine() {
+	// Set configuration options
+	cameraDist = CM::get()->find_config_as_int("CAM_DIST");
+	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
+	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
+
 	startWindow();
 	renderInitalization();	//start initialization
+	HUDInitialization();
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
-	// Initial Positioning 
-	xpos = 10;
-	ypos = -200;
-	zpos = 200;
-
-	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
-	
 	D3DXMatrixIdentity(&world);
-	D3DXMatrixIdentity(&camera);
 
-	cam = new Camera(100); // TODO config!!
+	cam = new Camera(cameraDist);
+	hudText = "DEFAULT";
 }
 
 
@@ -170,7 +191,26 @@ void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
+	direct3dText->Release(); // close and release the Text
 	delete cam;
+}
+
+void RenderEngine::drawHUD() {
+	RECT font_rect;
+
+   //A pre-formatted string showing the current frames per second
+	SetRect(&font_rect,
+			hudTopX,
+			hudTopY,
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT);
+
+   this->direct3dText->DrawText(NULL,        //pSprite
+								hudText.c_str(),	 //pString
+                                -1,          //Count
+                                &font_rect,  //pRect
+                                DT_LEFT|DT_NOCLIP,//Format,
+                                0xFF000000); //Color
 }
 
 /*where we actually draw a scene
@@ -202,13 +242,15 @@ void RenderEngine::render() {
 
 	// do 3D rendering on the back buffer here
 	sceneDrawing();
+	drawHUD();
 
 	direct3dDevice->EndScene(); // ends the 3D scene
 
 	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
 }
 
-#define TIME_SINCE_LAST_UPDATE 4
+// todo take time
+#define TIME_SINCE_LAST_UPDATE 33 // 4
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);

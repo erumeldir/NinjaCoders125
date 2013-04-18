@@ -1,3 +1,5 @@
+#pragma once
+
 #include <winsock2.h>
 #include <Windows.h>
 #include "NetworkServices.h"
@@ -16,11 +18,15 @@ private:
     ~ServerNetworkManager(void);
 
 	SOCKET getSocketById(int client_id);
+	inline int initPacketBuffer(unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size);
 
 	static ServerNetworkManager SNM;	// Class Singleton
-	static unsigned int client_id;		// Unique Client Ids for each connecting client
 	char network_data[MAX_PACKET_SIZE];	// data buffer
+	char packet_buffer[MAX_PACKET_SIZE];	// data buffer
+	bool prepare_packet;
 public:
+	static unsigned int client_id;		// Unique Client Ids for each connecting client TODO private, numClients
+
 	static ServerNetworkManager * get();
 
 	void update();												// Generic Update cycle - manages buffer and connections.
@@ -28,6 +34,11 @@ public:
 	bool acceptNewClient(unsigned int & id);					// accept new connections
     int  receiveData(unsigned int client_id, char * recvbuf);	// receive incoming data
 	char* getSendBuffer();										// Fetches send buffer to fill for sending.
+	// send data to a single client
+	int sendToClient(SOCKET sock_id, unsigned int packet_type, unsigned int data_size);
+	int sendToClient(SOCKET sock_id, unsigned int packet_type, unsigned int object_id, unsigned int data_size);
+	int sendToClient(SOCKET sock_id, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size);
+	int sendToClient(SOCKET sock_id, unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size);
     // send data to all clients
 	void sendToAll(unsigned int packet_type, unsigned int data_size);
 	void sendToAll(unsigned int packet_type, unsigned int object_id, unsigned int data_size);

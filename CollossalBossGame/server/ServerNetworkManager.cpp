@@ -135,7 +135,7 @@ SOCKET ServerNetworkManager::getSocketById(int cid) {
 void ServerNetworkManager::update() {
 	// get new clients
 	do {
-		unsigned int temp_c_id = client_id, obj_id = 0;
+		unsigned int temp_c_id = client_id;
 		if(acceptNewClient(temp_c_id)) {
 			DC::get()->print("client %d has been connected to the server\n",client_id);
 			PlayerSObj * o;
@@ -146,36 +146,15 @@ void ServerNetworkManager::update() {
 				// but how do we get them matching later? maybe the server should send
 				// the client the id back or something?
 				o = new PlayerSObj(som->genId());
-				obj_id = o->getId();
 				som->add(o);
-				sessionsobjid.insert( pair<unsigned int, unsigned int>(temp_c_id, obj_id) );
+				sessionsobjid.insert( pair<unsigned int, unsigned int>(temp_c_id, o->getId()) );
 			} else {
 				o = reinterpret_cast<PlayerSObj *>(SOM::get()->find(sessionsobjid.find(temp_c_id)->second));
-				if(o != NULL) {
-					obj_id = o->getId();
-				}
 			}
-			// TODO Send generated player id back to client
-			char data[sizeof(Packet)];
-			SOCKET currentSocket = getSocketById(temp_c_id);
-			Packet packet;
-			packet.packet_type = INIT_CONNECTION;
-			packet.object_id = obj_id;
-			packet.serialize(data);
-			int loopcount = 0;
-			while(NetworkServices::sendMessage(currentSocket, data, sizeof(Packet)) == SOCKET_ERROR) {
-				int err = WSAGetLastError();
-				if(loopcount > 50 ) {
-					DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
-					closesocket(currentSocket);
-				} else if(err == 10056 || err == 10035) {
-					loopcount++;
-				} else {
-					DC::get()->print("send failed with error: %d\n", WSAGetLastError());
-					closesocket(currentSocket);
-				}
-			}
-			
+
+			this->getSendBuffer();	// Need to call this before each send, regardless of whether or not you have a message.
+			this->sendToClient(sessions[temp_c_id], INIT_CONNECTION, o->getId(), 0);			
+
 			DC::get()->print("client %d has been assigned client_id... Moving onto the rest of the loop.\n",client_id);
 			if(temp_c_id == client_id) {
 				client_id++;
@@ -195,7 +174,6 @@ void ServerNetworkManager::receiveFromClients() {
     for(iter = sessions.begin(); iter != sessions.end(); ) {
         int data_length = receiveData(iter->first, network_data);
 
-		// TODO FOR NOW: CHANGE? loop until you get data from a client....
         while (data_length <= 0) { //no data recieved
             //continue;
 			data_length = receiveData(iter->first, network_data);
@@ -214,7 +192,6 @@ void ServerNetworkManager::receiveFromClients() {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
 			// <Log Packet>
-			//cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
 			if(CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG"))
 				DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
 			// </Log Packet>
@@ -225,23 +202,13 @@ void ServerNetworkManager::receiveFromClients() {
                     break;
                 case ACTION_EVENT:
 					DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
-					//inputstatus is;
-					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
-					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
 					destObject = SOM::get()->find(packet.object_id);
 
-					// TODO handshake to set up player object, so this shouldn't happen after that
 					if (destObject != NULL) {
 						destObject->deserialize(packet.packet_data);
 					}
-					//memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 
-					// Re-send what you gave me xD (wow, we're a useful server =P)
-					/*char packet_data[sizeof(Packet)];
-					packet.serialize(packet_data);
-					sendToAll(packet_data, sizeof(packet));*/
-                    // sendActionPackets();
                     break;
                 default:
                     DC::get()->print("error in packet types\n");
@@ -310,7 +277,67 @@ int ServerNetworkManager::receiveData(unsigned int c_id, char * recvbuf) {
 
 char* ServerNetworkManager::getSendBuffer() {
 	send_buffer.clear();
+	this->prepare_packet = false;
 	return &(send_buffer.packet_data[0]);
+}
+
+int ServerNetworkManager::initPacketBuffer(unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
+	if(!prepare_packet) {
+		send_buffer.iteration = iteration;
+		send_buffer.packet_type = packet_type;
+		send_buffer.object_id = object_id;
+		send_buffer.command_type = command_type;
+		send_buffer.data_size = data_size;
+		send_buffer.packet_number = p_count;
+		send_buffer.serialize(packet_buffer);
+		prepare_packet = true;
+	}
+	p_count++;
+	return prepare_packet;
+}
+
+#pragma region Send to Client and Send to All
+
+int ServerNetworkManager::sendToClient(SOCKET sock_id, unsigned int packet_type, unsigned int data_size) {
+	return sendToClient(sock_id, iteration, packet_type, -1, CMD_UPDATE, data_size);
+}
+int ServerNetworkManager::sendToClient(SOCKET sock_id, unsigned int packet_type, unsigned int object_id, unsigned int data_size) {
+	return sendToClient(sock_id, iteration, packet_type, object_id, CMD_UPDATE, data_size);
+}
+int ServerNetworkManager::sendToClient(SOCKET sock_id, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
+	return sendToClient(sock_id, iteration, packet_type, object_id, command_type, data_size);
+}
+int ServerNetworkManager::sendToClient(SOCKET sock_id, unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
+	initPacketBuffer(iteration, packet_type, object_id, command_type, data_size);
+
+    SOCKET client_socket = sock_id;
+    int iSendResult;
+	// http://bobobobo.wordpress.com/2008/11/09/resolving-winsock-error-10035-wsaewouldblock/
+	// Issue seems to be that the buffer on the client is full, so you need to wait until all of the packets are processed.
+	// Current fix is to keep attempting to send until it succeeds, with a max iterate count so it doesn't hang
+	// NOTE: iSendResult might be less than sizeof(Packet)! Find out if this case needs to be considered.
+		// Print out a debug statement at least.
+	int loopcount = 0;
+	int err;
+    while((iSendResult = NetworkServices::sendMessage(client_socket, packet_buffer, sizeof(Packet))) == SOCKET_ERROR) {
+		err = WSAGetLastError();
+		/*if(loopcount > 50 ) {
+			DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
+			// closesocket(client_socket);
+			return 1; //break;
+		} else */
+		if(err == 10056 || err == 10035) {
+			loopcount++;
+		} else {
+			DC::get()->print("send failed with error: %d\n", WSAGetLastError());
+			return 1; // closesocket(client_socket);
+			break;
+		}
+	}
+	if(loopcount > 10) {
+		DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
+	}
+	return iSendResult;
 }
 
 void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int data_size) {
@@ -325,43 +352,14 @@ void ServerNetworkManager::sendToAll(unsigned int packet_type, unsigned int obje
 
 // send data to all clients
 void ServerNetworkManager::sendToAll(unsigned int iteration, unsigned int packet_type, unsigned int object_id, CommandTypes command_type, unsigned int data_size) {
-	char data[sizeof(Packet)];
-	send_buffer.iteration = iteration;
-	send_buffer.packet_type = packet_type;
-	send_buffer.object_id = object_id;
-	send_buffer.command_type = command_type;
-	send_buffer.data_size = data_size;
-	send_buffer.packet_number = p_count;
-	send_buffer.serialize(data);
-
-	p_count++;
-
     SOCKET currentSocket;
     std::map<unsigned int, SOCKET>::iterator iter;
-    int iSendResult;
+	int iSendResult;
 
     for (iter = sessions.begin(); iter != sessions.end(); iter++) {
         currentSocket = iter->second;
-
-		// http://bobobobo.wordpress.com/2008/11/09/resolving-winsock-error-10035-wsaewouldblock/
-		// Issue seems to be that the buffer on the client is full, so you need to wait until all of the packets are processed.
-		// Current fix is to keep attempting to send until it succeeds, with a max iterate count so it doesn't hang
-		// NOTE: iSendResult might be less than sizeof(Packet)! Find out if this case needs to be considered.
-			// Print out a debug statement at least.
-		int loopcount = 0;
-        while((iSendResult = NetworkServices::sendMessage(currentSocket, data, sizeof(Packet))) == SOCKET_ERROR) {
-			int err = WSAGetLastError();
-			if(loopcount > 50 ) {
-				DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
-				closesocket(currentSocket);
-			} else if(err == 10056 || err == 10035) {
-				loopcount++;
-			} else {
-				DC::get()->print("send failed with error: %d\n", WSAGetLastError());
-				closesocket(currentSocket);
-			}
-		}
+		iSendResult = sendToClient(currentSocket, iteration, packet_type, object_id, command_type, data_size);
     }
 }
 
-
+#pragma endregion

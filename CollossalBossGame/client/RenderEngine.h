@@ -18,6 +18,7 @@
 
 #include <list>
 #include <stdio.h>
+#include <string>
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
@@ -43,13 +44,14 @@ public:
 
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
-
-	D3DXMATRIX getViewOffset() { return camera; }
+	ID3DXFont* direct3dText; // the pointer to the device class
 
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
 	void updateCamera(const Point_t &pos, const Rot_t &rot);
+
+	void setHUDText(string newText) { hudText = newText; }
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
@@ -59,6 +61,8 @@ private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
+	void drawHUD();
+	void HUDInitialization();
 
 	RenderEngine();
 	virtual ~RenderEngine();
@@ -66,15 +70,17 @@ private:
 	//Static members
 	static RenderEngine *re;
 	static IXAnimator* xAnimator;
-	D3DXMATRIX camera, world;
-	D3DXVECTOR3 camLookAt, camPos, camUp;
-
-	float xpos, ypos, zpos;
+	D3DXMATRIX world;
+	string hudText;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
 
 	Camera* cam;
+
+	//Configuration fields
+	int cameraDist;
+	int hudTopX, hudTopY;
 };
 typedef RenderEngine RE;
 

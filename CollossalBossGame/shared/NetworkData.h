@@ -11,14 +11,15 @@ enum PacketTypes {
     INIT_CONNECTION = 0,
     ACTION_EVENT = 1,
 	MESSAGE = 2,
+	COMPLETE
 };
 
 // Commands sent from the ServerObjectManager to the ClientObjectManager.
 enum CommandTypes {
-    CMD_CREATE = 0,
-    CMD_UPDATE = 1,
-	CMD_DELETE = 2,
-	CMD_ACTION = 3,
+    CMD_CREATE,
+    CMD_UPDATE,
+	CMD_DELETE,
+	CMD_ACTION
 };
 
 struct Packet {
@@ -54,6 +55,7 @@ enum Model {
     MDL_0,
     MDL_1,
     MDL_2,
+    MDL_3,
     NUM_MDLS
 };
 
