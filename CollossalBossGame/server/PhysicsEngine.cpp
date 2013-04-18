@@ -1,5 +1,8 @@
 #include "PhysicsEngine.h"
+#include "ConfigurationManager.h"
 #define TIMESTEP 5
+#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.f	//A bit excessive, but it works for now
 
 //Static members
 PhysicsEngine *PhysicsEngine::pe;
@@ -25,12 +28,30 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	//Apply additional forces, such as gravity and friction.
 	// We are ignoring both for now and applying a half-assed version of
 	// friction when we update the velocity.
+	Vec3f downVector = Vec3f(0, -1, 0);
+	float gravity = CM::get()->find_config_as_float("GRAVITY_FORCE");
+	mdl->applyAccel(downVector*gravity);
 
 	//Update position
 	float dx = 0.5 * mdl->accel.x * dt * dt + mdl->vel.x * dt,
 		  dy = 0.5 * mdl->accel.y * dt * dt + mdl->vel.y * dt,
 		  dz = 0.5 * mdl->accel.z * dt * dt + mdl->vel.z * dt;
 	mdl->ref->translate(Point_t(dx, dy, dz));
+
+	// if pos < 0 reset y pos to 0 and if y vel < 0 clear out y vel set friction to 1.3, else friction = 0
+	Point_t pos = mdl->ref->getPos();
+	if (pos.y < 0) {
+		mdl->ref->setPos(Point_t(pos.x, 0, pos.z));
+		mdl->onGround = true;
+		mdl->frictCoeff = GROUND_FRICTION;
+		mdl->accel.y = 0;
+		if(mdl->vel.y < 0) {
+			mdl->vel.y = 0;
+		}
+	} else {
+		mdl->onGround = false;
+		mdl->frictCoeff = AIR_FRICTION;
+	}
 
 	//Update velocity
 	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;

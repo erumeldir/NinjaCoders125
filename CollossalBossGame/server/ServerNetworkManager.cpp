@@ -191,7 +191,6 @@ void ServerNetworkManager::receiveFromClients() {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
 			// <Log Packet>
-			//cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
 			if(CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG"))
 				DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
 			// </Log Packet>
@@ -202,10 +201,7 @@ void ServerNetworkManager::receiveFromClients() {
                     break;
                 case ACTION_EVENT:
 					DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
-					//inputstatus is;
-					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
-					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
 					destObject = SOM::get()->find(packet.object_id);
 
 					if (destObject != NULL) {

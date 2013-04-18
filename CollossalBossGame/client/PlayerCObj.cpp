@@ -50,11 +50,6 @@ bool PlayerCObj::update() {
 					cameraPitch = -M_PI / 4;
 				}
 			}
-
-			// this is horrendous, remove
-			if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_B) health--;
-			if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_A) health++;
-			if(health < 0) health = 0;
 		}
 		Point_t objPos = rm->getFrameOfRef()->getPos();
 		Rot_t objDir = rm->getFrameOfRef()->getRot();

@@ -1,7 +1,7 @@
 #pragma once
 #include "defs.h"
 #include "Frame.h"
-#define AIR_FRICTION 1.1f	//A bit excessive, but it works for now
+#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
 
 //All physics data should be known to the frames
 struct PhysicsModel
@@ -12,7 +12,7 @@ struct PhysicsModel
 		vel = Vec3f();
 		accel = Vec3f();
 		this->mass = mass;
-		frictCoeff = AIR_FRICTION;
+		frictCoeff = GROUND_FRICTION;
 	}
 
 	virtual ~PhysicsModel() {
@@ -37,4 +37,5 @@ struct PhysicsModel
 	float mass;			//Mass of this object
 	float frictCoeff;	//Friction coefficient
 	Vec3f frictNorm;	//Normal on which the friction will be applied
+	bool onGround;
 };

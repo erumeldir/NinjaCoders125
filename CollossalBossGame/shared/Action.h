@@ -19,7 +19,7 @@ struct inputstatus {
 	bool attack; // Right Trigger
 	bool specialPower; // B
 	bool quit; // Back
-	float xDist, yDist; // Left Joystick
+	float rightDist, forwardDist; // Left Joystick
 	float rotAngle; // Right Joystick
 	float rotVert, rotHoriz;
 };

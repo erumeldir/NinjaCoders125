@@ -189,6 +189,11 @@ int ConfigurationManager::find_config_as_int(string key) {
 	return atoi(&(valuetable[index][0]));
 }
 
+float ConfigurationManager::find_config_as_float(string key) {
+	int index = find_config_index(key);
+	return (float)atof(&(valuetable[index][0]));
+}
+
 bool ConfigurationManager::find_config_as_bool(string key) {
 	int index = find_config_index(key);
 	string boolean((const char *)&(valuetable[index][0]), valuelen[index]);

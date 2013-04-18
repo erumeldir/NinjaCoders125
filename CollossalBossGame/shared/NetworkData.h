@@ -54,6 +54,7 @@ enum Model {
     MDL_0,
     MDL_1,
     MDL_2,
+    MDL_3,
     NUM_MDLS
 };
 
