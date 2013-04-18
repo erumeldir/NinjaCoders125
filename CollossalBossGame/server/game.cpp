@@ -42,4 +42,5 @@ void gameInit() {
 	som->add(rightWall);
 	som->add(leftWall);
 	//som->add(frontWall);
+
 }

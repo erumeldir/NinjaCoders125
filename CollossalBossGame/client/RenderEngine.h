@@ -45,13 +45,15 @@ public:
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
 	ID3DXFont* direct3dText; // the pointer to the device class
+	LPD3DXLINE healthLine;
+	LPD3DXLINE backgroundLine;
 
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
 	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
-	void setHUDText(string newText) { hudText = newText; }
+	void setHUDText(string newText, int health) { hudText = newText; healthPts = health; }
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
@@ -72,6 +74,7 @@ private:
 	static IXAnimator* xAnimator;
 	D3DXMATRIX world;
 	string hudText;
+	int healthPts;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;

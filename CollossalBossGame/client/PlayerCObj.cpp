@@ -12,7 +12,7 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id)
 {
 	DC::get()->print("Created new PlayerCObj %d\n", id);
-	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI), MDL_0);
+	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI), MDL_4);
 	cameraPitch = 0;
 	health = CM::get()->find_config_as_int("INIT_HEALTH");
 }
@@ -29,12 +29,12 @@ void PlayerCObj::showStatus()
 {
 	std::stringstream status;
 	status << "Player " << getId() << "\n";
-	std::string s1 ("[");
-	std::string s2 (floor(health/20 + 0.5f), '~');
-	std::string s3 ("]");
-	status << s1 << s2 << s3;
+	//std::string s1 ("[");
+	//std::string s2 (floor(health/20 + 0.5f), '~');
+	//std::string s3 ("]");
+	//status << s1 << s2 << s3;
 	if (health == 0) status << "\nGAME OVER";
-	RE::get()->setHUDText(status.str());
+	RE::get()->setHUDText(status.str(), health);
 }
 
 bool PlayerCObj::update() {

@@ -23,7 +23,7 @@ ClientNetworkManager ClientNetworkManager::CNM;
 */
 ClientNetworkManager::ClientNetworkManager(void) {
 	connected = false;
-
+	debugFlag = CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG");
 	char * HOST = CM::get()->find_config("HOST");
 	char * PORT = CM::get()->find_config("PORT");
 
@@ -186,7 +186,7 @@ bool ClientNetworkManager::update()
 		this->response_packet_number = packet.packet_number;
         i += sizeof(Packet);
 		//cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
-		if(CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG"))
+		if(debugFlag)
 			DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
         switch (packet.packet_type) {
 			case INIT_CONNECTION:
@@ -200,7 +200,8 @@ bool ClientNetworkManager::update()
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 				//COM::get()->find(packet.object_id)->deserialize(packet.packet_data);
-				DC::get()->print(CONSOLE | LOGFILE, "%s %d: Action event received\n", __FILE__, __LINE__);
+				if(debugFlag) 
+					DC::get()->print(CONSOLE | LOGFILE, "%s %d: Action event received\n", __FILE__, __LINE__);
 				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
 			case COMPLETE:

@@ -26,6 +26,9 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 	case MDL_3:
 		filename = CM::get()->find_config("MODEL_3");
 		break;
+	case MDL_4:
+		filename = CM::get()->find_config("MODEL_4");
+		break;
 	default:
 		DC::get()->print("ERROR: Model %d not known\n", modelNum);
 	}
