@@ -32,6 +32,11 @@ struct PhysicsModel
 		delete ref;
 	}
 
+	void setColBox(CollisionBox cb)
+	{
+		this->colBox = cb;
+	}
+
 	void applyForce(const Vec3f &force) {
 		this->accel.x += force.x / mass;
 		this->accel.y += force.y / mass;

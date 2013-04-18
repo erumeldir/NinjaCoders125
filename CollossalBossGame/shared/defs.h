@@ -50,9 +50,12 @@ typedef struct Vec3f {
 	}
 
 	Vec3f operator/	(float rhs) {
-		return Vec3f(this->x / rhs, 
-			this->y / rhs, 
-			this->z / rhs);
+		if (rhs == 0)
+			return Vec3f(0, 0, 0);
+		else
+			return Vec3f(this->x / rhs, 
+				this->y / rhs, 
+				this->z / rhs);
 	}
 
 	Vec3f operator*	(Vec3f rhs) {
@@ -62,9 +65,10 @@ typedef struct Vec3f {
 	}
 
 	Vec3f operator/	(Vec3f rhs) {
-		return Vec3f(this->x / rhs.x, 
-			this->y / rhs.y, 
-			this->z / rhs.z);
+		float x = (rhs.x == 0) ? 0 : this->x / rhs.x;
+		float y = (rhs.y == 0) ? 0 : this->y / rhs.y;
+		float z = (rhs.z == 0) ? 0 : this->z / rhs.z;
+		return Vec3f(x, y, z);
 	}
 
 } Point_t, Rot_t;

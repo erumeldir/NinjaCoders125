@@ -6,6 +6,13 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject
 	pm = new PhysicsModel(pos, Rot_t(), 500);
 	this->dir = dir;
 	this->modelNum = modelNum;
+	switch (modelNum) {
+		case MDL_2:
+			pm->setColBox(CB_LARGE);
+			break;
+		default:
+			break;
+	}
 	t = 0;
 }
 
