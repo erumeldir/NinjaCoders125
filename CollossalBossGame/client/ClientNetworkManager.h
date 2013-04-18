@@ -29,6 +29,7 @@ public:
 	int receivePackets(char *);
 	void update();
 	void sendData(char * data, int datalen, int objectID);
+	bool isConnected();
 private:
 	// ctor/dtor
     ClientNetworkManager(void);
@@ -38,6 +39,7 @@ private:
 	static unsigned int exper;
 	unsigned int iteration_count;
 	unsigned int response_packet_number;
+	bool connected;
 };
 
 #endif

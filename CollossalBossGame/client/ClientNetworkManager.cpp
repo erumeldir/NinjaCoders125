@@ -22,6 +22,8 @@ ClientNetworkManager ClientNetworkManager::CNM;
 
 */
 ClientNetworkManager::ClientNetworkManager(void) {
+	connected = false;
+
 	char * HOST = CM::get()->find_config("HOST");
 	char * PORT = CM::get()->find_config("PORT");
 
@@ -138,6 +140,11 @@ ClientNetworkManager::~ClientNetworkManager(void) {
 
 }
 
+bool ClientNetworkManager::isConnected()
+{
+	return connected;
+}
+
 int ClientNetworkManager::receivePackets(char * recvbuf) 
 {
     iResult = NetworkServices::receiveMessage(ConnectSocket, recvbuf, MAX_PACKET_SIZE);
@@ -162,6 +169,7 @@ void ClientNetworkManager::update()
     Packet packet;
     int data_length = receivePackets(network_data);
 
+	// TODO how to make sure you get all the packets the server wants to send? O_O
     while (data_length <= 0) 
     {
         //no data recieved
@@ -183,6 +191,7 @@ void ClientNetworkManager::update()
 			case INIT_CONNECTION:
 				COM::get()->player_id = packet.object_id;
 				DC::get()->print("PLAYER ID RECEIVED! %d\n", COM::get()->player_id);
+				connected = true;
 				break;
             case ACTION_EVENT:
                 //DC::get()->print("client received action event packet from server\n");

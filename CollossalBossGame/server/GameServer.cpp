@@ -34,6 +34,18 @@ int main()
 	//Create game objects
 	gameInit();
 
+	// Wait for at least one client to connect
+	while(SNM::client_id == 0)	
+	{ 
+		ServerNetworkManager::get()->update();
+	}
+
+	// Update our Server Object Manager (since we have a player now)
+	SOM::get()->update();
+
+	// Now send them the state
+	SOM::get()->sendState();
+
 	//Main server loop
 	while(true) 
     {
@@ -58,7 +70,8 @@ int main()
 		}
 		else
 		{
-			DC::get()->print("ERROR!!! total loop time %d is greater than tick time: %d\n", totalLoopTime, TICK);
+			int tick = TICK;
+			DC::get()->print("ERROR!!! total loop time %f is greater than tick time: %d\n", totalLoopTime, tick);
 		}
 		
     }

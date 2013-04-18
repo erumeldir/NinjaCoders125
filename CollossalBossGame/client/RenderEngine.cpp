@@ -249,12 +249,11 @@ void RenderEngine::render() {
 
 	direct3dDevice->EndScene(); // ends the 3D scene
 
-	HRESULT hr=direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
-
-	hr = direct3dDevice->TestCooperativeLevel();
+	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
 }
 
-#define TIME_SINCE_LAST_UPDATE 4
+// todo take time
+#define TIME_SINCE_LAST_UPDATE 33 // 4
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);

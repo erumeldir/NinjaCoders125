@@ -50,6 +50,13 @@ void ClientEngine::exit(int i) {
  * The main game loop of the engine.  Initializes and runs the game.
  */
 void ClientEngine::run() {
+
+	// Wait until we connect to a server
+	while(!ClientNetworkManager::get()->isConnected()) { 
+		ClientNetworkManager::get()->update(); 
+	}
+	DC::get()->print("My player id is: %d\n", COM::get()->player_id);
+
 	while(isRunning) {
 		
 		//Send event information to the server
@@ -67,6 +74,6 @@ void ClientEngine::run() {
 		//Poll events
 		
 
-		Sleep(10);
+		//Sleep(10);
 	}
 }

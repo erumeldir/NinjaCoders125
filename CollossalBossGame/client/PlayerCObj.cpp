@@ -53,7 +53,6 @@ bool PlayerCObj::update() {
 		}
 		Point_t objPos = rm->getFrameOfRef()->getPos();
 		Rot_t objDir = rm->getFrameOfRef()->getRot();
-		DC::get()->print("Pitch: %f (controller input = %f)\n", cameraPitch, atan(((double)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8))));
 		objDir.x = cameraPitch;
 		RE::get()->updateCamera(objPos, objDir);
 		showStatus();
