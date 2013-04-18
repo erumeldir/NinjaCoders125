@@ -81,6 +81,10 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	//Collision checks/inter-object physics
 	
+	//0. Get physics models. call the get physics model method a lot
+	PhysicsModel * p1 = obj1->getPhysicsModel();
+	PhysicsModel * p2 = obj2->getPhysicsModel();
+
 	//1. get their positions types (eventually size as well?)
 	Point_t first = obj1->getPhysicsModel()->ref->getPos();
 	Point_t second = obj2->getPhysicsModel()->ref->getPos();
@@ -97,18 +101,16 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	float distY = first.y - second.y;
 	float distZ = first.z - second.z;
 
-	float squareDist = distX * distX + distY * distY + distZ * distZ;
 	
-	PhysicsModel * p1 = obj1->getPhysicsModel();
-	PhysicsModel * p2 = obj2->getPhysicsModel();
+		float x21 = obj2->getPhysicsModel()->ref->getPos().x - obj1->getPhysicsModel()->ref->getPos().x;
+		float y21 = obj2->getPhysicsModel()->ref->getPos().y - obj1->getPhysicsModel()->ref->getPos().y;
+		float z21 = obj2->getPhysicsModel()->ref->getPos().z - obj1->getPhysicsModel()->ref->getPos().z;
+		float d=sqrt(x21*x21 +y21*y21+z21*z21);
 
-	//4. find if we collided
-	bool collidedX = distX * distX < (r1 + r2) * (r1 + r2);
-	bool collidedY = distY * distY < (r1 + r2) * (r1 + r2);
-	bool collidedZ = distZ * distZ < (r1 + r2) * (r1 + r2);
-
-	
-		float vx1 = obj1->getPhysicsModel()->vel.x;
+	//Dealing with collisions!
+	if (d<r1 + r2)
+	{
+				float vx1 = obj1->getPhysicsModel()->vel.x;
 		float vx2 = obj2->getPhysicsModel()->vel.x;
 		
 		float vy1 = obj1->getPhysicsModel()->vel.y;
@@ -124,26 +126,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		float m1 = obj1->getPhysicsModel()->mass;
 		float m2 = obj2->getPhysicsModel()->mass;
 
-		float pi2=2*acos(-1.0E0);
-		float m21 = m2 / m1;
-		float x21 = obj2->getPhysicsModel()->ref->getPos().x - obj1->getPhysicsModel()->ref->getPos().x;
-		float y21 = obj2->getPhysicsModel()->ref->getPos().y - obj1->getPhysicsModel()->ref->getPos().y;
-		float z21 = obj2->getPhysicsModel()->ref->getPos().z - obj1->getPhysicsModel()->ref->getPos().z;
-		float gammav=atan2(-vy21,-vx21);
-		float gammaxy=atan2(y21,x21);
-		float dgamma=gammaxy-gammav;
-		float d=sqrt(x21*x21 +y21*y21+z21*z21);
-        if (dgamma>pi2) 
-			{dgamma=dgamma-pi2;}
-		else if (dgamma<-pi2) 
-			{dgamma=dgamma+pi2;}
-		
-		float dr=d*sin(dgamma)/r1+r2;
 
-	//Dealing with collisions!
-	if (d<r1 + r2)
-	{
-		
+
 		float vx_cm = (m1*vx1+m2*vx2)/(m1+m2) ;
 		float vy_cm = (m1*vy1+m2*vy2)/(m1+m2) ;
 
@@ -161,21 +145,21 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	   float a, dvx2;
 //     ***  update velocities ***
        a=y21/x21;
-       dvx2= -2*(vx21 +a*vy21)/((1+a*a)*(1+m21)) ;
+       dvx2= -2*(vx21 +a*vy21)/((1+a*a)*(1+m2/m1)) ;
        vx2=vx2+dvx2;
        vy2=vy2+a*dvx2;
-       vx1=vx1-m21*dvx2;
-       vy1=vy1-a*m21*dvx2;
+       vx1=vx1-m2/m1*dvx2;
+       vy1=vy1-a*m2/m1*dvx2;
 
-	   float R = r1;
+	   float R = r1 + r2;
 //     ***  velocity correction for inelastic collisions ***
        vx1=(vx1-vx_cm)*R + vx_cm;
        vy1=(vy1-vy_cm)*R + vy_cm;
        vx2=(vx2-vx_cm)*R + vx_cm;
        vy2=(vy2-vy_cm)*R + vy_cm;
 	   
-	   obj1->getPhysicsModel()->vel = Vec3f(vx1, vy1, obj1->getPhysicsModel()->vel.z);
-	   obj2->getPhysicsModel()->vel = Vec3f(vx2, vy2, obj2->getPhysicsModel()->vel.z);
+	   //obj1->getPhysicsModel()->vel = Vec3f(vx1, vy1, obj1->getPhysicsModel()->vel.z);
+	  // obj2->getPhysicsModel()->vel = Vec3f(vx2, vy2, obj2->getPhysicsModel()->vel.z);
 //		cout << "squareDist: " << squareDist << ", things: " << (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2)<< endl;
 		/*General principle: conservation of momentum 
 		 *	If we were to have this be absolutely accurate, we would need
@@ -188,7 +172,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		//0. set acceleration
 		obj1->getPhysicsModel()->accel = Vec3f(0, 0, 0);
 		obj2->getPhysicsModel()->accel = Vec3f(0, 0, 0);
-
+	   
 		//1. calculate momentum. 
 		Vec3f moment = Vec3f(obj1->getPhysicsModel()->mass * obj1->getPhysicsModel()->vel.x
 								+ obj2->getPhysicsModel()->mass * obj2->getPhysicsModel()->vel.x,
@@ -223,7 +207,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		
 		Vec3f force = obj1->getPhysicsModel()->vel * direction;
 		//B. Set the velocities
-		obj1->getPhysicsModel()->applyForce( force / 1000 );
+		obj1->getPhysicsModel()->applyForce( force );
 
 		Vec3f firstMom = Vec3f( obj1->getPhysicsModel()->vel.x * obj1->getPhysicsModel()->mass,
 			obj1->getPhysicsModel()->vel.y * obj1->getPhysicsModel()->mass,
@@ -233,7 +217,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		moment = moment - firstMom;
 
 		//Overriding crazy! Also storing the final velocity in it
-		obj2->getPhysicsModel()->applyForce(moment / obj2->getPhysicsModel()->mass * direction / 1000);
+		obj2->getPhysicsModel()->applyForce(moment * direction);
 		
 	}
 
