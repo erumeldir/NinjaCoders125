@@ -19,5 +19,9 @@ public:
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
+
+	// Configuration options
+	int jumpDist;
+	int movDamp;
 };
 

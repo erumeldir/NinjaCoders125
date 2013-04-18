@@ -39,6 +39,9 @@
     <ClCompile Include="PlayerSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WallSObj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServer.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayerSObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WallSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

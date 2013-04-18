@@ -158,22 +158,19 @@ void RenderEngine::HUDInitialization() {
  * Initialize DirectX and any other rendering libraries that we may have.
  */
 RenderEngine::RenderEngine() {
+	// Set configuration options
+	cameraDist = CM::get()->find_config_as_int("CAM_DIST");
+	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
+	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
+
 	startWindow();
 	renderInitalization();	//start initialization
 	HUDInitialization();
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
-	// Initial Positioning 
-	xpos = 10;
-	ypos = -200;
-	zpos = 200;
-
-	D3DXMATRIX xworld, yworld, zworld, tworld, sworld;
-	
 	D3DXMatrixIdentity(&world);
-	D3DXMatrixIdentity(&camera);
 
-	cam = new Camera(CM::get()->find_config_as_int("CAM_DIST"));
+	cam = new Camera(cameraDist);
 	hudText = "DEFAULT";
 }
 
@@ -203,8 +200,8 @@ void RenderEngine::drawHUD() {
 
    //A pre-formatted string showing the current frames per second
 	SetRect(&font_rect,
-			CM::get()->find_config_as_int("HUD_TOP_X"),
-			CM::get()->find_config_as_int("HUD_TOP_Y"),
+			hudTopX,
+			hudTopY,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
 
@@ -249,12 +246,11 @@ void RenderEngine::render() {
 
 	direct3dDevice->EndScene(); // ends the 3D scene
 
-	HRESULT hr=direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
-
-	hr = direct3dDevice->TestCooperativeLevel();
+	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
 }
 
-#define TIME_SINCE_LAST_UPDATE 4
+// todo take time
+#define TIME_SINCE_LAST_UPDATE 33 // 4
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);

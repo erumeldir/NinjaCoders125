@@ -96,6 +96,8 @@ void ClientObjectManager::create(uint id, char *data) {
 	case OBJ_PLAYER:
 		obj = new PlayerCObj(id, data + sizeof(CreateHeader));
 		break;
+	//case OBJ_ARENA:
+	//	obj = new WallCObj(id, data + sizeof(CreateHeader));
 	default:	//OBJ_GENERAL
 		obj = new TestObject(id, data + sizeof(CreateHeader));
 		break;

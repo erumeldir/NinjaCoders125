@@ -46,8 +46,6 @@ public:
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
 	ID3DXFont* direct3dText; // the pointer to the device class
 
-	D3DXMATRIX getViewOffset() { return camera; }
-
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
@@ -72,16 +70,17 @@ private:
 	//Static members
 	static RenderEngine *re;
 	static IXAnimator* xAnimator;
-	D3DXMATRIX camera, world;
-	D3DXVECTOR3 camLookAt, camPos, camUp;
+	D3DXMATRIX world;
 	string hudText;
-
-	float xpos, ypos, zpos;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
 
 	Camera* cam;
+
+	//Configuration fields
+	int cameraDist;
+	int hudTopX, hudTopY;
 };
 typedef RenderEngine RE;
 

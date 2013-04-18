@@ -15,6 +15,8 @@ PhysicsEngine *PhysicsEngine::pe;
 
 PhysicsEngine::PhysicsEngine(void)
 {
+	// Configuration options
+	gravity = CM::get()->find_config_as_float("GRAVITY_FORCE");
 }
 
 
@@ -31,11 +33,12 @@ PhysicsEngine::~PhysicsEngine(void)
 bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	float dt = TIMESTEP;
 
+	if(mdl->isStatic) return true;
+
 	//Apply additional forces, such as gravity and friction.
 	// We are ignoring both for now and applying a half-assed version of
 	// friction when we update the velocity.
 	Vec3f downVector = Vec3f(0, -1, 0);
-	float gravity = CM::get()->find_config_as_float("GRAVITY_FORCE");
 	mdl->applyAccel(downVector*gravity);
 
 	//Update position

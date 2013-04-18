@@ -17,5 +17,8 @@ private:
 	virtual ~PhysicsEngine(void);
 
 	static PhysicsEngine *pe;
+
+	// Configuration options
+	float gravity;
 };
 typedef PhysicsEngine PE;
