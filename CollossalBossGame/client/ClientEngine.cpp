@@ -62,8 +62,8 @@ void ClientEngine::run() {
 		//Send event information to the server
 		xctrl->sendInput();
 		
-		// Fetch Data From the Server
-		ClientNetworkManager::get()->update();
+		// Fetch all Data From the Server 
+		while(ClientNetworkManager::get()->update()) {}
 
 		//Update game logic/physics (will be moved to the server)
 		COM::get()->update();

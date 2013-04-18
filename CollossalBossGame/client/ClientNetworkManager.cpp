@@ -164,10 +164,11 @@ ClientNetworkManager * ClientNetworkManager::get() {
 	return &CNM;
 }
 
-void ClientNetworkManager::update()
+bool ClientNetworkManager::update()
 {
     Packet packet;
     int data_length = receivePackets(network_data);
+	bool ret = true;
 
 	// TODO how to make sure you get all the packets the server wants to send? O_O
     while (data_length <= 0) 
@@ -192,20 +193,29 @@ void ClientNetworkManager::update()
 				COM::get()->player_id = packet.object_id;
 				DC::get()->print("PLAYER ID RECEIVED! %d\n", COM::get()->player_id);
 				connected = true;
+				ret = false;
 				break;
             case ACTION_EVENT:
                 //DC::get()->print("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 				//COM::get()->find(packet.object_id)->deserialize(packet.packet_data);
+				DC::get()->print(CONSOLE | LOGFILE, "%s %d: Action event received\n", __FILE__, __LINE__);
 				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
+			case COMPLETE:
+				DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);
+				ret = false;
+				break;
             default:
                 DC::get()->print("error in packet types\n");
                 break;
         }
     }
 	iteration_count++;
+
+	// keep receiving packets until we get one that says COMPLETE
+	return ret; 
 }
 
 void ClientNetworkManager::sendData(char * data, int datalen, int objectID) {

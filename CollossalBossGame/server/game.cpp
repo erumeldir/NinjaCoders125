@@ -24,6 +24,11 @@ void gameInit() {
 	som->add(obj2);
 	som->add(obj3);
 
+	for (int i=0; i< 10; i++)
+	{
+	//	som->add(new TestSObj(som->genId(), MDL_1, Point_t(), TEST_WEST));
+	}
+
 	// Build arena (todo maybe these should be planeObjects? ArenaObjects?)
 	WallSObj *floor = new WallSObj(som->genId(), MDL_3, Point_t(0, 0, 0), Rot_t()),
 			 *ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0, 150, 0), Rot_t(0, 0, M_PI)),

@@ -317,19 +317,24 @@ int ServerNetworkManager::sendToClient(SOCKET sock_id, unsigned int iteration, u
 	// NOTE: iSendResult might be less than sizeof(Packet)! Find out if this case needs to be considered.
 		// Print out a debug statement at least.
 	int loopcount = 0;
+	int err;
     while((iSendResult = NetworkServices::sendMessage(client_socket, packet_buffer, sizeof(Packet))) == SOCKET_ERROR) {
-		int err = WSAGetLastError();
-		if(loopcount > 50 ) {
+		err = WSAGetLastError();
+		/*if(loopcount > 50 ) {
 			DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
 			// closesocket(client_socket);
-			break;
-		} else if(err == 10056 || err == 10035) {
+			return 1; //break;
+		} else */
+		if(err == 10056 || err == 10035) {
 			loopcount++;
 		} else {
 			DC::get()->print("send failed with error: %d\n", WSAGetLastError());
-			// closesocket(client_socket);
+			return 1; // closesocket(client_socket);
 			break;
 		}
+	}
+	if(loopcount > 10) {
+		DC::get()->print("send looped %d times. Client possibly not processing packets fast enough. Error: %d\n", loopcount, err);
 	}
 	return iSendResult;
 }
