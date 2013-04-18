@@ -18,6 +18,7 @@
 
 #include <list>
 #include <stdio.h>
+#include <string>
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
@@ -52,7 +53,7 @@ public:
 	Camera * getCamera() { return cam; }
 	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
-	const char* hudText;
+	void setHUDText(string newText) { hudText = newText; }
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
@@ -73,6 +74,7 @@ private:
 	static IXAnimator* xAnimator;
 	D3DXMATRIX camera, world;
 	D3DXVECTOR3 camLookAt, camPos, camUp;
+	string hudText;
 
 	float xpos, ypos, zpos;
 

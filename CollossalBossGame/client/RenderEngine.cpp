@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "RenderModel.h"
 #include "ClientObjectManager.h"
+#include "ConfigurationManager.h"
 #include <mmsystem.h>
 
 #if defined(DEBUG) | defined(_DEBUG)
@@ -139,18 +140,18 @@ void RenderEngine::renderInitalization()
  * Author(s): Suman, Haro
  */
 void RenderEngine::HUDInitialization() {
-	HRESULT hr = D3DXCreateFont(this->direct3dDevice,     //D3D Device
-				                22,                       //Font height
-								0,					      //Font width
-								FW_NORMAL,                //Font Weight
-								1,                        //MipLevels
-								false,                    //Italic
-								DEFAULT_CHARSET,          //CharSet
-								OUT_DEFAULT_PRECIS,       //OutputPrecision
-								ANTIALIASED_QUALITY,      //Quality
-								DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
-								"Arial",                  //pFacename,
-								&this->direct3dText);     //ppFont
+	D3DXCreateFont(	this->direct3dDevice,     //D3D Device
+				    22,                       //Font height
+					0,					      //Font width
+					FW_NORMAL,                //Font Weight
+					1,                        //MipLevels
+					false,                    //Italic
+					DEFAULT_CHARSET,          //CharSet
+					OUT_DEFAULT_PRECIS,       //OutputPrecision
+					ANTIALIASED_QUALITY,      //Quality
+					DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
+					"Georgia",                //pFacename,
+					&this->direct3dText);     //ppFont
 }
 
 /*
@@ -172,7 +173,7 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixIdentity(&world);
 	D3DXMatrixIdentity(&camera);
 
-	cam = new Camera(100); // TODO config!!
+	cam = new Camera(CM::get()->find_config_as_int("CAM_DIST"));
 	hudText = "DEFAULT";
 }
 
@@ -201,11 +202,14 @@ void RenderEngine::drawHUD() {
 	RECT font_rect;
 
    //A pre-formatted string showing the current frames per second
-	// TODO Coordinates config
-   SetRect(&font_rect,10,10,SCREEN_WIDTH,SCREEN_HEIGHT);
+	SetRect(&font_rect,
+			CM::get()->find_config_as_int("HUD_TOP_X"),
+			CM::get()->find_config_as_int("HUD_TOP_Y"),
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT);
 
    this->direct3dText->DrawText(NULL,        //pSprite
-                                hudText,	 //pString
+								hudText.c_str(),	 //pString
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,

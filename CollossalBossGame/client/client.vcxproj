@@ -107,6 +107,7 @@
     <None Include="pyramidofDOOM.X" />
     <None Include="rabbit.x" />
     <None Include="renderC.jpg" />
+    <None Include="res\plane.X" />
     <None Include="smallBox.X" />
     <None Include="tiny.x" />
     <None Include="tiny_skin.bmp" />

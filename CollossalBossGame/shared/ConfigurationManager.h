@@ -19,6 +19,7 @@ public:
 	char* find_config(std::string config);
 	string find_config_as_string(string key);
 	int find_config_as_int(string key);
+	float find_config_as_float(string key);
 	bool find_config_as_bool(string key);
 	Vec3f find_config_as_point(string key);
 private:

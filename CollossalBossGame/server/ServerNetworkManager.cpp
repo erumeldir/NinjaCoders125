@@ -151,7 +151,7 @@ void ServerNetworkManager::update() {
 			} else {
 				o = reinterpret_cast<PlayerSObj *>(SOM::get()->find(sessionsobjid.find(temp_c_id)->second));
 			}
-			// TODO Send generated player id back to client
+
 			this->getSendBuffer();	// Need to call this before each send, regardless of whether or not you have a message.
 			this->sendToClient(sessions[temp_c_id], INIT_CONNECTION, o->getId(), 0);			
 			DC::get()->print("client %d has been assigned client_id... Moving onto the rest of the loop.\n",client_id);
@@ -173,7 +173,6 @@ void ServerNetworkManager::receiveFromClients() {
     for(iter = sessions.begin(); iter != sessions.end(); ) {
         int data_length = receiveData(iter->first, network_data);
 
-		// TODO FOR NOW: CHANGE? loop until you get data from a client....
         while (data_length <= 0) { //no data recieved
             //continue;
 			data_length = receiveData(iter->first, network_data);
@@ -192,7 +191,6 @@ void ServerNetworkManager::receiveFromClients() {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
 			// <Log Packet>
-			//cout << "Iteration: " << packet.iteration << " packet_type: " << packet.packet_type << " object_id: " << packet.object_id << " packet_number: " << packet.packet_number << " command_type: " << packet.command_type << endl;
 			if(CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG"))
 				DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
 			// </Log Packet>
@@ -203,23 +201,13 @@ void ServerNetworkManager::receiveFromClients() {
                     break;
                 case ACTION_EVENT:
 					DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
-					//inputstatus is;
-					//memcpy(&is, &packet.packet_data, sizeof(inputstatus));
 
-					// Set the input status of the TestSObj (FOR NOW id 0!! needs to change)
 					destObject = SOM::get()->find(packet.object_id);
 
-					// TODO handshake to set up player object, so this shouldn't happen after that
 					if (destObject != NULL) {
 						destObject->deserialize(packet.packet_data);
 					}
-					//memcpy(&(((TestSObj*)SOM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
 
-					// Re-send what you gave me xD (wow, we're a useful server =P)
-					/*char packet_data[sizeof(Packet)];
-					packet.serialize(packet_data);
-					sendToAll(packet_data, sizeof(packet));*/
-                    // sendActionPackets();
                     break;
                 default:
                     DC::get()->print("error in packet types\n");

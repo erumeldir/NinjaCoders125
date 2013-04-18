@@ -68,25 +68,20 @@ void Camera::setPitch(float angle)
 
 /**
  * Rotates up and down
-  * TODO Radians PI/2
  */
 void Camera::pitch(float angle)
 {
-	// Make sure our angle is within bounds
-	if (currentPitch + angle > -M_PI / 4 && currentPitch + angle < M_PI / 2)
-	{
-		// Perform a rotation around the right vector of the target
-		D3DXMATRIX pitch; // create a matrix to hold the rotation
-		D3DXMatrixRotationAxis(&pitch, &tarRight, angle);
+	// Perform a rotation around the right vector of the target
+	D3DXMATRIX pitch; // create a matrix to hold the rotation
+	D3DXMatrixRotationAxis(&pitch, &tarRight, angle);
 
-		// Update the view vector of the camera to reflect the rotation
-		D3DXVec3TransformCoord(&camView, &camView, &pitch);
+	// Update the view vector of the camera to reflect the rotation
+	D3DXVec3TransformCoord(&camView, &camView, &pitch);
 
-		// Also update the up vector of the camera
-		D3DXVec3TransformCoord(&camUp, &camUp, &pitch);
+	// Also update the up vector of the camera
+	D3DXVec3TransformCoord(&camUp, &camUp, &pitch);
 
-		currentPitch += angle;
-	}
+	currentPitch += angle;
 }
 
 void Camera::forward(float distance)

@@ -58,7 +58,6 @@ int main()
 		}
 		else
 		{
-			// TODO: Print to error console
 			DC::get()->print("ERROR!!! total loop time %d is greater than tick time: %d\n", totalLoopTime, TICK);
 		}
 		
