@@ -1,7 +1,7 @@
 #include "PhysicsEngine.h"
 #define TIMESTEP 5
 #define SMALLRADIUS 5.0f
-#define LARGERADIUS 20.0f
+#define LARGERADIUS 30.0f
 
 //Static members
 PhysicsEngine *PhysicsEngine::pe;
