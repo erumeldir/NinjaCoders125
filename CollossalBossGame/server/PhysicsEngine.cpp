@@ -86,139 +86,64 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	PhysicsModel * p2 = obj2->getPhysicsModel();
 
 	//1. get their positions types (eventually size as well?)
-	Point_t first = obj1->getPhysicsModel()->ref->getPos();
-	Point_t second = obj2->getPhysicsModel()->ref->getPos();
+	Point_t first = p1->ref->getPos();
+	Point_t second = p2->ref->getPos();
 
 	//2. get radii of each object
-	CollisionBox size1 = obj1->getPhysicsModel()->getColBox();	
-	CollisionBox size2 = obj2->getPhysicsModel()->getColBox();
+	CollisionBox size1 = p1->getColBox();	
+	CollisionBox size2 = p2->getColBox();
 
 	float r1 = (size1 == CB_SMALL) ? SMALLRADIUS : LARGERADIUS;
 	float r2 = (size2 == CB_SMALL) ? SMALLRADIUS : LARGERADIUS;
 
 	//3. calculate the distance
-	float distX = first.x - second.x;
-	float distY = first.y - second.y;
-	float distZ = first.z - second.z;
-
+		float x21 = second.x - first.x;
+		float y21 = second.y - first.y;
+		float z21 = second.z - first.z;
+	Vec3f dist = Vec3f(first.x - second.x, first.y - second.y, first.z - second.z);
 	
-		float x21 = obj2->getPhysicsModel()->ref->getPos().x - obj1->getPhysicsModel()->ref->getPos().x;
-		float y21 = obj2->getPhysicsModel()->ref->getPos().y - obj1->getPhysicsModel()->ref->getPos().y;
-		float z21 = obj2->getPhysicsModel()->ref->getPos().z - obj1->getPhysicsModel()->ref->getPos().z;
-		float d=sqrt(x21*x21 +y21*y21+z21*z21);
+		float d=sqrt(dist.x * dist.x + dist.y * dist.y + dist.z * dist.z);
 
 	//Dealing with collisions!
 	if (d<r1 + r2)
 	{
-				float vx1 = obj1->getPhysicsModel()->vel.x;
-		float vx2 = obj2->getPhysicsModel()->vel.x;
-		
-		float vy1 = obj1->getPhysicsModel()->vel.y;
-		float vy2 = obj2->getPhysicsModel()->vel.y;
-
-		float vz1 = obj1->getPhysicsModel()->vel.z;
-		float vz2 = obj2->getPhysicsModel()->vel.z;
-
-		float vx21 = obj2->getPhysicsModel()->vel.x - obj1->getPhysicsModel()->vel.x;
-		float vy21 = obj2->getPhysicsModel()->vel.y - obj1->getPhysicsModel()->vel.y;
-		float vz21 = obj2->getPhysicsModel()->vel.z - obj1->getPhysicsModel()->vel.z;
-
-		float m1 = obj1->getPhysicsModel()->mass;
-		float m2 = obj2->getPhysicsModel()->mass;
-
-
-
-		float vx_cm = (m1*vx1+m2*vx2)/(m1+m2) ;
-		float vy_cm = (m1*vy1+m2*vy2)/(m1+m2) ;
-
-//     *** I have inserted the following statements to avoid a zero divide; 
-//         (for single precision calculations, 
-//          1.0E-12 should be replaced by a larger value). **************  
-  
-       float fy21=1.0E-12*fabs(y21);
-	   float sign;
-       if ( fabs(x21)<fy21 ) {  
-                   if (x21<0) { sign=-1; } else { sign=1;}  
-                   x21=fy21*sign; 
-        } 
-
-	   float a, dvx2;
-//     ***  update velocities ***
-       a=y21/x21;
-       dvx2= -2*(vx21 +a*vy21)/((1+a*a)*(1+m2/m1)) ;
-       vx2=vx2+dvx2;
-       vy2=vy2+a*dvx2;
-       vx1=vx1-m2/m1*dvx2;
-       vy1=vy1-a*m2/m1*dvx2;
-
-	   float R = r1 + r2;
-//     ***  velocity correction for inelastic collisions ***
-       vx1=(vx1-vx_cm)*R + vx_cm;
-       vy1=(vy1-vy_cm)*R + vy_cm;
-       vx2=(vx2-vx_cm)*R + vx_cm;
-       vy2=(vy2-vy_cm)*R + vy_cm;
-	   
-	   //obj1->getPhysicsModel()->vel = Vec3f(vx1, vy1, obj1->getPhysicsModel()->vel.z);
-	  // obj2->getPhysicsModel()->vel = Vec3f(vx2, vy2, obj2->getPhysicsModel()->vel.z);
-//		cout << "squareDist: " << squareDist << ", things: " << (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2) + (r1 + r2) * (r1 + r2)<< endl;
-		/*General principle: conservation of momentum 
-		 *	If we were to have this be absolutely accurate, we would need
-		 *   a gauge of elasticity for both objects. However since we don't
-		 *   have elasticity, we will instead use a difference of mass as 
-		 *   a factor.
-		 *
-		 */
-
-		//0. set acceleration
-		obj1->getPhysicsModel()->accel = Vec3f(0, 0, 0);
-		obj2->getPhysicsModel()->accel = Vec3f(0, 0, 0);
-	   
-		//1. calculate momentum. 
-		Vec3f moment = Vec3f(obj1->getPhysicsModel()->mass * obj1->getPhysicsModel()->vel.x
-								+ obj2->getPhysicsModel()->mass * obj2->getPhysicsModel()->vel.x,
-								obj1->getPhysicsModel()->mass * obj1->getPhysicsModel()->vel.y
-								+ obj2->getPhysicsModel()->mass * obj2->getPhysicsModel()->vel.y,
-								obj1->getPhysicsModel()->mass * obj1->getPhysicsModel()->vel.z
-								+ obj2->getPhysicsModel()->mass * obj2->getPhysicsModel()->vel.z);
-
-		//2. calculate the percent difference of masses to indicate the final direction of obj1
-		float direction = (obj1->getPhysicsModel()->mass - obj2->getPhysicsModel()->mass) 
-								/(obj1->getPhysicsModel()->mass + obj2->getPhysicsModel()->mass);
 
 		//Now we have two tasks: set the positions of the objects appropriately (A) and 
 		// setting the velocities appropriately (B)
 
 		//A. Set the positions, which we'll base on the difference.
 		//1. We need the difference that we need to make up. 
-		Vec3f positionDif = Vec3f (r1+r2 - distX, r1+r2 - distY, r1+r2 - distZ);
+		Vec3f positionDif = Vec3f (r1+r2 - fabs(dist.x), r1+r2 - fabs(dist.y), r1+r2 - fabs(dist.z));
 
 		//2. the amounts that we need to move
-		Vec3f divisor = obj1->getPhysicsModel()->vel + obj2->getPhysicsModel()->vel;
-		Vec3f move1a = (obj1->getPhysicsModel()->vel / divisor);
+		Vec3f divisor = p1->vel + p2->vel;
+		Vec3f move1a = (p1->vel / divisor);
 		Vec3f move1 = move1a * positionDif;
-		Vec3f move2a = obj2->getPhysicsModel()->vel / divisor;
+		Vec3f move2a = p2->vel / divisor;
 		Vec3f move2 = move2a * positionDif;
 		
 		//3. do the movement
-		Vec3f set1 = obj1->getPhysicsModel()->vel - move1;
-		Vec3f set2 = obj2->getPhysicsModel()->vel - move2;
-		obj1->getPhysicsModel()->ref->setPos(set1);
-		obj2->getPhysicsModel()->ref->setPos(set2);
-		
-		Vec3f force = obj1->getPhysicsModel()->vel * direction;
+		Vec3f set1 = p1->ref->getPos() - move1;
+		Vec3f set2 = p2->ref->getPos() - move2;
+		p1->ref->setPos(set1);
+		p2->ref->setPos(set2);
+		p1->vel = Vec3f(0, 0, 0);
+		p2->vel = Vec3f(0, 0, 0);
+		/*
+		Vec3f force = p1->vel * direction;
 		//B. Set the velocities
-		obj1->getPhysicsModel()->applyForce( force );
+		p1->applyForce( force );
 
-		Vec3f firstMom = Vec3f( obj1->getPhysicsModel()->vel.x * obj1->getPhysicsModel()->mass,
-			obj1->getPhysicsModel()->vel.y * obj1->getPhysicsModel()->mass,
-			obj1->getPhysicsModel()->vel.z * obj1->getPhysicsModel()->mass);
+		Vec3f firstMom = Vec3f( p1->vel.x * p1->mass,
+			p1->vel.y * p1->mass,
+			p1->vel.z * p1->mass);
 
 		//I got to override an operator! :D
 		moment = moment - firstMom;
 
 		//Overriding crazy! Also storing the final velocity in it
-		obj2->getPhysicsModel()->applyForce(moment * direction);
-		
+		p2->applyForce(moment * direction);
+	*/
 	}
 
 }
