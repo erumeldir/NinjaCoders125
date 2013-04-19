@@ -40,6 +40,7 @@ private:
 	unsigned int iteration_count;
 	unsigned int response_packet_number;
 	bool connected;
+	int debugFlag;
 };
 
 #endif

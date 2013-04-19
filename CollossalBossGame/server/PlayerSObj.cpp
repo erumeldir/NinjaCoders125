@@ -4,12 +4,12 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	// Configuration options
-	jumpDist = CM::get()->find_config_as_int("JUMP_DIST");
+	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(Point_t(0,0,0), Rot_t(), CM::get()->find_config_as_int("PLAYER_MASS"));
+	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 
 	// Initialize input status
 	istat.attack = false;
@@ -53,8 +53,9 @@ bool PlayerSObj::update() {
 	int divBy = movDamp;
 	float rawRight = istat.rightDist / divBy;
 	float rawForward = istat.forwardDist / divBy;
-
-	pm->applyForce(Vec3f( (rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2)), yDist, (rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2)) ));	
+	float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
+	float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
+	pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
 
 	return false;
 }

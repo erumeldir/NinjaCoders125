@@ -104,7 +104,8 @@ void RenderEngine::renderInitalization()
 	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 	D3DXMATRIX matProj;
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 1000.0f );
+	//TODO: determine clipping
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 300.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
@@ -152,6 +153,9 @@ void RenderEngine::HUDInitialization() {
 					DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
 					"Georgia",                //pFacename,
 					&this->direct3dText);     //ppFont
+	D3DXCreateLine(this->direct3dDevice, &healthLine);
+	D3DXCreateLine(this->direct3dDevice, &backgroundLine);
+
 }
 
 /*
@@ -159,7 +163,7 @@ void RenderEngine::HUDInitialization() {
  */
 RenderEngine::RenderEngine() {
 	// Set configuration options
-	cameraDist = CM::get()->find_config_as_int("CAM_DIST");
+	cameraDist = CM::get()->find_config_as_float("CAM_DIST");
 	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
 	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
 
@@ -192,6 +196,8 @@ RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
 	direct3dText->Release(); // close and release the Text
+	healthLine->Release();
+	backgroundLine->Release();
 	delete cam;
 }
 
@@ -205,12 +211,20 @@ void RenderEngine::drawHUD() {
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
 
-   this->direct3dText->DrawText(NULL,        //pSprite
+    this->direct3dText->DrawText(NULL,        //pSprite
 								hudText.c_str(),	 //pString
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
                                 0xFF000000); //Color
+
+	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
+	backgroundLine->SetWidth(15.0f);
+	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
+
+	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10.f , 40.0f)};
+	healthLine->SetWidth(15.0f);
+	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, 0, 255, 0));
 }
 
 /*where we actually draw a scene

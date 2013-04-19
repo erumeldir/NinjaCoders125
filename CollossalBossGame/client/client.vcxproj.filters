@@ -121,5 +121,11 @@
     <None Include="res\plane.X">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\ballbounce.X">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tentacle1.X">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
