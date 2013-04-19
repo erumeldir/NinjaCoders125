@@ -14,8 +14,8 @@
 void gameInit() {
 	ServerObjectManager *som = SOM::get();
 	//Create all non-player game objects
-	TestSObj *obj0 = new TestSObj(som->genId(), MDL_1, Point_t(-50, 0, 100), TEST_WEST),
-			 *obj1 = new TestSObj(som->genId(), MDL_1, Point_t(50, 0, 80), TEST_EAST),
+	TestSObj *obj0 = new TestSObj(som->genId(), MDL_1, Point_t(-50, 5, 100), TEST_WEST),
+			 *obj1 = new TestSObj(som->genId(), MDL_1, Point_t(50, 5, 80), TEST_EAST),
 			 *obj2 = new TestSObj(som->genId(), MDL_2, Point_t(0, 0, 100), TEST_SOUTH),
 			 *obj3 = new TestSObj(som->genId(), MDL_2, Point_t(50, 10, 50));
 	som->add(obj0);

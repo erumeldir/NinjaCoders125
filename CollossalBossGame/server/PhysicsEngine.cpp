@@ -49,8 +49,9 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 
 	// if pos < 0 reset y pos to 0 and if y vel < 0 clear out y vel set friction to 1.3, else friction = 0
 	Point_t pos = mdl->ref->getPos();
-	if (pos.y < 0) {
-		mdl->ref->setPos(Point_t(pos.x, 0, pos.z));
+	float y = mdl->vol.y + pos.y;
+	if (y < 0) {
+		mdl->ref->setPos(Point_t(pos.x, -mdl->vol.y, pos.z));
 		mdl->onGround = true;
 		mdl->frictCoeff = GROUND_FRICTION;
 		mdl->accel.y = 0;
