@@ -10,6 +10,8 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject
 		case MDL_2:
 			pm->setColBox(CB_LARGE);
 			break;
+		case MDL_3:
+			pm->setColBox(CB_FLAT);
 		default:
 			break;
 	}

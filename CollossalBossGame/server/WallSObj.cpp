@@ -6,6 +6,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, Rot_t rot) : ServerObje
 	DC::get()->print("Created new WallSObj %d\n", id);
 	pm = new PhysicsModel(pos, rot, 500, true);
 	this->modelNum = modelNum;
+	pm->setColBox(CB_FLAT);
 	t = 0;
 }
 

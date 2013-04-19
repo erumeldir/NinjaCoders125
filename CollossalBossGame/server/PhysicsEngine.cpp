@@ -73,6 +73,83 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	return true;	//We'll add a detection for has-moved later
 }
 
+/*flatCollision: detects and adjusts for collisions between 
+ *  an object and a wall.
+ *
+ *
+ * Author: Bryan
+ */
+void PhysicsEngine::flatCollision(ServerObject * theObj, Frame * flat)
+{
+	PhysicsModel * obj = theObj->getPhysicsModel();
+	//1. Figure out the axis along which this object is flat
+	bool xCollide, yCollide, zCollide;
+
+	xCollide = flat->getRot().x != 0;
+	yCollide = flat->getRot().y == 0;
+	zCollide = flat->getRot().z == 0;
+
+	//now if colliding with the wall is relevant, then it's nonzero
+
+	//2. figure out what side the object originally came from
+	Point_t prev = obj->ref->getPos() - obj->vel;
+
+	//3. now we have the previous position, we can see if there's a 
+	//   change in the object's relation to this
+
+	Point_t pos = obj->ref->getPos();
+	if (xCollide && (
+			(prev.x > flat->getPos().x && obj->ref->getPos().x <= flat->getPos().x)
+			|| (prev.x < flat->getPos().x && obj->ref->getPos().x >= flat->getPos().x) 
+			)
+		)
+	{
+		obj->ref->setPos(Point_t(0, pos.y, pos.z));
+		obj->onGround = true;
+		obj->frictCoeff = GROUND_FRICTION;
+		obj->accel.x = 0;
+		if(obj->vel.x < 0) {
+			obj->vel.x = 0;
+		}
+		pos = obj->ref->getPos();
+	}
+
+	if (yCollide && (
+			(prev.y > flat->getPos().y && obj->ref->getPos().y <= flat->getPos().y)
+			|| (prev.y < flat->getPos().y && obj->ref->getPos().y >= flat->getPos().y) 
+			) 
+		)
+	{
+		obj->ref->setPos(Point_t(pos.x, 0, pos.z));
+		obj->onGround = true;
+		obj->frictCoeff = GROUND_FRICTION;
+		obj->accel.y = 0;
+		if(obj->vel.y < 0) {
+			obj->vel.y = 0;
+		}
+		pos = obj->ref->getPos();
+	}
+
+	if (zCollide && (
+			(prev.z > flat->getPos().z && obj->ref->getPos().z <= flat->getPos().z)
+			|| (prev.z < flat->getPos().z && obj->ref->getPos().z >= flat->getPos().z) 
+			) 
+		)
+	{
+		obj->ref->setPos(Point_t(pos.x, pos.y, 0));
+		obj->onGround = true;
+		obj->frictCoeff = GROUND_FRICTION;
+		obj->accel.z = 0;
+		if(obj->vel.z < 0) {
+			obj->vel.z = 0;
+		}
+		pos = obj->ref->getPos();
+	}
+	//if the object was above and is now below
+
+	return;
+}
+
 /*applyPhysics: figures out if the two objects collide and how to react
  *
  *	General Note: Currently dealing only in spheres
@@ -96,16 +173,44 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	CollisionBox size1 = p1->getColBox();	
 	CollisionBox size2 = p2->getColBox();
 
-	float r1 = (size1 == CB_SMALL) ? SMALLRADIUS : LARGERADIUS;
-	float r2 = (size2 == CB_SMALL) ? SMALLRADIUS : LARGERADIUS;
+	float r1, r2;
+	bool isWall1 = false, isWall2 = false;
+	switch (size1) {
+	case CB_SMALL: r1 = SMALLRADIUS;
+		break;
+	case CB_LARGE:
+		r1 = LARGERADIUS;
+		break;
+	default: //it's a wall, so we can deal with it here
+		if (size2 != CB_FLAT) {
+			flatCollision(obj2, p1->ref);
+		}
+		return;
+	}
+	
+	switch (size2) {
+	case CB_SMALL: r2 = SMALLRADIUS;
+		break;
+	case CB_LARGE:
+		r2 = LARGERADIUS;
+		break;
+	default: //it's a wall, so we can deal with it here
+		if (size1 != CB_FLAT) {
+			flatCollision(obj1, p2->ref);
+		}
+		return;
+	}
 
+	if (isWall1) {
+		
+	} else if (isWall2)
+	{
+
+	}
 	//3. calculate the distance
-		float x21 = second.x - first.x;
-		float y21 = second.y - first.y;
-		float z21 = second.z - first.z;
 	Vec3f dist = Vec3f(first.x - second.x, first.y - second.y, first.z - second.z);
 	
-		float d=sqrt(dist.x * dist.x + dist.y * dist.y + dist.z * dist.z);
+	float d=sqrt(dist.x * dist.x + dist.y * dist.y + dist.z * dist.z);
 
 	//Dealing with collisions!
 	if (d<r1 + r2)

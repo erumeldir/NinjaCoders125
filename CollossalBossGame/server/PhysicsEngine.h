@@ -18,6 +18,8 @@ private:
 
 	static PhysicsEngine *pe;
 
+	void flatCollision(ServerObject * theObj, Frame * flat);
+
 	// Configuration options
 	float gravity;
 };

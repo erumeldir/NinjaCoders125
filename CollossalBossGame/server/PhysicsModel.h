@@ -13,6 +13,7 @@
 typedef enum CollisionBox {
 	CB_SMALL,
 	CB_LARGE,
+	CB_FLAT,
 	NUM_CBS
 };
 
