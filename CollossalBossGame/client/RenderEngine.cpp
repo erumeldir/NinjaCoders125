@@ -163,7 +163,7 @@ void RenderEngine::HUDInitialization() {
  */
 RenderEngine::RenderEngine() {
 	// Set configuration options
-	cameraDist = CM::get()->find_config_as_int("CAM_DIST");
+	cameraDist = CM::get()->find_config_as_float("CAM_DIST");
 	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
 	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
 
@@ -196,6 +196,8 @@ RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
 	direct3dText->Release(); // close and release the Text
+	healthLine->Release();
+	backgroundLine->Release();
 	delete cam;
 }
 
@@ -220,7 +222,7 @@ void RenderEngine::drawHUD() {
 	backgroundLine->SetWidth(15.0f);
 	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
 
-	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10 , 40.0f)};
+	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10.f , 40.0f)};
 	healthLine->SetWidth(15.0f);
 	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, 0, 255, 0));
 }

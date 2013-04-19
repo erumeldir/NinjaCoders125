@@ -42,9 +42,9 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 	mdl->applyAccel(downVector*gravity);
 
 	//Update position
-	float dx = 0.5 * mdl->accel.x * dt * dt + mdl->vel.x * dt,
-		  dy = 0.5 * mdl->accel.y * dt * dt + mdl->vel.y * dt,
-		  dz = 0.5 * mdl->accel.z * dt * dt + mdl->vel.z * dt;
+	float dx = 0.5f * mdl->accel.x * dt * dt + mdl->vel.x * dt,
+		  dy = 0.5f * mdl->accel.y * dt * dt + mdl->vel.y * dt,
+		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
 	mdl->ref->translate(Point_t(dx, dy, dz));
 
 	// if pos < 0 reset y pos to 0 and if y vel < 0 clear out y vel set friction to 1.3, else friction = 0

@@ -109,6 +109,7 @@
     <None Include="renderC.jpg" />
     <None Include="res\ballbounce.X" />
     <None Include="res\plane.X" />
+    <None Include="res\tentacle1.X" />
     <None Include="smallBox.X" />
     <None Include="tiny.x" />
     <None Include="tiny_skin.bmp" />

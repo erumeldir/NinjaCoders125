@@ -82,7 +82,7 @@ private:
 	Camera* cam;
 
 	//Configuration fields
-	int cameraDist;
+	float cameraDist;
 	int hudTopX, hudTopY;
 };
 typedef RenderEngine RE;

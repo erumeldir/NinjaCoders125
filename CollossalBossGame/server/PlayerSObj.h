@@ -21,7 +21,7 @@ private:
 	inputstatus istat;
 
 	// Configuration options
-	int jumpDist;
+	float jumpDist;
 	int movDamp;
 };
 

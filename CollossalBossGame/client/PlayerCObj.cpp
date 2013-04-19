@@ -12,7 +12,7 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id)
 {
 	DC::get()->print("Created new PlayerCObj %d\n", id);
-	rm = new RenderModel(Point_t(300,500,0),Rot_t(0,0,M_PI), MDL_4);
+	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, M_PI), MDL_4);
 	cameraPitch = 0;
 	health = CM::get()->find_config_as_int("INIT_HEALTH");
 }
@@ -45,12 +45,12 @@ bool PlayerCObj::update() {
 			
 			if(xctrl->getState().Gamepad.bLeftTrigger) {
 				cameraPitch = 0;
-			} else if(fabs((double)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
-				cameraPitch += atan(((double)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
-				if (cameraPitch > M_PI / 2) {
-					cameraPitch = M_PI / 2;
+			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
+				cameraPitch += atan(((float)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
+				if (cameraPitch > M_PI / 2.f) {
+					cameraPitch = M_PI / 2.f;
 				} else if(cameraPitch < -M_PI / 4) {
-					cameraPitch = -M_PI / 4;
+					cameraPitch = -M_PI / 4.f;
 				}
 			}
 		}

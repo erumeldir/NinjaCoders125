@@ -31,16 +31,16 @@ bool TestSObj::update() {
 	 */
 	switch(dir) {
 	case TEST_NORTH:
-		pm->applyForce(Vec3f(0, 0, MOVE_AMT * sin((double)t / DIV)));
+		pm->applyForce(Vec3f(0, 0, MOVE_AMT * sin((float)t / DIV)));
 		break;
 	case TEST_EAST:
-		pm->applyForce(Vec3f(MOVE_AMT * sin((double)t / DIV), 0, 0));
+		pm->applyForce(Vec3f(MOVE_AMT * sin((float)t / DIV), 0, 0));
 		break;
 	case TEST_SOUTH:
-		pm->applyForce(Vec3f(0, 0, -MOVE_AMT * sin((double)t / DIV)));
+		pm->applyForce(Vec3f(0, 0, -MOVE_AMT * sin((float)t / DIV)));
 		break;
 	case TEST_WEST:
-		pm->applyForce(Vec3f(-MOVE_AMT * sin((double)t / DIV), 0, 0));
+		pm->applyForce(Vec3f(-MOVE_AMT * sin((float)t / DIV), 0, 0));
 		break;
 	default:
 		break;
