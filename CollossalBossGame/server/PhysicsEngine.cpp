@@ -30,16 +30,21 @@ PhysicsEngine::~PhysicsEngine(void)
  * Updates the physical position of the model and returns true if this object
  * should have collision physics applied.
  */
-bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
+bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	float dt = TIMESTEP;
 
-	if(mdl->isStatic) return true;
+	PhysicsModel *mdl = obj->getPhysicsModel();
+	if(obj->getFlag(IS_STATIC)) return true;
 
-	//Apply additional forces, such as gravity and friction.
-	// We are ignoring both for now and applying a half-assed version of
-	// friction when we update the velocity.
-	Vec3f downVector = Vec3f(0, -1, 0);
-	mdl->applyAccel(downVector*gravity);
+	//Apply gravity if not falling; otherwise, apply friction
+	if(obj->getFlag(IS_FALLING)) {
+		//gravity
+		Vec3f downVector = Vec3f(0, -1, 0);
+		mdl->applyAccel(downVector*gravity);
+	} else {
+		//friction
+	}
+
 
 	//Update position
 	float dx = 0.5f * mdl->accel.x * dt * dt + mdl->vel.x * dt,
@@ -47,6 +52,12 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
 	mdl->ref->translate(Point_t(dx, dy, dz));
 
+	//Object falls if it has moved (it may not fall after collision checks have been applied)
+	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
+		obj->setFlag(IS_FALLING, true);
+	}
+
+#if 0
 	// if pos < 0 reset y pos to 0 and if y vel < 0 clear out y vel set friction to 1.3, else friction = 0
 	Point_t pos = mdl->ref->getPos();
 	float y = mdl->vol.y + pos.y;
@@ -62,6 +73,7 @@ bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
 		mdl->onGround = false;
 		mdl->frictCoeff = AIR_FRICTION;
 	}
+#endif
 
 	//Update velocity
 	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;
@@ -315,9 +327,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {
-            if(!obj1->getFlag(IS_PASSABLE) && !obj2->getFlag(IS_PASSABLE)) {
-                obj2->setFlag(IS_FALLING, false);
-            }
+            obj2->setFlag(IS_FALLING, false);
         } else {
 			obj1->setFlag(IS_FALLING, false);
         }

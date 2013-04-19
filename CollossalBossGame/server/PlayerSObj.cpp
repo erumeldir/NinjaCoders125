@@ -7,7 +7,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
-	Point_t pos = Point_t();
+	Point_t pos = Point_t(0, 25, 0);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	DC::get()->print("Created new PlayerSObj %d\n", id);
@@ -39,7 +39,7 @@ bool PlayerSObj::update() {
 	if (istat.attack) {
 		// Determine attack logic here
 	}
-	if (istat.jump && pm->onGround) {
+	if (istat.jump && !getFlag(IS_FALLING)) {
 		yDist = jumpDist;
 	}
 	if (istat.specialPower) {

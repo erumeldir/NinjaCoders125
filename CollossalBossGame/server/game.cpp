@@ -36,7 +36,7 @@ void gameInit() {
 			 //*frontWall = new WallSObj(som->genId(), MDL_3, Point_t(0, 75, 75), Rot_t(0, 0, -M_PI/2));
 			// *backWall = new WallSObj(som->genId(), MDL_3, Point_t(-75, 75, 0), Rot_t(0, 0, -M_PI/2));
 	
-	//som->add(floor);
+	som->add(floor);
 	som->add(ceiling);
 	som->add(rightWall);
 	som->add(leftWall);
