@@ -40,7 +40,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	if(obj->getFlag(IS_FALLING)) {
 		//gravity
 		Vec3f downVector = Vec3f(0, -1, 0);
-		mdl->applyAccel(downVector*gravity);
+		//mdl->applyAccel(downVector*gravity);
 	} else {
 		//friction
 	}
@@ -55,6 +55,8 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	//Object falls if it has moved (it may not fall after collision checks have been applied)
 	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
 		obj->setFlag(IS_FALLING, true);
+		//mdl->frictCoeff = AIR_FRICTION;
+		mdl->frictCoeff = GROUND_FRICTION;
 	}
 
 #if 0
@@ -328,8 +330,10 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {
             obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
         } else {
 			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
         }
     } else {
         //Shift by Z
