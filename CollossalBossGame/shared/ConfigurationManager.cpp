@@ -219,4 +219,22 @@ Vec3f ConfigurationManager::find_config_as_point(string key) {
 	return Vec3f(fx, fy, fz);
 }
 
+Box ConfigurationManager::find_config_as_box(string key) {
+	vector<string> chunk;
+	string box = find_config_as_string(key);
+	split(box, ',', chunk);
+	assert(chunk.size() == 6 && "Config Error: Points are represented as <floatx> , <floaty> , <floatz> , <floatw> , <floath> , <floatl>. Spaces will ignored.");
+	string x = chunk[0], y = chunk[1], z = chunk[2],
+		   w = chunk[3], h = chunk[4], l = chunk[5];
+	stripSpaces(x); stripSpaces(y); stripSpaces(z);
+	stripSpaces(w); stripSpaces(h); stripSpaces(l);
+	float fx = (float)atof(x.c_str()),
+		  fy = (float)atof(y.c_str()),
+		  fz = (float)atof(z.c_str()),
+		  fw = (float)atof(w.c_str()),
+		  fh = (float)atof(h.c_str()),
+		  fl = (float)atof(l.c_str());
+	return Box(fx, fy, fz, fw, fh, fl);
+}
+
 #pragma endregion

@@ -1,5 +1,6 @@
 #include "TestSObj.h"
 #include <math.h>
+#include "ConfigurationManager.h"
 
 TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject(id) {
 	DC::get()->print("Created new TestSObj %d\n", id);
@@ -9,15 +10,15 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject
 	switch (modelNum) {
 		case MDL_4:
 		case MDL_1:	//box
-			bxVol = Box(pos.x - 10, pos.y, pos.z - 10, 20, 20, 20);
+			bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-5, 0, -5, 10, 10, 10);
 			break;
 		case MDL_2:	//Pyramid
-			bxVol = Box(pos.x - 25, pos.y, pos.z - 25, 50, 50, 50);
+			bxVol = CM::get()->find_config_as_box("BOX_PYRAMID");//Box(-20, 0, -20, 40, 40, 40);
 			//pm->setColBox(CB_LARGE);
 			break;
 		case MDL_3:	//plane
 #define WALL_WIDTH 150
-			bxVol = Box(pos.x - WALL_WIDTH / 2, pos.y, pos.z - WALL_WIDTH / 2,
+			bxVol = Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
 					WALL_WIDTH, 10, WALL_WIDTH);
 			//pm->setColBox(CB_FLAT);
 			break;

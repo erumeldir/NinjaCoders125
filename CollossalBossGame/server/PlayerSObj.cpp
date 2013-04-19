@@ -8,7 +8,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
 	Point_t pos = Point_t();
-	Box bxVol = Box(pos.x - 10, pos.y, pos.z - 10, 20, 20, 20);
+	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
@@ -76,5 +76,5 @@ void PlayerSObj::deserialize(char* newInput)
 }
 
 void PlayerSObj::onCollision(ServerObject *obj) {
-	DC::get()->print("Collided with obj %d", obj->getId());
+	DC::get()->print("Collided with obj %d\n", obj->getId());
 }

@@ -22,6 +22,7 @@ public:
 	float find_config_as_float(string key);
 	bool find_config_as_bool(string key);
 	Vec3f find_config_as_point(string key);
+	Box   find_config_as_box(string key);
 private:
 	void init();
 

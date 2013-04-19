@@ -54,6 +54,7 @@ public:
 	std::map<long, unsigned int> sessionsip; // table to keep track of each client's ipaddress in the form of a long
 	std::map<unsigned int, unsigned int> sessionsobjid; // table <client id, object id>
 	Packet send_buffer;
+	int debugFlag;
 	
 };
 typedef ServerNetworkManager SNM;

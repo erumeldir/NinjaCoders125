@@ -42,6 +42,16 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 		} else {
 			DC::get()->print("Successfully loaded model %d\n",modelNum);
 		}
+		D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
+		float rad;
+		int numMesh;
+		RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
+		DC::get()->print("Bounding box for model %d = (%f,%f,%f:%f,%f,%f); center = (%f,%f,%f); rad = %f; num meshes = %d\n",
+			modelNum,
+			mdlMin.x - sphereCenter.x, mdlMin.y - sphereCenter.y, mdlMin.z - sphereCenter.z,
+			mdlMax.x - mdlMin.x, mdlMax.y - mdlMin.y, mdlMax.z - mdlMin.z,
+			sphereCenter.x, sphereCenter.y, sphereCenter.z,
+			rad, numMesh);
 	}
 }
 

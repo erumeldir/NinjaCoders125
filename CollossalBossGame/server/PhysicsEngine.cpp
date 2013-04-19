@@ -333,11 +333,11 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
         }
 	}
-
+#if 1
 	//Move the objects by the specified amount
 	obj1->getPhysicsModel()->ref->translate(ptObj1Shift);
 	obj2->getPhysicsModel()->ref->translate(ptObj2Shift);
-
+#endif
 	//Inform the logic module of the collision event
 	obj1->onCollision(obj2);
 	obj2->onCollision(obj1);
@@ -345,10 +345,10 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 #endif
 
 bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
-	return bx1.x + bx1.w < bx2.x ||
-		   bx1.y + bx1.h < bx2.y ||
-		   bx1.z + bx1.l < bx2.z ||
-		   bx1.x > bx2.x + bx2.w ||
-		   bx1.y > bx2.y + bx2.h ||
-		   bx1.z > bx2.z + bx2.l;
+	return !(bx1.x + bx1.w < bx2.x ||
+			 bx1.y + bx1.h < bx2.y ||
+			 bx1.z + bx1.l < bx2.z ||
+			 bx1.x > bx2.x + bx2.w ||
+			 bx1.y > bx2.y + bx2.h ||
+			 bx1.z > bx2.z + bx2.l);
 }

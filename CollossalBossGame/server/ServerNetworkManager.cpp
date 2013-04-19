@@ -20,6 +20,7 @@ ServerNetworkManager ServerNetworkManager::SNM;
  */
 ServerNetworkManager::ServerNetworkManager(void)
 {
+	debugFlag = CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG");
 	char * PORT = CM::get()->find_config("PORT");
 	printf("Listening at port %s\n", PORT);
 
@@ -192,16 +193,18 @@ void ServerNetworkManager::receiveFromClients() {
             packet.deserialize(&(network_data[i]));
             i += sizeof(Packet);
 			// <Log Packet>
-			if(CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG"))
+			if(debugFlag)
 				DC::get()->print(TIMESTAMP | LOGFILE, "Iteration: %d packet_type: %d object_id: %d packet_number: %d command_type: %d\n", packet.iteration, packet.packet_type, packet.object_id, packet.packet_number, packet.command_type);
 			// </Log Packet>
             switch (packet.packet_type) {
 				ServerObject* destObject;
                 case INIT_CONNECTION:
-                    DC::get()->print("server received init packet from client %d\n", iter->first);
+					if(debugFlag)
+						DC::get()->print("server received init packet from client %d\n", iter->first);
                     break;
                 case ACTION_EVENT:
-					DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
+					if(debugFlag)
+						DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
 
 					destObject = SOM::get()->find(packet.object_id);
 

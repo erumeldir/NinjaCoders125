@@ -205,7 +205,8 @@ bool ClientNetworkManager::update()
 				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
 			case COMPLETE:
-				DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);
+				if(debugFlag)
+					DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);
 				ret = false;
 				break;
             default:
