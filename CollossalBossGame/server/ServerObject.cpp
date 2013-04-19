@@ -3,6 +3,7 @@
 
 ServerObject::ServerObject(uint id) {
 	this->id = id;
+	flags = 0;
 }
 
 

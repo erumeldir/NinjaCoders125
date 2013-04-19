@@ -156,7 +156,7 @@ void PhysicsEngine::flatCollision(ServerObject * theObj, Frame * flat)
  *  Author: Bryan
  *  Alex note: separate detection and collision response
  */
-
+#if 0
 #include <iostream>
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	//Collision checks/inter-object physics
@@ -255,4 +255,100 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	}
 
 }
+#else
 
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
+	Box bx1 = obj1->getPhysicsModel()->vol + obj1->getPhysicsModel()->ref->getPos(),
+		bx2 = obj2->getPhysicsModel()->vol + obj2->getPhysicsModel()->ref->getPos();
+
+	//Check for collision
+	if(!aabbCollision(bx1,bx2)) {
+		return;
+	}
+
+	//Passable objects or static pairs cannot be collided with
+	if((obj1->getFlag(IS_PASSABLE) || obj2->getFlag(IS_PASSABLE)) ||
+			(obj1->getFlag(IS_STATIC) && obj2->getFlag(IS_STATIC))) {
+		obj1->onCollision(obj2);
+		obj2->onCollision(obj1);
+		return;
+	}
+
+	//Move out bounding boxes if collision occurs
+	float fXShift1 = bx2.x - (bx1.x + bx1.w),
+          fXShift2 = (bx2.x + bx2.w) - bx1.x,
+          fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
+    float fYShift1 = bx2.y - (bx1.y + bx1.l),
+          fYShift2 = (bx2.y + bx2.l) - bx1.y,
+          fYShift  = fabs(fYShift1) < fabs(fYShift2) ? fYShift1 : fYShift2;
+    float fZShift1 = bx2.z - (bx1.z + bx1.h),
+          fZShift2 = (bx2.z + bx2.h) - bx1.z,
+          fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
+	Vec3f ptObj1Shift, ptObj2Shift;
+
+    if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
+        //Shift by X
+        if(obj1->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f();
+            ptObj2Shift = Vec3f(-fXShift, 0, 0);
+        } else if(obj2->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f(fXShift, 0, 0);
+            ptObj2Shift = Vec3f();
+
+        } else {    //Split evenly
+            ptObj1Shift = Vec3f(fXShift / 2, 0, 0);
+            ptObj2Shift = Vec3f(-fXShift / 2, 0, 0);
+        }
+    } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
+        //Shift by Y (vertical)
+        if(obj1->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f();
+            ptObj2Shift = Vec3f(0, -fYShift, 0);
+        } else if(obj2->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f(0, fYShift, 0);
+            ptObj2Shift = Vec3f();
+        } else {    //Split evenly
+            ptObj1Shift = Vec3f(0, fYShift / 2, 0);
+            ptObj2Shift = Vec3f(0, -fYShift / 2, 0);
+        }
+		
+		//Stop the lower object from falling
+        if(bx2.y > bx1.y) {
+            if(!obj1->getFlag(IS_PASSABLE) && !obj2->getFlag(IS_PASSABLE)) {
+                obj2->setFlag(IS_FALLING, false);
+            }
+        } else {
+			obj1->setFlag(IS_FALLING, false);
+        }
+    } else {
+        //Shift by Z
+        if(obj1->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f();
+            ptObj2Shift = Vec3f(0, 0, -fZShift);
+        } else if(obj2->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f(0, 0, fZShift);
+            ptObj2Shift = Vec3f();
+        } else {    //Split evenly
+            ptObj1Shift = Vec3f(0, 0, fZShift / 2);
+            ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
+        }
+	}
+
+	//Move the objects by the specified amount
+	obj1->getPhysicsModel()->ref->translate(ptObj1Shift);
+	obj2->getPhysicsModel()->ref->translate(ptObj2Shift);
+
+	//Inform the logic module of the collision event
+	obj1->onCollision(obj2);
+	obj2->onCollision(obj1);
+}
+#endif
+
+bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
+	return bx1.x + bx1.w < bx2.x ||
+		   bx1.y + bx1.h < bx2.y ||
+		   bx1.z + bx1.l < bx2.z ||
+		   bx1.x > bx2.x + bx2.w ||
+		   bx1.y > bx2.y + bx2.h ||
+		   bx1.z > bx2.z + bx2.l;
+}

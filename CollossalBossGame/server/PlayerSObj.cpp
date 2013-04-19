@@ -7,9 +7,12 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
+	Point_t pos = Point_t();
+	Box bxVol = Box(pos.x - 10, pos.y, pos.z - 10, 20, 20, 20);
+
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
 
 	// Initialize input status
 	istat.attack = false;
@@ -70,4 +73,8 @@ void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
+}
+
+void PlayerSObj::onCollision(ServerObject *obj) {
+	DC::get()->print("Collided with obj %d", obj->getId());
 }

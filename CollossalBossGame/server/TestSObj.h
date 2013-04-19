@@ -18,6 +18,7 @@ public:
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
 	virtual ObjectType getType() { return OBJ_GENERAL; }
+	virtual void onCollision(ServerObject *obj) {}
 
 	char serialbuffer[100];
 

@@ -279,10 +279,7 @@ bool RenderEngine::loadModel(const char * filename, int * idAddr) {
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
-	{	
-		case WM_KEYUP:
-			printf("Key up\n");
-			break;
+	{
 		case WM_DESTROY:
 		{
 			printf("Window destroyed\n");
@@ -290,7 +287,7 @@ LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPAR
 			return 0;
 		} break;
 		default:
-			printf("Unknown message 0x%x\n", message);
+			//printf("Unknown message 0x%x\n", message);
 			break;
 	}
 

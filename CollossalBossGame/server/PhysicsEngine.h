@@ -20,6 +20,8 @@ private:
 
 	void flatCollision(ServerObject * theObj, Frame * flat);
 
+	bool aabbCollision(const Box &bx1, const Box &bx2);
+
 	// Configuration options
 	float gravity;
 };

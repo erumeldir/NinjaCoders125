@@ -75,10 +75,44 @@ typedef struct Vec3f {
 
 } Point_t, Rot_t;
 
+//Axis-aligned bounding box
+typedef struct Box {
+	float x, y, z;
+	float w, h, l;
+
+	Box() {
+		x = y = z = w = l = h = 0;
+	}
+	
+	Box(float x, float y, float z, float w, float h, float l) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->w = w;
+		this->h = h;
+		this->l = l;
+	}
+
+	Box operator+ (const Vec3f &pt) const {
+		return Box(x + pt.x, y + pt.y, z + pt.z,
+				   w,        h,        l);
+	}
+};
+
 //Enumerations
 /*
  * Actions that are sent from the client to the server
  */
+
+typedef enum OBJ_FLAGS {
+	//General flags
+	//Physics flags
+	IS_STATIC,
+	IS_PASSABLE,
+	IS_FALLING
+};
+
+
 typedef enum ACTION {
 	ACT_MOVE_X,
 	ACT_MOVE_Y,

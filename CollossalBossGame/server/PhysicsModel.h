@@ -20,7 +20,7 @@ typedef enum CollisionBox {
 //All physics data should be known to the frames
 struct PhysicsModel
 {
-	PhysicsModel(Point_t pos, Rot_t rot, float mass, bool isStatic = false) {
+	PhysicsModel(Point_t pos, Rot_t rot, float mass, const Box &vol, bool isStatic = false) {
 		ref = new Frame(pos,rot);
 //		appliedAccel = Vec3f();
 		vel = Vec3f();
@@ -29,6 +29,7 @@ struct PhysicsModel
 		frictCoeff = GROUND_FRICTION;
 		this->colBox = CB_SMALL;		
 		this->isStatic = isStatic;
+		this->vol = vol;
 	}
 
 	virtual ~PhysicsModel() {
@@ -69,4 +70,5 @@ struct PhysicsModel
 	bool onGround;
 	bool isStatic;
 	CollisionBox colBox;
+	Box vol;
 };
