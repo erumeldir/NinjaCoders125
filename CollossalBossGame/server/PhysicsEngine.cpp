@@ -18,6 +18,9 @@ PhysicsEngine::PhysicsEngine(void)
 {
 	// Configuration options
 	gravity = CM::get()->find_config_as_float("GRAVITY_FORCE");
+
+	xPos = yPos = zPos = 500;
+	xNeg = yNeg = zNeg = 0;
 }
 
 
@@ -71,10 +74,26 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	//Update acceleration
 	mdl->accel = Vec3f();
 
+#if 1
+	//Cap position
 	Point_t pos = mdl->ref->getPos();
-	if(pos.y + mdl->vol.y < 0) {
-		mdl->ref->setPos(Point_t(pos.x, -mdl->vol.y, pos.z));
+	if(pos.y + mdl->vol.y < yNeg) {
+		pos.y = yNeg - mdl->vol.y;
+	} else if(pos.y + mdl->vol.y + mdl->vol.h > yPos) {
+		pos.y = yPos - (mdl->vol.y + mdl->vol.h);
 	}
+	if(pos.x + mdl->vol.x < xNeg) {
+		pos.x = xNeg - mdl->vol.x;
+	} else if(pos.x + mdl->vol.x + mdl->vol.w > xPos) {
+		pos.x = xPos - (mdl->vol.x + mdl->vol.w);
+	}
+	if(pos.z + mdl->vol.z < zNeg) {
+		pos.z = zNeg - mdl->vol.z;
+	} else if(pos.x + mdl->vol.z + mdl->vol.l > zPos) {
+		pos.z = zPos - (mdl->vol.z + mdl->vol.l);
+	}
+	mdl->ref->setPos(Point_t(pos.x, pos.y, pos.z));
+#endif
 
 	//Object falls if it has moved (it may not fall after collision checks have been applied)
 	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
@@ -297,12 +316,6 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
           fZShift2 = (bx2.z + bx2.l) - bx1.z,
           fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
 	Vec3f ptObj1Shift, ptObj2Shift;
-	
-	if(obj1->getId() == 16 || obj2->getId() == 16) {
-		DC::get()->print("Obj %d-%d collision: (1:2=res) = (%f:%f=%f),\t(%f:%f=%f),\t(%f:%f=%f)\n",
-			obj1->getId(), obj2->getId(), 
-			fXShift1,fXShift2,fXShift, fYShift1,fYShift2,fYShift, fZShift1,fZShift2,fZShift);
-	}
 	
     if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X

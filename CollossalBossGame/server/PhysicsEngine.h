@@ -12,6 +12,15 @@ public:
 	bool applyPhysics(ServerObject *obj);
 	void applyPhysics(ServerObject *obj1, ServerObject *obj2);
 
+	void setLimits(float xNeg, float yNeg, float zNeg, float xPos, float yPos, float zPos) {
+		this->xPos = xPos;
+		this->xNeg = xNeg;
+		this->yPos = yPos;
+		this->yNeg = yNeg;
+		this->zPos = zPos;
+		this->zNeg = zNeg;
+	}
+
 private:
 	PhysicsEngine(void);
 	virtual ~PhysicsEngine(void);
@@ -24,5 +33,9 @@ private:
 
 	// Configuration options
 	float gravity;
+
+	//Position caps
+	float xPos, yPos, zPos,
+		  xNeg, yNeg, zNeg;
 };
 typedef PhysicsEngine PE;

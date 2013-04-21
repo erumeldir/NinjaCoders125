@@ -10,6 +10,7 @@
 //Objects we can build
 #include "TestSObj.h"
 #include "WallSObj.h"
+#include "PhysicsEngine.h"
 
 void buildRoom(Point_t center, int w, int h, int l) {
 #define WIDTH 150
@@ -25,6 +26,7 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	WallSObj *floor, *ceiling,
 			 *north, *south,
 			 *east, *west;
+	DC::get()->print("Making room with bottom-corner at (%f,%f,%f)\n", center.x, center.y, center.z);
 #if 1	
 	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), WALL_DOWN);
 	ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH,0), WALL_UP);
@@ -39,6 +41,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	som->add(west);
 	som->add(north);
 	som->add(south);
+	PE::get()->setLimits(-WIDTH / 2, 0, -WIDTH / 2,
+						  WIDTH / 2, WIDTH, WIDTH / 2);
 #else
 	//floor/ceiling
 	for(x = 0; x < w; ++x) {
