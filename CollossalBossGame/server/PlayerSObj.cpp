@@ -43,7 +43,7 @@ bool PlayerSObj::update() {
 		if (istat.attack) {
 			// Determine attack logic here
 		}
-		if (istat.jump && pm->onGround) {
+		if (istat.jump && !getFlag(IS_FALLING)) {
 			yDist = jumpDist;
 		}
 		if (istat.specialPower) {
@@ -89,7 +89,7 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	if(this->health < 0) health = 0;
 	if(this->health > 100) health = 100;
 
-
+#if 0
 	/**  http://bobobobo.wordpress.com/tag/computer-graphics/
 	  */
 	if(obj->getFlag(IS_WALL)) //&& istat.jump)
@@ -106,4 +106,5 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	//	pm->vel = reflected;
 	//	pm->applyForce(normal * 5);
 	}
+#endif
 }

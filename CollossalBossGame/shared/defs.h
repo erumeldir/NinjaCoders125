@@ -80,6 +80,19 @@ typedef struct Vec3f {
 		return Vec3f(x, y, z);
 	}
 
+	//Scalar ops
+	void operator*= (float s) {
+		x *= s;
+		y *= s;
+		z *= s;
+	}
+
+	void operator/= (float s) {
+		x /= s;
+		y /= s;
+		z /= s;
+	}
+
 } Point_t, Rot_t;
 
 //Axis-aligned bounding box
@@ -104,7 +117,7 @@ typedef struct Box {
 		return Box(x + pt.x, y + pt.y, z + pt.z,
 				   w,        h,        l);
 	}
-};
+} Vol_t;
 
 //Enumerations
 /*

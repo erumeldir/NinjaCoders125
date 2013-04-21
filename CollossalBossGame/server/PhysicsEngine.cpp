@@ -5,6 +5,7 @@
 //Movement Defines
 #define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
 #define AIR_FRICTION 1.01f	//A bit excessive, but it works for now
+#define MAX_VEL 5.0f
 
 //Collision Defines
 #define SMALLRADIUS 5.0f
@@ -53,10 +54,18 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
 	mdl->ref->translate(Point_t(dx, dy, dz));
 
+
+
 	//Update velocity
 	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;
 	mdl->vel.y = mdl->accel.y * dt + mdl->vel.y / mdl->frictCoeff;
 	mdl->vel.z = mdl->accel.z * dt + mdl->vel.z / mdl->frictCoeff;
+
+	//Cap velocity
+	float magSq = mdl->vel.x * mdl->vel.x + mdl->vel.y * mdl->vel.y + mdl->vel.z * mdl->vel.z;
+	if(magSq > MAX_VEL * MAX_VEL) {
+		mdl->vel *= MAX_VEL / sqrt(magSq);
+	}
 
 	//Update acceleration
 	mdl->accel = Vec3f();
@@ -282,9 +291,13 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
           fZShift2 = (bx2.z + bx2.l) - bx1.z,
           fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
 	Vec3f ptObj1Shift, ptObj2Shift;
-	DC::get()->print("Obj %d-%d collision: (1:2=res) = (%f:%f=%f),\t(%f:%f=%f),\t(%f:%f=%f)\n",
-		obj1->getId(), obj2->getId(), 
-		fXShift1,fXShift2,fXShift, fYShift1,fYShift2,fYShift, fZShift1,fZShift2,fZShift);
+	
+	if(obj1->getId() == 16 || obj2->getId() == 16) {
+		DC::get()->print("Obj %d-%d collision: (1:2=res) = (%f:%f=%f),\t(%f:%f=%f),\t(%f:%f=%f)\n",
+			obj1->getId(), obj2->getId(), 
+			fXShift1,fXShift2,fXShift, fYShift1,fYShift2,fYShift, fZShift1,fZShift2,fZShift);
+	}
+	
 
     if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X
