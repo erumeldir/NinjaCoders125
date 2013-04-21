@@ -48,6 +48,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 
 	//Update position
 	mdl->lastPos = mdl->ref->getPos();
+	//if(mdl->ref->getPos().y <= 0) mdl->lastPosOnGround = mdl->ref->getPos();
 	float dx = 0.5f * mdl->accel.x * dt * dt + mdl->vel.x * dt,
 		  dy = 0.5f * mdl->accel.y * dt * dt + mdl->vel.y * dt,
 		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
@@ -60,6 +61,11 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 
 	//Update acceleration
 	mdl->accel = Vec3f();
+
+	Point_t pos = mdl->ref->getPos();
+	if(pos.y + mdl->vol.y < 0) {
+		mdl->ref->setPos(Point_t(pos.x, -mdl->vol.y, pos.z));
+	}
 
 	//Object falls if it has moved (it may not fall after collision checks have been applied)
 	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
@@ -282,10 +288,10 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
           fZShift2 = (bx2.z + bx2.l) - bx1.z,
           fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
 	Vec3f ptObj1Shift, ptObj2Shift;
-	DC::get()->print("Obj %d-%d collision: (1:2=res) = (%f:%f=%f),\t(%f:%f=%f),\t(%f:%f=%f)\n",
+	/*DC::get()->print("Obj %d-%d collision: (1:2=res) = (%f:%f=%f),\t(%f:%f=%f),\t(%f:%f=%f)\n",
 		obj1->getId(), obj2->getId(), 
 		fXShift1,fXShift2,fXShift, fYShift1,fYShift2,fYShift, fZShift1,fZShift2,fZShift);
-
+    */
     if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X
         if(obj1->getFlag(IS_STATIC)) {
@@ -333,6 +339,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
         }
 	}
+
 #if 1
 	//Move the objects by the specified amount
 	obj1->getPhysicsModel()->ref->translate(ptObj1Shift);

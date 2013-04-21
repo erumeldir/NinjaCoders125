@@ -14,6 +14,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
 	istat.attack = false;
@@ -43,7 +44,7 @@ bool PlayerSObj::update() {
 		if (istat.attack) {
 			// Determine attack logic here
 		}
-		if (istat.jump && pm->onGround) {
+		if (istat.jump && !getFlag(IS_FALLING)) {
 			yDist = jumpDist;
 		}
 		if (istat.specialPower) {
@@ -96,21 +97,16 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	{
 		//jump!
 		WallSObj *wall  = reinterpret_cast<WallSObj *>(obj);
-		float bounceDamp = 2.f;
+		float bounceDamp = 0.05f;
 
-//		Vec3f incident = this->pm->vel;
-		Vec3f incident = pm->ref->getPos() - pm->lastPos;
+		Vec3f incident = pm->ref->getPos() - lastCollision;
 		Vec3f normal = wall->getNormal();
 		Vec3f reflected = incident - (((normal - incident) * normal) * 2.f);
 		// http://www.3dkingdoms.com/weekly/weekly.php?a=2
 
-		float dotProduct = (normal ^ incident) * 2.f;
-		Vec3f vectorProduct = normal * dotProduct;
-		Vec3f subVector = vectorProduct - incident;
-		subVector = subVector ;//* bounceDamp;
-	//	pm->vel = (Vec3f(subVector.x, subVector.y, subVector.z));
-		pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) ;//* bounceDamp;
-	//	pm->vel = reflected;
-	//	pm->applyForce(normal * 5);
+		pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) * bounceDamp;
 	}
+
+	// Set last collision pos
+	lastCollision = pm->ref->getPos();
 }
