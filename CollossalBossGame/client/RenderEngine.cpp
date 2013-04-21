@@ -105,7 +105,7 @@ void RenderEngine::renderInitalization()
 
 	D3DXMATRIX matProj;
 	//TODO: determine clipping
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 300.0f );
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 400.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
@@ -224,7 +224,7 @@ void RenderEngine::drawHUD() {
 
 	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10.f , 40.0f)};
 	healthLine->SetWidth(15.0f);
-	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, 0, 255, 0));
+	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->healthPts) / 100.0), (int)(255.0 * this->healthPts / 100.0), 0));
 }
 
 /*where we actually draw a scene

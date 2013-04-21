@@ -20,7 +20,7 @@ public:
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
-
+	int health;
 	// Configuration options
 	float jumpDist;
 	int movDamp;

@@ -2,8 +2,9 @@
 #include "defs.h"
 #include <math.h>
 
-WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, Rot_t rot) : ServerObject(id) {
-	DC::get()->print("Created new WallSObj %d ", id);
+WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f normal) : ServerObject(id) {
+	DC::get()->print("Created new WallSObj %d\n", id);
+	this->normal = normal;
 #define WALL_WIDTH 150
 	Box bxVol;
 	/*= Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
