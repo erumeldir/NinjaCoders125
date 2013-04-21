@@ -46,12 +46,13 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 		float rad;
 		int numMesh;
 		RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
-		DC::get()->print("Bounding box for model %d = (%f,%f,%f:%f,%f,%f); center = (%f,%f,%f); rad = %f; num meshes = %d\n",
+	/*	DC::get()->print("Bounding box for model %d = (%f,%f,%f:%f,%f,%f); center = (%f,%f,%f); rad = %f; num meshes = %d\n",
 			modelNum,
 			mdlMin.x - sphereCenter.x, mdlMin.y - sphereCenter.y, mdlMin.z - sphereCenter.z,
 			mdlMax.x - mdlMin.x, mdlMax.y - mdlMin.y, mdlMax.z - mdlMin.z,
 			sphereCenter.x, sphereCenter.y, sphereCenter.z,
 			rad, numMesh);
+	*/
 	}
 }
 

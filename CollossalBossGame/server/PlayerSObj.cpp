@@ -96,13 +96,20 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	{
 		//jump!
 		WallSObj *wall  = reinterpret_cast<WallSObj *>(obj);
-		float bounceDamp = 3.f;
+		float bounceDamp = 2.f;
 
 		Vec3f incident = this->pm->vel;
 		Vec3f normal = wall->getNormal();
 		Vec3f reflected = incident - (((normal - incident) * normal) * 2.f);
 		// http://www.3dkingdoms.com/weekly/weekly.php?a=2
-		pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) * bounceDamp;
+
+		float dotProduct = (normal ^ incident) * 2.f;
+		Vec3f vectorProduct = normal * dotProduct;
+		Vec3f subVector = vectorProduct - incident;
+		subVector = subVector ;//* bounceDamp;
+		//pm->vel = subVector;
+		pm->vel = (Vec3f(subVector.x, subVector.y, subVector.z));
+	//	pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) ;//* bounceDamp;
 	//	pm->vel = reflected;
 	//	pm->applyForce(normal * 5);
 	}
