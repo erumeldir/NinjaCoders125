@@ -4,7 +4,7 @@
 
 //Movement Defines
 #define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
-#define AIR_FRICTION 1.f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.01f	//A bit excessive, but it works for now
 
 //Collision Defines
 #define SMALLRADIUS 5.0f
@@ -53,30 +53,6 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
 	mdl->ref->translate(Point_t(dx, dy, dz));
 
-	//Object falls if it has moved (it may not fall after collision checks have been applied)
-	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
-		obj->setFlag(IS_FALLING, true);
-		mdl->frictCoeff = AIR_FRICTION;
-	}
-
-#if 0
-	// if pos < 0 reset y pos to 0 and if y vel < 0 clear out y vel set friction to 1.3, else friction = 0
-	Point_t pos = mdl->ref->getPos();
-	float y = mdl->vol.y + pos.y;
-	if (y < 0) {
-		mdl->ref->setPos(Point_t(pos.x, -mdl->vol.y, pos.z));
-		mdl->onGround = true;
-		mdl->frictCoeff = GROUND_FRICTION;
-		mdl->accel.y = 0;
-		if(mdl->vel.y < 0) {
-			mdl->vel.y = 0;
-		}
-	} else {
-		mdl->onGround = false;
-		mdl->frictCoeff = AIR_FRICTION;
-	}
-#endif
-
 	//Update velocity
 	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;
 	mdl->vel.y = mdl->accel.y * dt + mdl->vel.y / mdl->frictCoeff;
@@ -84,6 +60,12 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 
 	//Update acceleration
 	mdl->accel = Vec3f();
+
+	//Object falls if it has moved (it may not fall after collision checks have been applied)
+	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
+		obj->setFlag(IS_FALLING, true);
+		mdl->frictCoeff = AIR_FRICTION;
+	}
 
 	return true;	//We'll add a detection for has-moved later
 }

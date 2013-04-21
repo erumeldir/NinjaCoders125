@@ -33,29 +33,29 @@ void gameInit() {
 	}
 
 	// Build arena (todo maybe these should be planeObjects? ArenaObjects?)
-	WallSObj //*floor = new WallSObj(som->genId(), MDL_3, Point_t(), Rot_t(), Vec3f(0, 1, 0)),
+	WallSObj *floor,// = new WallSObj(som->genId(), MDL_3, Point_t(), Rot_t(), Vec3f(0, 1, 0)),
 			 *ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0.f, 150.f, 0.f), Rot_t(0.f, 0.f, M_PI), Vec3f(0, -1, 0)),
 			 *rightWall = new WallSObj(som->genId(), MDL_3, Point_t(75.f, 75.f, 0.f), Rot_t(0.f, 0.f, M_PI/2), Vec3f(-1, 0, 0)),
 			 *leftWall = new WallSObj(som->genId(), MDL_3, Point_t(-75.f, 75.f, 0.f), Rot_t(0.f, 0.f, -M_PI/2), Vec3f(1, 0, 0));
 			 //*frontWall = new WallSObj(som->genId(), MDL_3, Point_t(0, 75, 75), Rot_t(0, 0, -M_PI/2));
 			// *backWall = new WallSObj(som->genId(), MDL_3, Point_t(-75, 75, 0), Rot_t(0, 0, -M_PI/2));
 
-	WallSObj *floor1 = new WallSObj(som->genId(), MDL_3, Point_t(-150, 0, 0), Rot_t(), Vec3f(0, 1, 0));
-	WallSObj *floor2 = new WallSObj(som->genId(), MDL_3, Point_t(0, 0, 0), Rot_t(), Vec3f(0, 1, 0));
-	WallSObj *floor3 = new WallSObj(som->genId(), MDL_3, Point_t(150, 0, 0), Rot_t(), Vec3f(0, 1, 0));
-	WallSObj *floor4 = new WallSObj(som->genId(), MDL_3, Point_t(0, 0, 150), Rot_t(), Vec3f(0, 1, 0));
-	WallSObj *floor5 = new WallSObj(som->genId(), MDL_3, Point_t(0, 0, 0), Rot_t(), Vec3f(0, 1, 0));
-	WallSObj *floor6 = new WallSObj(som->genId(), MDL_3, Point_t(0, 0, -150), Rot_t(), Vec3f(0, 1, 0));
+
 
 	ceiling->setFlag(IS_WALL, 1);
 	rightWall->setFlag(IS_WALL, 1);
 	leftWall->setFlag(IS_WALL, 1);
-	som->add(floor1);
-	som->add(floor2);
-	som->add(floor3);
-	som->add(floor4);
-	som->add(floor5);
-	som->add(floor6);
+
+for(int x = 0; x < 3; ++x) {
+	for(int z = 0; z < 3; ++ z) {
+		floor = new WallSObj(som->genId(), MDL_3, Point_t(x * 150, 0, z * 150), Rot_t(), Vec3f(0, 1, 0));
+		som->add(floor);
+	}
+}
+	ceiling->setFlag(IS_WALL,1);
+	rightWall->setFlag(IS_WALL,1);
+	leftWall->setFlag(IS_WALL,1);
+	//som->add(floor);
 	som->add(ceiling);
 	som->add(rightWall);
 	som->add(leftWall);
