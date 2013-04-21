@@ -30,6 +30,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 
 
 PlayerSObj::~PlayerSObj(void) {
+	delete pm;
 }
 
 bool PlayerSObj::update() {
@@ -114,7 +115,6 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	if(this->health < 0) health = 0;
 	if(this->health > 100) health = 100;
 
-
 	// If I started jumping a little bit ago, that's a jump
 	if(istat.jump)//jumpCounter > 0 && jumpCounter < 20) // button mashing problem
 	{
@@ -167,6 +167,7 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 
 		pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) * bounceDamp;
 	}*/
+
 
 	// Set last collision pos
 	lastCollision = pm->ref->getPos();
