@@ -26,6 +26,8 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	istat.rotVert = 0.0;
 	istat.rightDist = 0.0;
 	istat.forwardDist = 0.0;
+
+	newJump = true; // any jump at this point is a new jump
 }
 
 
@@ -50,11 +52,9 @@ bool PlayerSObj::update() {
 		// 2. In the air
 		// This handles in the air, collisions
 		// are handled in OnCollision()
-		if (istat.jump && getFlag(IS_FALLING))
-		{
-			// start a counter and keep it going somewhow.
-			jumping = true;
-		}
+
+		jumping = istat.jump && newJump; // isFalling?
+		newJump = !istat.jump;
 
 		if (jumping) jumpCounter++;
 		else jumpCounter = 0;
@@ -116,7 +116,7 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	if(this->health > 100) health = 100;
 
 	// If I started jumping a little bit ago, that's a jump
-	if(istat.jump)//jumpCounter > 0 && jumpCounter < 20) // button mashing problem
+	if(jumpCounter > 0 && jumpCounter < 10)
 	{
 		// surface bouncing
 		if(obj->getFlag(IS_WALL))
