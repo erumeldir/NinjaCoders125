@@ -5,7 +5,7 @@
 WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f normal) : ServerObject(id) {
 	DC::get()->print("Created new WallSObj %d\n", id);
 	this->normal = normal;
-#define WALL_WIDTH 150
+#define WALL_WIDTH 200 //150
 	Box bxVol;
 	/*= Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
 					WALL_WIDTH, 10, WALL_WIDTH);
