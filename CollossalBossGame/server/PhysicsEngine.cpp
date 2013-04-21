@@ -89,7 +89,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	}
 	if(pos.z + mdl->vol.z < zNeg) {
 		pos.z = zNeg - mdl->vol.z;
-	} else if(pos.x + mdl->vol.z + mdl->vol.l > zPos) {
+	} else if(pos.z + mdl->vol.z + mdl->vol.l > zPos) {
 		pos.z = zPos - (mdl->vol.z + mdl->vol.l);
 	}
 	mdl->ref->setPos(Point_t(pos.x, pos.y, pos.z));
