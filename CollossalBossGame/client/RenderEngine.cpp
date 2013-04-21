@@ -216,7 +216,7 @@ void RenderEngine::drawHUD() {
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
-                                0xFF000000); //Color
+                                0xFFFFFFFF);//0xFF000000); //Color
 
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
 	backgroundLine->SetWidth(15.0f);
@@ -250,7 +250,7 @@ void RenderEngine::renderThis(ClientObject *obj) {
 */
 void RenderEngine::render() {
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(240, 240, 240), 1.0f, 0);
+	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
