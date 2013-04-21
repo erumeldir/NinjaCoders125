@@ -20,6 +20,7 @@ public:
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
+	Point_t lastCollision;
 	int health;
 	// Configuration options
 	float jumpDist;

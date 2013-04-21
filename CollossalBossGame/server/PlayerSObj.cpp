@@ -14,6 +14,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
 	istat.attack = false;
@@ -89,22 +90,23 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	if(this->health < 0) health = 0;
 	if(this->health > 100) health = 100;
 
-#if 0
 	/**  http://bobobobo.wordpress.com/tag/computer-graphics/
 	  */
 	if(obj->getFlag(IS_WALL)) //&& istat.jump)
 	{
 		//jump!
 		WallSObj *wall  = reinterpret_cast<WallSObj *>(obj);
-		float bounceDamp = 3.f;
+		float bounceDamp = 0.05f;
 
-		Vec3f incident = this->pm->vel;
+		Vec3f incident = pm->ref->getPos() - lastCollision;
 		Vec3f normal = wall->getNormal();
 		Vec3f reflected = incident - (((normal - incident) * normal) * 2.f);
 		// http://www.3dkingdoms.com/weekly/weekly.php?a=2
+
 		pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) * bounceDamp;
-	//	pm->vel = reflected;
-	//	pm->applyForce(normal * 5);
 	}
-#endif
+
+
+	// Set last collision pos
+	lastCollision = pm->ref->getPos();
 }
