@@ -40,13 +40,14 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	if(obj->getFlag(IS_FALLING)) {
 		//gravity
 		Vec3f downVector = Vec3f(0, -1, 0);
-		//mdl->applyAccel(downVector*gravity);
+		mdl->applyAccel(downVector*gravity);
 	} else {
 		//friction
 	}
 
 
 	//Update position
+	mdl->lastPos = mdl->ref->getPos();
 	float dx = 0.5f * mdl->accel.x * dt * dt + mdl->vel.x * dt,
 		  dy = 0.5f * mdl->accel.y * dt * dt + mdl->vel.y * dt,
 		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
@@ -55,8 +56,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	//Object falls if it has moved (it may not fall after collision checks have been applied)
 	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
 		obj->setFlag(IS_FALLING, true);
-		//mdl->frictCoeff = AIR_FRICTION;
-		mdl->frictCoeff = GROUND_FRICTION;
+		mdl->frictCoeff = AIR_FRICTION;
 	}
 
 #if 0
@@ -293,13 +293,16 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	float fXShift1 = bx2.x - (bx1.x + bx1.w),
           fXShift2 = (bx2.x + bx2.w) - bx1.x,
           fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
-    float fYShift1 = bx2.y - (bx1.y + bx1.l),
-          fYShift2 = (bx2.y + bx2.l) - bx1.y,
+    float fYShift1 = bx2.y - (bx1.y + bx1.h),
+          fYShift2 = (bx2.y + bx2.h) - bx1.y,
           fYShift  = fabs(fYShift1) < fabs(fYShift2) ? fYShift1 : fYShift2;
-    float fZShift1 = bx2.z - (bx1.z + bx1.h),
-          fZShift2 = (bx2.z + bx2.h) - bx1.z,
+    float fZShift1 = bx2.z - (bx1.z + bx1.l),
+          fZShift2 = (bx2.z + bx2.l) - bx1.z,
           fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
 	Vec3f ptObj1Shift, ptObj2Shift;
+	DC::get()->print("Obj %d-%d collision: (1:2=res) = (%f:%f=%f),\t(%f:%f=%f),\t(%f:%f=%f)\n",
+		obj1->getId(), obj2->getId(), 
+		fXShift1,fXShift2,fXShift, fYShift1,fYShift2,fYShift, fZShift1,fZShift2,fZShift);
 
     if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X
