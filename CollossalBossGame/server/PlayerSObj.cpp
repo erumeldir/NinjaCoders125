@@ -30,6 +30,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 
 
 PlayerSObj::~PlayerSObj(void) {
+	delete pm;
 }
 
 bool PlayerSObj::update() {
