@@ -47,7 +47,7 @@ void ServerObjectManager::update() {
 		}
 
 		//Update physics
-		if(PE::get()->applyPhysics(it->second->getPhysicsModel())) {
+		if(PE::get()->applyPhysics(it->second)) {
 			//Add this object to the list of objects that have moved
 			lsObjsThatMoved.push_back(it->second);
 		} else {

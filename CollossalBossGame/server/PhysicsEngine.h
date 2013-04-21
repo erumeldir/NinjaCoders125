@@ -9,7 +9,7 @@ public:
 	static PhysicsEngine *get() { return pe; }
 	static void clean() { delete pe; }
 
-	bool applyPhysics(PhysicsModel *mdl);
+	bool applyPhysics(ServerObject *obj);
 	void applyPhysics(ServerObject *obj1, ServerObject *obj2);
 
 private:
