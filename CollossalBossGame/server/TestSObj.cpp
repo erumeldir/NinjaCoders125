@@ -1,8 +1,9 @@
 #include "TestSObj.h"
+#include "ServerObjectManager.h"
 #include <math.h>
 
 TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject(id) {
-	DC::get()->print("Created new TestSObj %d\n", id);
+	if(SOM::get()->debugFlag) DC::get()->print("Created new TestSObj %d\n", id);
 	pm = new PhysicsModel(pos, Rot_t(), 500);
 	this->dir = dir;
 	this->modelNum = modelNum;

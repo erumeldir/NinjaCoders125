@@ -27,6 +27,8 @@ public:
 	ServerObject *find(uint id);
 	void remove(uint id);
 
+	bool debugFlag;
+
 private:
 	ServerObjectManager(void);
 	virtual ~ServerObjectManager(void);

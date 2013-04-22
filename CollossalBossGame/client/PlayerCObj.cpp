@@ -11,7 +11,7 @@
 PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id)
 {
-	DC::get()->print("Created new PlayerCObj %d\n", id);
+	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
 	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, M_PI), MDL_4);
 	cameraPitch = 0;
 	health = CM::get()->find_config_as_int("INIT_HEALTH");

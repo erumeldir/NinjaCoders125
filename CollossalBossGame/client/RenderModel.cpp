@@ -40,7 +40,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 		if (!RE::get()->loadModel(filename, &modelId)) {
 			DC::get()->print("Didn't load the model!\n");
 		} else {
-			DC::get()->print("Successfully loaded model %d\n",modelNum);
+			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded model %d\n",modelNum);
 		}
 	}
 }

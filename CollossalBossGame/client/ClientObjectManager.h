@@ -23,6 +23,7 @@ public:
 	void serverUpdate(uint id, CommandTypes cmd, char *data);
 
 	int player_id;
+	bool debugFlag;	
 /*  Needs to receive a server update
 	uint genId();
 	void freeId(uint id);

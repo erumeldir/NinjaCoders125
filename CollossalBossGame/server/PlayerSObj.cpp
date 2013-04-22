@@ -1,5 +1,6 @@
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
+#include "ServerObjectManager.h"
 #include "defs.h"
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
@@ -7,7 +8,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
-	DC::get()->print("Created new PlayerSObj %d\n", id);
+	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 

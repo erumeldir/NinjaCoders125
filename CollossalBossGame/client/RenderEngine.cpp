@@ -166,6 +166,7 @@ RenderEngine::RenderEngine() {
 	cameraDist = CM::get()->find_config_as_float("CAM_DIST");
 	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
 	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
+	debugFlag = CM::get()->find_config_as_bool("RENDER_DEBUG_FLAG");
 
 	startWindow();
 	renderInitalization();	//start initialization

@@ -59,6 +59,8 @@ public:
 	void animate(int id, const D3DXMATRIX &pos);
 	bool loadModel(const char * filename, int * idAddr);
 
+	bool debugFlag;
+
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here

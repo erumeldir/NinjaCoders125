@@ -1,9 +1,10 @@
 #include "WallSObj.h"
+#include "ServerObjectManager.h"
 #include "defs.h"
 #include <math.h>
 
 WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, Rot_t rot) : ServerObject(id) {
-	DC::get()->print("Created new WallSObj %d\n", id);
+	if(SOM::get()->debugFlag) DC::get()->print("Created new WallSObj %d\n", id);
 	pm = new PhysicsModel(pos, rot, 500, true);
 	this->modelNum = modelNum;
 	pm->setColBox(CB_FLAT);

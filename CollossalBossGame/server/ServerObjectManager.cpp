@@ -1,11 +1,13 @@
 #include "ServerNetworkManager.h"
 #include "ServerObjectManager.h"
+#include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 
 ServerObjectManager *ServerObjectManager::som;
 
 ServerObjectManager::ServerObjectManager(void) {
 	curId = 0;
+	debugFlag = CM::get()->find_config_as_bool("SOM_DEBUG_FLAG");
 }
 
 

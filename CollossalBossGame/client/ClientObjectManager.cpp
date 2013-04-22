@@ -1,5 +1,6 @@
 #include "ClientObjectManager.h"
 #include "RenderEngine.h"
+#include "ConfigurationManager.h"
 
 //Objects the COM can create
 #include "TestObject.h"
@@ -9,6 +10,7 @@ ClientObjectManager *ClientObjectManager::com;
 
 ClientObjectManager::ClientObjectManager(void) {
 	curId = 0;
+	debugFlag = CM::get()->find_config_as_bool("COM_DEBUG_FLAG");
 }
 
 

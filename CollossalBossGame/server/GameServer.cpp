@@ -61,7 +61,7 @@ int main()
 		else
 		{
 			int tick = TICK;
-			DC::get()->print("WARNING!!! total loop time %f is greater than tick time: %d\nNOTE: this might mean a client is connecting\n", totalLoopTime, tick);
+			DC::get()->print("WARNING!!! total loop time %f is greater than tick time: %d\n...NOTE: this might mean a client is connecting\n", totalLoopTime, tick);
 		}
 		
     }
