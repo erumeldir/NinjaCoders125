@@ -22,8 +22,11 @@ private:
 	inputstatus istat;
 	Point_t lastCollision;
 	int health;
+	int jumpCounter;
+	bool jumping, newJump, appliedJumpForce;
 	// Configuration options
 	float jumpDist;
 	int movDamp;
+
 };
 

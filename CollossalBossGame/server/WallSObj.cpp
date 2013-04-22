@@ -14,14 +14,14 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, WallDir dir) : ServerOb
 		DC::get()->print("(north)\n");
 		bxVol = Box(-WALL_WIDTH / 2, -WALL_WIDTH / 2, -WALL_THICKNESS,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
-		normal = Vec3f( 0, 0,-1);
+		normal = Vec3f( 0, 0, 1);
 		rot = Rot_t(M_PI / 2,0,0);
 		break;
 	case WALL_SOUTH:
 		DC::get()->print("(south)\n");
 		bxVol = Box(-WALL_WIDTH / 2, -WALL_WIDTH / 2, 0,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
-		normal = Vec3f( 0, 0, 1);
+		normal = Vec3f( 0, 0, -1);
 		rot = Rot_t(-M_PI / 2,0,0);
 		break;
 	case WALL_EAST:

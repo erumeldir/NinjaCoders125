@@ -98,6 +98,7 @@ void gameInit() {
 	}
 
 	// Build arena (todo maybe these should be planeObjects? ArenaObjects?)
+
 	WallSObj *floor,// = new WallSObj(som->genId(), MDL_3, Point_t(), Rot_t(), Vec3f(0, 1, 0)),
 			 *ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0.f, 40.f, 0.f), WALL_UP), //Rot_t(0.f, 0.f, M_PI), Vec3f(0, -1, 0)),
 			 *rightWall = new WallSObj(som->genId(), MDL_3, Point_t(75.f, 75.f, 0.f), WALL_EAST), //Rot_t(0.f, 0.f, M_PI/2), Vec3f(-1, 0, 0)),
@@ -115,7 +116,8 @@ for(int x = -1; x < 2; ++x) {
 	//ceiling->setFlag(IS_WALL,1);
 	rightWall->setFlag(IS_WALL,1);
 	leftWall->setFlag(IS_WALL,1);
-	//som->add(floor);
+	floor->setFlag(IS_WALL,1);
+	som->add(floor);
 	//som->add(ceiling);
 	som->add(rightWall);
 	som->add(leftWall);
