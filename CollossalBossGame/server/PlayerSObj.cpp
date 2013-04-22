@@ -28,6 +28,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	istat.forwardDist = 0.0;
 
 	newJump = true; // any jump at this point is a new jump
+	appliedJumpForce = false;
 }
 
 
@@ -58,6 +59,9 @@ bool PlayerSObj::update() {
 
 		if (jumping) jumpCounter++;
 		else jumpCounter = 0;
+
+		appliedJumpForce = false; // we apply it on collision
+
 		/*if (istat.jump) {
 			if(!getFlag(IS_FALLING)) yDist = jumpDist;
 			else
@@ -115,8 +119,9 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 	if(this->health < 0) health = 0;
 	if(this->health > 100) health = 100;
 
+	
 	// If I started jumping a little bit ago, that's a jump
-	if(jumpCounter > 0 && jumpCounter < 10)
+	if(!appliedJumpForce && (jumpCounter > 0 && jumpCounter < 10))
 	{
 		// surface bouncing
 		if(obj->getFlag(IS_WALL))
@@ -135,6 +140,7 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 			{
 				Vec3f up = Vec3f(0, 1, 0);
 				Vec3f force = up + normal;
+				pm->vel = Vec3f();
 				pm->applyForce(force*jumpDist);
 			}
 			// we have incident! so we bounce
@@ -152,7 +158,10 @@ void PlayerSObj::onCollision(ServerObject *obj) {
 			Vec3f up = Vec3f(0, 1, 0);
 			pm->applyForce(up*jumpDist);
 		}
+
+		appliedJumpForce = true;
 	}
+
 
 	/*if(obj->getFlag(IS_WALL) && jumpCounter > 0 && jumpCounter < 20) //&& istat.jump)
 	{

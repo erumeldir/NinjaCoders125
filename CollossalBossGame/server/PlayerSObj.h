@@ -23,7 +23,7 @@ private:
 	Point_t lastCollision;
 	int health;
 	int jumpCounter;
-	bool jumping, newJump;
+	bool jumping, newJump, appliedJumpForce;
 	// Configuration options
 	float jumpDist;
 	int movDamp;
