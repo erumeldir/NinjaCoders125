@@ -69,6 +69,7 @@ enum Model {
 enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
+	OBJ_TENTACLE,
 	NUM_OBJS
 };
 
