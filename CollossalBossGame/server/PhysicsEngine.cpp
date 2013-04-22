@@ -291,6 +291,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	Box bx1 = obj1->getPhysicsModel()->vol + obj1->getPhysicsModel()->ref->getPos(),
 		bx2 = obj2->getPhysicsModel()->vol + obj2->getPhysicsModel()->ref->getPos();
+	Vec3f collisionNormal = Vec3f();
 
 	//Check for collision
 	if(!aabbCollision(bx1,bx2)) {
@@ -300,8 +301,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	//Passable objects or static pairs cannot be collided with
 	if((obj1->getFlag(IS_PASSABLE) || obj2->getFlag(IS_PASSABLE)) ||
 			(obj1->getFlag(IS_STATIC) && obj2->getFlag(IS_STATIC))) {
-		obj1->onCollision(obj2);
-		obj2->onCollision(obj1);
+		obj1->onCollision(obj2, collisionNormal);
+		obj2->onCollision(obj1, collisionNormal);
 		return;
 	}
 
@@ -316,7 +317,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
           fZShift2 = (bx2.z + bx2.l) - bx1.z,
           fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
 	Vec3f ptObj1Shift, ptObj2Shift;
-	
+	float sign = 1.0;
     if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X
         if(obj1->getFlag(IS_STATIC)) {
@@ -330,6 +331,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(fXShift / 2, 0, 0);
             ptObj2Shift = Vec3f(-fXShift / 2, 0, 0);
         }
+		sign = fXShift < 0 ? -1 : 1;
+		collisionNormal = Vec3f(sign,0,0);
     } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
         //Shift by Y (vertical)
         if(obj1->getFlag(IS_STATIC)) {
@@ -342,6 +345,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(0, fYShift / 2, 0);
             ptObj2Shift = Vec3f(0, -fYShift / 2, 0);
         }
+		sign = fYShift < 0 ? -1 : 1;
+		collisionNormal = Vec3f(0,sign,0);
 		
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {
@@ -363,6 +368,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(0, 0, fZShift / 2);
             ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
         }
+		sign = fZShift < 0 ? -1 : 1;
+		collisionNormal = Vec3f(0,0,sign);
 	}
 
 #if 1
@@ -371,8 +378,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	obj2->getPhysicsModel()->ref->translate(ptObj2Shift);
 #endif
 	//Inform the logic module of the collision event
-	obj1->onCollision(obj2);
-	obj2->onCollision(obj1);
+	obj1->onCollision(obj2, collisionNormal);
+	obj2->onCollision(obj1, Vec3f(-collisionNormal.x, -collisionNormal.y, -collisionNormal.z));
 }
 #endif
 

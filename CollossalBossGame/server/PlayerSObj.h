@@ -13,7 +13,7 @@ public:
 	virtual int serialize(char * buf);
 	void deserialize(char* newInput);
 	virtual ObjectType getType() { return OBJ_PLAYER; }
-	virtual void onCollision(ServerObject *obj);
+	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
 
 	char serialbuffer[100];
 

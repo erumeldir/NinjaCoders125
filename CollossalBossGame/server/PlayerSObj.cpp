@@ -82,8 +82,8 @@ void PlayerSObj::deserialize(char* newInput)
 	istat = *newStatus;
 }
 
-void PlayerSObj::onCollision(ServerObject *obj) {
-	DC::get()->print("Collided with obj %d\n", obj->getId());
+void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
+	DC::get()->print("Collided with obj %d, normal (%f,%f,%f)\n", obj->getId(), collisionNormal.x, collisionNormal.y, collisionNormal.z);
 	if(obj->getFlag(IS_HARMFUL))
 		this->health--;
 	if(obj->getFlag(IS_HEALTHY))
