@@ -11,6 +11,7 @@
 #include "TestSObj.h"
 #include "WallSObj.h"
 #include "PhysicsEngine.h"
+#include "MonsterSObj.h"
 
 void buildRoom(Point_t center, int w, int h, int l) {
 #define WIDTH 150
@@ -26,6 +27,7 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	WallSObj *floor, *ceiling,
 			 *north, *south,
 			 *east, *west;
+
 	DC::get()->print("Making room with bottom-corner at (%f,%f,%f)\n", center.x, center.y, center.z);
 #if 1	
 	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), WALL_DOWN);
@@ -34,7 +36,7 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	south   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,WIDTH/2), WALL_SOUTH);
 	east    = new WallSObj(som->genId(), MDL_3, Point_t(WIDTH/2,WIDTH/2,0), WALL_EAST);
 	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WALL_WEST);
-	
+
 	som->add(floor);
 	som->add(ceiling);
 	som->add(east);
@@ -43,6 +45,7 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	som->add(south);
 	PE::get()->setLimits(-WIDTH / 2, 0, -WIDTH / 2,
 						  WIDTH / 2, WIDTH, WIDTH / 2);
+	
 #else
 	//floor/ceiling
 	for(x = 0; x < w; ++x) {
@@ -81,6 +84,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//tentacleRight->setFlag(IS_STATIC, 1);
 	som->add(tentacleLeft);
 	//som->add(tentacleRight);
+	MonsterSObj * tentacrule = new MonsterSObj(som->genId());
+	som->add(tentacrule);
 }
 
 

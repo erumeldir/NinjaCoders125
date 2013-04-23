@@ -1,20 +1,21 @@
-#include "TentacleSObj.h"
+#include "MonsterSObj.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
 #include "defs.h"
 
 
-TentacleSObj::TentacleSObj(uint id) : ServerObject(id)
+MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new TentacleObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
-
+	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), 
+		Box());
+	stateCounter = 1;
 	state=IDLE;
 }
 
 
-TentacleSObj::~TentacleSObj(void)
+MonsterSObj::~MonsterSObj(void)
 {
 	delete pm;
 }
@@ -28,23 +29,34 @@ TentacleSObj::~TentacleSObj(void)
  *
  * Author: Bryan
  */
-bool TentacleSObj::update()
+bool MonsterSObj::update()
 {
+	if (!stateCounter--)
+	{
+		distribution = std::uniform_int_distribution<int> (CYCLE*9, CYCLE*50);
+		stateCounter = distribution(generator);
+		DC::get()->print("stateCounter %d\n", stateCounter);
+	}
 	switch (state) 
 	{
 	case IDLE:
 
 		break;
 	case SWEEP:
-
+		state = IDLE;
 		break;
 	default:
+		break;
 	}
 	return 0;
 }
 
-int TentacleSObj::serialize(char * buf) {
+int MonsterSObj::serialize(char * buf) {
 	ObjectState *state = (ObjectState*)buf;
 	state->modelNum = MDL_0;
 	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
+}
+
+void MonsterSObj::onCollision(ServerObject * other) {
+	DC::get()->print("Collided with a Tentacle\n");
 }
