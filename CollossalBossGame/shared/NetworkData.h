@@ -69,6 +69,7 @@ enum Model {
 enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
+	OBJ_MONSTER,
 	NUM_OBJS
 };
 
@@ -107,4 +108,12 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
+};
+
+/*
+ * State information for the monster not encoded by the position
+ */
+struct MonsterState {
+	Model modelNum;
+	int health;
 };

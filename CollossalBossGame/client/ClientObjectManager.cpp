@@ -5,6 +5,7 @@
 //Objects the COM can create
 #include "TestObject.h"
 #include "PlayerCObj.h"
+#include "MonsterCObj.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
@@ -98,6 +99,8 @@ void ClientObjectManager::create(uint id, char *data) {
 	case OBJ_PLAYER:
 		obj = new PlayerCObj(id, data + sizeof(CreateHeader));
 		break;
+	case OBJ_MONSTER:
+		obj = new MonsterCObj(id, data + sizeof(CreateHeader));
 	//case OBJ_ARENA:
 	//	obj = new WallCObj(id, data + sizeof(CreateHeader));
 	default:	//OBJ_GENERAL
