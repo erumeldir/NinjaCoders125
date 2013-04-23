@@ -17,6 +17,7 @@ public:
 	static ServerObjectManager *get() { return som; }
 	static void clean() { delete som; }
 
+	void reset();
 	void update();
 	void sendState();
 

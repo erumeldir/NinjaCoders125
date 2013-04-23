@@ -184,3 +184,11 @@ void ServerObjectManager::remove(uint id) {
 	//mObjs.erase(id);
 	lsObjsRemoveQueue.push_back(id);
 }
+
+void ServerObjectManager::reset() {
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+				it->second->initialize();
+	}
+}

@@ -23,6 +23,8 @@ public:
 	virtual int serialize(char * buf);
 	virtual ObjectType getType() { return OBJ_GENERAL; }
 	virtual void onCollision(ServerObject *obj) {}
+	virtual void initialize();
+
 	Vec3f getNormal() { return normal; }
 	char serialbuffer[100];
 
