@@ -21,6 +21,7 @@ PhysicsEngine::PhysicsEngine(void)
 
 	xPos = yPos = zPos = 500;
 	xNeg = yNeg = zNeg = 0;
+	gravDir = Vec3f(0, -1, 0);
 }
 
 
@@ -44,7 +45,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	if(obj->getFlag(IS_FALLING)) {
 		//gravity
 		Vec3f downVector = Vec3f(0, -1, 0);
-		mdl->applyAccel(downVector*gravity);
+		mdl->applyAccel(gravDir*gravity);
 	} else {
 		//friction
 	}
@@ -291,7 +292,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	Box bx1 = obj1->getPhysicsModel()->vol + obj1->getPhysicsModel()->ref->getPos(),
 		bx2 = obj2->getPhysicsModel()->vol + obj2->getPhysicsModel()->ref->getPos();
-	Vec3f collisionNormal = Vec3f();
+	Vec3f collNorm1 = Vec3f(),
+		  collNorm2 = Vec3f();
 
 	//Check for collision
 	if(!aabbCollision(bx1,bx2)) {
@@ -301,10 +303,11 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	//Passable objects or static pairs cannot be collided with
 	if((obj1->getFlag(IS_PASSABLE) || obj2->getFlag(IS_PASSABLE)) ||
 			(obj1->getFlag(IS_STATIC) && obj2->getFlag(IS_STATIC))) {
-		obj1->onCollision(obj2, collisionNormal);
-		obj2->onCollision(obj1, collisionNormal);
+		obj1->onCollision(obj2, collNorm1);
+		obj2->onCollision(obj1, collNorm2);
 		return;
 	}
+	bool applyForce = true;
 
 	//Move out bounding boxes if collision occurs
 	float fXShift1 = bx2.x - (bx1.x + bx1.w),
@@ -332,7 +335,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj2Shift = Vec3f(-fXShift / 2, 0, 0);
         }
 		sign = fXShift < 0 ? -1 : 1;
-		collisionNormal = Vec3f(sign,0,0);
+		collNorm1 = Vec3f(sign,0,0);
+		collNorm2 = Vec3f(-sign,0,0);
     } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
         //Shift by Y (vertical)
         if(obj1->getFlag(IS_STATIC)) {
@@ -346,7 +350,9 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj2Shift = Vec3f(0, -fYShift / 2, 0);
         }
 		sign = fYShift < 0 ? -1 : 1;
-		collisionNormal = Vec3f(0,sign,0);
+		collNorm1 = Vec3f(0,sign,0);
+		collNorm2 = Vec3f(0,-sign,0);
+		applyForce = false;
 		
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {
@@ -369,17 +375,22 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
         }
 		sign = fZShift < 0 ? -1 : 1;
-		collisionNormal = Vec3f(0,0,sign);
+		collNorm1 = Vec3f(0,0,sign);
+		collNorm2 = Vec3f(0,0,-sign);
 	}
 
 #if 1
 	//Move the objects by the specified amount
 	obj1->getPhysicsModel()->ref->translate(ptObj1Shift);
 	obj2->getPhysicsModel()->ref->translate(ptObj2Shift);
+	if(applyForce) {
+		obj1->getPhysicsModel()->applyForce(collNorm1);
+		obj2->getPhysicsModel()->applyForce(collNorm2);
+	}
 #endif
 	//Inform the logic module of the collision event
-	obj1->onCollision(obj2, collisionNormal);
-	obj2->onCollision(obj1, Vec3f(-collisionNormal.x, -collisionNormal.y, -collisionNormal.z));
+	obj1->onCollision(obj2, collNorm1);
+	obj2->onCollision(obj1, collNorm2);
 }
 #endif
 

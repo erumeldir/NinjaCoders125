@@ -2,6 +2,7 @@
 #include "ConfigurationManager.h"
 #include "WallSObj.h"
 #include "defs.h"
+#include "PhysicsEngine.h"
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	// Configuration options
@@ -29,6 +30,8 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 
 	newJump = true; // any jump at this point is a new jump
 	appliedJumpForce = false;
+	
+	gravityTimer = 0;
 }
 
 
@@ -37,6 +40,23 @@ PlayerSObj::~PlayerSObj(void) {
 }
 
 bool PlayerSObj::update() {
+	//gravity
+	gravityTimer++;
+	static char cdir = 'v';
+	if(gravityTimer == 500) {
+		PE::get()->setGravDir(Vec3f(0,0,0));
+		cdir = 'o';
+	} else if(gravityTimer == 1000) {
+		PE::get()->setGravDir(Vec3f(1,0,0));
+		cdir = '>';
+	} else if(gravityTimer > 1500) {
+		PE::get()->setGravDir(Vec3f(0,-1,0));
+		gravityTimer = 0;
+		cdir = 'v';
+	}
+	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
+
+
 	float yDist = 0.f;
 	if (istat.quit) {
 		// todo Send Client quit event
@@ -111,7 +131,7 @@ void PlayerSObj::deserialize(char* newInput)
 }
 
 void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
-	DC::get()->print("Collided with obj %d, normal (%f,%f,%f)\n", obj->getId(), collisionNormal.x, collisionNormal.y, collisionNormal.z);
+	//DC::get()->print("Collided with obj %d, normal (%f,%f,%f)\n", obj->getId(), collisionNormal.x, collisionNormal.y, collisionNormal.z);
 	if(obj->getFlag(IS_HARMFUL))
 		this->health--;
 	if(obj->getFlag(IS_HEALTHY))

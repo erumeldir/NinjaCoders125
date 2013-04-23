@@ -28,5 +28,6 @@ private:
 	float jumpDist;
 	int movDamp;
 
+	int gravityTimer;
 };
 

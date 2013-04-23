@@ -21,6 +21,10 @@ public:
 		this->zNeg = zNeg;
 	}
 
+	void setGravDir(const Vec3f &dir) {
+		gravDir = dir;
+	}
+
 private:
 	PhysicsEngine(void);
 	virtual ~PhysicsEngine(void);
@@ -33,6 +37,7 @@ private:
 
 	// Configuration options
 	float gravity;
+	Vec3f gravDir;
 
 	//Position caps
 	float xPos, yPos, zPos,
