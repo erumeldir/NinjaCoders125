@@ -72,6 +72,15 @@ void buildRoom(Point_t center, int w, int h, int l) {
 		}
 	}
 #endif
+
+	TestSObj* tentacleLeft = new TestSObj(som->genId(), MDL_0, Point_t(0, 100, 0), Rot_t(0, 0, 0), TEST_STILL);
+	TestSObj* tentacleRight = new TestSObj(som->genId(), MDL_0, Point_t(0,0, 0), Rot_t(M_PI / 4, 0, 0), TEST_WEST);
+	tentacleLeft->setFlag(IS_HARMFUL, 1);
+	//tentacleRight->setFlag(IS_HARMFUL, 1);
+	//tentacleLeft->setFlag(IS_STATIC, 1);
+	//tentacleRight->setFlag(IS_STATIC, 1);
+	som->add(tentacleLeft);
+	som->add(tentacleRight);
 }
 
 

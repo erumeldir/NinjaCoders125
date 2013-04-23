@@ -2,13 +2,14 @@
 #include <math.h>
 #include "ConfigurationManager.h"
 
-TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject(id) {
+TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, int dir) : ServerObject(id) {
 	DC::get()->print("Created new TestSObj %d\n", id);
 	Box bxVol;
 	this->dir = dir;
 	this->modelNum = modelNum;
 	switch (modelNum) {
 		case MDL_4:
+		case MDL_5:
 		case MDL_1:	//box
 			bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-5, 0, -5, 10, 10, 10);
 			break;
@@ -27,7 +28,7 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, int dir) : ServerObject
 			break;
 	}
 	
-	pm = new PhysicsModel(pos, Rot_t(), 500, bxVol);
+	pm = new PhysicsModel(pos, rot, 500, bxVol);
 	t = 0;
 }
 

@@ -266,7 +266,6 @@ void RenderEngine::render() {
 // todo take time
 #define TIME_SINCE_LAST_UPDATE 33 // 4
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
-
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
