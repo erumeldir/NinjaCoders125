@@ -127,5 +127,11 @@
     <None Include="res\tentacle1.X">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\tentacle_anim_1.X">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\cute propeller.X">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

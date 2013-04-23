@@ -60,6 +60,9 @@ public:
 	bool loadModel(const char * filename, int * idAddr);
 
 	bool debugFlag;
+	//Debug
+	IXAnimator *getAnim() { return xAnimator; }
+
 
 private:
 	void startWindow ();
