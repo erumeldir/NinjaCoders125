@@ -12,9 +12,10 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
-	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, M_PI), MDL_4);
+	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, M_PI), MDL_1);
 	cameraPitch = 0;
-	health = CM::get()->find_config_as_int("INIT_HEALTH");
+	PlayerState *state = (PlayerState*)data;
+	this->health = state->health;
 }
 
 PlayerCObj::~PlayerCObj(void)
@@ -33,7 +34,7 @@ void PlayerCObj::showStatus()
 	//std::string s2 (floor(health/20 + 0.5f), '~');
 	//std::string s3 ("]");
 	//status << s1 << s2 << s3;
-	if (health == 0) status << "\nGAME OVER";
+	if (health <= 0) status << "\nGAME OVER";
 	RE::get()->setHUDText(status.str(), health);
 }
 
@@ -44,7 +45,7 @@ bool PlayerCObj::update() {
 		if(xctrl->isConnected()) {
 			
 			if(xctrl->getState().Gamepad.bLeftTrigger) {
-				cameraPitch = 0;
+				cameraPitch = 0.174532925f; //10
 			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
 				cameraPitch += atan(((float)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
 				if (cameraPitch > M_PI / 2.f) {
@@ -64,6 +65,7 @@ bool PlayerCObj::update() {
 }
 
 void PlayerCObj::deserialize(char* newState) {
-	ObjectState *state = (ObjectState*)newState;
-	rm->getFrameOfRef()->deserialize(newState + sizeof(ObjectState));
+	PlayerState *state = (PlayerState*)newState;
+	this->health = state->health;
+	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

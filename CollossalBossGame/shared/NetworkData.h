@@ -100,6 +100,7 @@ struct CreateHeader {
  */
 struct PlayerState {
     Model modelNum;
+	int health;
 };
 
 /*

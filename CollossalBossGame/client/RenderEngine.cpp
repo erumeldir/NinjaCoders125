@@ -105,7 +105,7 @@ void RenderEngine::renderInitalization()
 
 	D3DXMATRIX matProj;
 	//TODO: determine clipping
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 300.0f );
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 400.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
@@ -217,7 +217,7 @@ void RenderEngine::drawHUD() {
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
-                                0xFF000000); //Color
+                                0xFFFFFFFF);//0xFF000000); //Color
 
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
 	backgroundLine->SetWidth(15.0f);
@@ -225,7 +225,7 @@ void RenderEngine::drawHUD() {
 
 	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10.f , 40.0f)};
 	healthLine->SetWidth(15.0f);
-	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, 0, 255, 0));
+	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->healthPts) / 100.0), (int)(255.0 * this->healthPts / 100.0), 0));
 }
 
 /*where we actually draw a scene
@@ -251,7 +251,7 @@ void RenderEngine::renderThis(ClientObject *obj) {
 */
 void RenderEngine::render() {
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(240, 240, 240), 1.0f, 0);
+	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
@@ -267,7 +267,6 @@ void RenderEngine::render() {
 // todo take time
 #define TIME_SINCE_LAST_UPDATE 33 // 4
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
-
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
@@ -280,10 +279,7 @@ bool RenderEngine::loadModel(const char * filename, int * idAddr) {
 LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
-	{	
-		case WM_KEYUP:
-			printf("Key up\n");
-			break;
+	{
 		case WM_DESTROY:
 		{
 			printf("Window destroyed\n");
@@ -291,7 +287,7 @@ LRESULT CALLBACK WindowProc(HWND windowHandle, UINT message, WPARAM wParam, LPAR
 			return 0;
 		} break;
 		default:
-			printf("Unknown message 0x%x\n", message);
+			//printf("Unknown message 0x%x\n", message);
 			break;
 	}
 

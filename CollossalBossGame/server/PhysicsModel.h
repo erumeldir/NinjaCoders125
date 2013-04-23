@@ -20,15 +20,16 @@ typedef enum CollisionBox {
 //All physics data should be known to the frames
 struct PhysicsModel
 {
-	PhysicsModel(Point_t pos, Rot_t rot, float mass, bool isStatic = false) {
+	PhysicsModel(Point_t pos, Rot_t rot, float mass, const Box &vol, bool isStatic = false) {
 		ref = new Frame(pos,rot);
-//		appliedAccel = Vec3f();
+		this->lastPos = pos;
 		vel = Vec3f();
 		accel = Vec3f();
 		this->mass = mass;
 		frictCoeff = GROUND_FRICTION;
 		this->colBox = CB_SMALL;		
 		this->isStatic = isStatic;
+		this->vol = vol;
 	}
 
 	virtual ~PhysicsModel() {
@@ -63,10 +64,12 @@ struct PhysicsModel
 	Frame *ref;	//Frame of Reference/skeleton; also root position and collision info
 	Vec3f vel;			//Current velocity
 	Vec3f accel;		//Current acceleration
+	Point_t lastPos;
 	float mass;			//Mass of this object
 	float frictCoeff;	//Friction coefficient
 	Vec3f frictNorm;	//Normal on which the friction will be applied
 	bool onGround;
 	bool isStatic;
 	CollisionBox colBox;
+	Box vol;
 };

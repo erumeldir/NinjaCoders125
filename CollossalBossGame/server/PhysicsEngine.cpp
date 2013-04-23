@@ -4,7 +4,8 @@
 
 //Movement Defines
 #define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
-#define AIR_FRICTION 1.f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.01f	//A bit excessive, but it works for now
+#define MAX_VEL 5.0f
 
 //Collision Defines
 #define SMALLRADIUS 5.0f
@@ -17,6 +18,9 @@ PhysicsEngine::PhysicsEngine(void)
 {
 	// Configuration options
 	gravity = CM::get()->find_config_as_float("GRAVITY_FORCE");
+
+	xPos = yPos = zPos = 500;
+	xNeg = yNeg = zNeg = 0;
 }
 
 
@@ -30,45 +34,72 @@ PhysicsEngine::~PhysicsEngine(void)
  * Updates the physical position of the model and returns true if this object
  * should have collision physics applied.
  */
-bool PhysicsEngine::applyPhysics(PhysicsModel *mdl) {
+bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	float dt = TIMESTEP;
 
-	if(mdl->isStatic) return true;
+	PhysicsModel *mdl = obj->getPhysicsModel();
+	if(obj->getFlag(IS_STATIC)) return true;
 
-	//Apply additional forces, such as gravity and friction.
-	// We are ignoring both for now and applying a half-assed version of
-	// friction when we update the velocity.
-	Vec3f downVector = Vec3f(0, -1, 0);
-	mdl->applyAccel(downVector*gravity);
+	//Apply gravity if not falling; otherwise, apply friction
+	if(obj->getFlag(IS_FALLING)) {
+		//gravity
+		Vec3f downVector = Vec3f(0, -1, 0);
+		mdl->applyAccel(downVector*gravity);
+	} else {
+		//friction
+	}
+
 
 	//Update position
+	mdl->lastPos = mdl->ref->getPos();
+	//if(mdl->ref->getPos().y <= 0) mdl->lastPosOnGround = mdl->ref->getPos();
 	float dx = 0.5f * mdl->accel.x * dt * dt + mdl->vel.x * dt,
 		  dy = 0.5f * mdl->accel.y * dt * dt + mdl->vel.y * dt,
 		  dz = 0.5f * mdl->accel.z * dt * dt + mdl->vel.z * dt;
 	mdl->ref->translate(Point_t(dx, dy, dz));
 
-	// if pos < 0 reset y pos to 0 and if y vel < 0 clear out y vel set friction to 1.3, else friction = 0
-	Point_t pos = mdl->ref->getPos();
-	if (pos.y < 0) {
-		mdl->ref->setPos(Point_t(pos.x, 0, pos.z));
-		mdl->onGround = true;
-		mdl->frictCoeff = GROUND_FRICTION;
-		mdl->accel.y = 0;
-		if(mdl->vel.y < 0) {
-			mdl->vel.y = 0;
-		}
-	} else {
-		mdl->onGround = false;
-		mdl->frictCoeff = AIR_FRICTION;
-	}
+
 
 	//Update velocity
 	mdl->vel.x = mdl->accel.x * dt + mdl->vel.x / mdl->frictCoeff;
 	mdl->vel.y = mdl->accel.y * dt + mdl->vel.y / mdl->frictCoeff;
 	mdl->vel.z = mdl->accel.z * dt + mdl->vel.z / mdl->frictCoeff;
 
+	//Cap velocity
+	float magSq = mdl->vel.x * mdl->vel.x + mdl->vel.y * mdl->vel.y + mdl->vel.z * mdl->vel.z;
+	if(magSq > MAX_VEL * MAX_VEL) {
+		mdl->vel *= MAX_VEL / sqrt(magSq);
+	}
+
 	//Update acceleration
 	mdl->accel = Vec3f();
+
+#if 1
+	//Cap position
+	Point_t pos = mdl->ref->getPos();
+	if(pos.y + mdl->vol.y < yNeg) {
+		pos.y = yNeg - mdl->vol.y;
+	} else if(pos.y + mdl->vol.y + mdl->vol.h > yPos) {
+		pos.y = yPos - (mdl->vol.y + mdl->vol.h);
+	}
+	if(pos.x + mdl->vol.x < xNeg) {
+		pos.x = xNeg - mdl->vol.x;
+	} else if(pos.x + mdl->vol.x + mdl->vol.w > xPos) {
+		pos.x = xPos - (mdl->vol.x + mdl->vol.w);
+	}
+	if(pos.z + mdl->vol.z < zNeg) {
+		pos.z = zNeg - mdl->vol.z;
+	} else if(pos.z + mdl->vol.z + mdl->vol.l > zPos) {
+		pos.z = zPos - (mdl->vol.z + mdl->vol.l);
+	}
+	mdl->ref->setPos(Point_t(pos.x, pos.y, pos.z));
+#endif
+
+	//Object falls if it has moved (it may not fall after collision checks have been applied)
+	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
+		obj->setFlag(IS_FALLING, true);
+		mdl->frictCoeff = AIR_FRICTION;
+	}
 
 	return true;	//We'll add a detection for has-moved later
 }
@@ -156,7 +187,7 @@ void PhysicsEngine::flatCollision(ServerObject * theObj, Frame * flat)
  *  Author: Bryan
  *  Alex note: separate detection and collision response
  */
-
+#if 0
 #include <iostream>
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	//Collision checks/inter-object physics
@@ -255,4 +286,101 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	}
 
 }
+#else
 
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
+	Box bx1 = obj1->getPhysicsModel()->vol + obj1->getPhysicsModel()->ref->getPos(),
+		bx2 = obj2->getPhysicsModel()->vol + obj2->getPhysicsModel()->ref->getPos();
+
+	//Check for collision
+	if(!aabbCollision(bx1,bx2)) {
+		return;
+	}
+
+	//Passable objects or static pairs cannot be collided with
+	if((obj1->getFlag(IS_PASSABLE) || obj2->getFlag(IS_PASSABLE)) ||
+			(obj1->getFlag(IS_STATIC) && obj2->getFlag(IS_STATIC))) {
+		obj1->onCollision(obj2);
+		obj2->onCollision(obj1);
+		return;
+	}
+
+	//Move out bounding boxes if collision occurs
+	float fXShift1 = bx2.x - (bx1.x + bx1.w),
+          fXShift2 = (bx2.x + bx2.w) - bx1.x,
+          fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
+    float fYShift1 = bx2.y - (bx1.y + bx1.h),
+          fYShift2 = (bx2.y + bx2.h) - bx1.y,
+          fYShift  = fabs(fYShift1) < fabs(fYShift2) ? fYShift1 : fYShift2;
+    float fZShift1 = bx2.z - (bx1.z + bx1.l),
+          fZShift2 = (bx2.z + bx2.l) - bx1.z,
+          fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
+	Vec3f ptObj1Shift, ptObj2Shift;
+	
+    if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
+        //Shift by X
+        if(obj1->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f();
+            ptObj2Shift = Vec3f(-fXShift, 0, 0);
+        } else if(obj2->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f(fXShift, 0, 0);
+            ptObj2Shift = Vec3f();
+
+        } else {    //Split evenly
+            ptObj1Shift = Vec3f(fXShift / 2, 0, 0);
+            ptObj2Shift = Vec3f(-fXShift / 2, 0, 0);
+        }
+    } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
+        //Shift by Y (vertical)
+        if(obj1->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f();
+            ptObj2Shift = Vec3f(0, -fYShift, 0);
+        } else if(obj2->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f(0, fYShift, 0);
+            ptObj2Shift = Vec3f();
+        } else {    //Split evenly
+            ptObj1Shift = Vec3f(0, fYShift / 2, 0);
+            ptObj2Shift = Vec3f(0, -fYShift / 2, 0);
+        }
+		
+		//Stop the lower object from falling
+        if(bx2.y > bx1.y) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        }
+    } else {
+        //Shift by Z
+        if(obj1->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f();
+            ptObj2Shift = Vec3f(0, 0, -fZShift);
+        } else if(obj2->getFlag(IS_STATIC)) {
+            ptObj1Shift = Vec3f(0, 0, fZShift);
+            ptObj2Shift = Vec3f();
+        } else {    //Split evenly
+            ptObj1Shift = Vec3f(0, 0, fZShift / 2);
+            ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
+        }
+	}
+
+#if 1
+	//Move the objects by the specified amount
+	obj1->getPhysicsModel()->ref->translate(ptObj1Shift);
+	obj2->getPhysicsModel()->ref->translate(ptObj2Shift);
+#endif
+	//Inform the logic module of the collision event
+	obj1->onCollision(obj2);
+	obj2->onCollision(obj1);
+}
+#endif
+
+bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
+	return !(bx1.x + bx1.w < bx2.x ||
+			 bx1.y + bx1.h < bx2.y ||
+			 bx1.z + bx1.l < bx2.z ||
+			 bx1.x > bx2.x + bx2.w ||
+			 bx1.y > bx2.y + bx2.h ||
+			 bx1.z > bx2.z + bx2.l);
+}

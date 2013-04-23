@@ -66,6 +66,13 @@ typedef struct Vec3f {
 			this->z * rhs.z);
 	}
 
+	// DOT PRODUCT!
+	float operator^	(Vec3f rhs) {
+		return (this->x * rhs.x +
+			this->y * rhs.y + 
+			this->z * rhs.z);
+	}
+
 	Vec3f operator/	(Vec3f rhs) {
 		float x = (rhs.x == 0) ? 0 : this->x / rhs.x;
 		float y = (rhs.y == 0) ? 0 : this->y / rhs.y;
@@ -73,12 +80,62 @@ typedef struct Vec3f {
 		return Vec3f(x, y, z);
 	}
 
+	//Scalar ops
+	void operator*= (float s) {
+		x *= s;
+		y *= s;
+		z *= s;
+	}
+
+	void operator/= (float s) {
+		x /= s;
+		y /= s;
+		z /= s;
+	}
+
 } Point_t, Rot_t;
+
+//Axis-aligned bounding box
+typedef struct Box {
+	float x, y, z;
+	float w, h, l;
+
+	Box() {
+		x = y = z = w = l = h = 0;
+	}
+	
+	Box(float x, float y, float z, float w, float h, float l) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->w = w;
+		this->h = h;
+		this->l = l;
+	}
+
+	Box operator+ (const Vec3f &pt) const {
+		return Box(x + pt.x, y + pt.y, z + pt.z,
+				   w,        h,        l);
+	}
+} Vol_t;
 
 //Enumerations
 /*
  * Actions that are sent from the client to the server
  */
+
+typedef enum OBJ_FLAGS {
+	//General flags
+	IS_HEALTHY,
+	IS_HARMFUL,
+	IS_WALL,
+	//Physics flags
+	IS_STATIC,
+	IS_PASSABLE,
+	IS_FALLING
+};
+
+
 typedef enum ACTION {
 	ACT_MOVE_X,
 	ACT_MOVE_Y,
