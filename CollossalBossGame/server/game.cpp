@@ -28,12 +28,12 @@ void buildRoom(Point_t center, int w, int h, int l) {
 			 *east, *west;
 	DC::get()->print("Making room with bottom-corner at (%f,%f,%f)\n", center.x, center.y, center.z);
 #if 1	
-	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), WALL_DOWN);
-	ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH,0), WALL_UP);
-	north   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,-WIDTH/2), WALL_NORTH);
-	south   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,WIDTH/2), WALL_SOUTH);
-	east    = new WallSObj(som->genId(), MDL_3, Point_t(WIDTH/2,WIDTH/2,0), WALL_EAST);
-	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WALL_WEST);
+	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), DOWN);
+	ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH,0), UP);
+	north   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,-WIDTH/2), NORTH);
+	south   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,WIDTH/2), SOUTH);
+	east    = new WallSObj(som->genId(), MDL_3, Point_t(WIDTH/2,WIDTH/2,0), EAST);
+	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WEST);
 	
 	som->add(floor);
 	som->add(ceiling);
@@ -47,8 +47,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//floor/ceiling
 	for(x = 0; x < w; ++x) {
 		for(z = 0; z < l; ++z) {
-			floor   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y,             center.z + z * WIDTH), WALL_DOWN);
-			ceiling = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + h * WIDTH, center.z + z * WIDTH), WALL_UP);
+			floor   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y,             center.z + z * WIDTH), DOWN);
+			ceiling = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + h * WIDTH, center.z + z * WIDTH), UP);
 			som->add(floor);
 			som->add(ceiling);
 		}
@@ -56,8 +56,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//north/south
 	for(x = 0; x < w; ++x) {
 		for(y = 0; y < h; ++y) {
-			north   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z),             WALL_NORTH);
-			south   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z + l * WIDTH), WALL_SOUTH);
+			north   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z),             NORTH);
+			south   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z + l * WIDTH), SOUTH);
 			som->add(north);
 			som->add(south);
 		}
@@ -65,8 +65,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//east/west
 	for(z = 0; z < l; ++z) {
 		for(y = 0; y < h; ++y) {
-			east    = new WallSObj(som->genId(), MDL_3, Point_t(center.x + w * WIDTH, center.y + y * WIDTH, center.z + z * WIDTH), WALL_EAST);
-			west    = new WallSObj(som->genId(), MDL_3, Point_t(center.x,             center.y + y * WIDTH, center.z + z * WIDTH), WALL_WEST);
+			east    = new WallSObj(som->genId(), MDL_3, Point_t(center.x + w * WIDTH, center.y + y * WIDTH, center.z + z * WIDTH), EAST);
+			west    = new WallSObj(som->genId(), MDL_3, Point_t(center.x,             center.y + y * WIDTH, center.z + z * WIDTH), WEST);
 			som->add(east);
 			som->add(west);
 		}

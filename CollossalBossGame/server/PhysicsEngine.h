@@ -21,9 +21,8 @@ public:
 		this->zNeg = zNeg;
 	}
 
-	void setGravDir(const Vec3f &dir) {
-		gravDir = dir;
-	}
+	inline void setGravDir(const Vec3f &dir) { gravDir = dir; }
+	inline const Vec3f &getGravDir() { return gravDir; }
 
 private:
 	PhysicsEngine(void);
@@ -36,7 +35,7 @@ private:
 	bool aabbCollision(const Box &bx1, const Box &bx2);
 
 	// Configuration options
-	float gravity;
+	float gravMag;
 	Vec3f gravDir;
 
 	//Position caps

@@ -41,6 +41,7 @@ PlayerSObj::~PlayerSObj(void) {
 
 bool PlayerSObj::update() {
 	//gravity
+#if 0
 	gravityTimer++;
 	static char cdir = 'v';
 	if(gravityTimer == 500) {
@@ -55,7 +56,7 @@ bool PlayerSObj::update() {
 		cdir = 'v';
 	}
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
-
+#endif
 
 	float yDist = 0.f;
 	if (istat.quit) {
@@ -108,7 +109,7 @@ bool PlayerSObj::update() {
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_0;
+	state->modelNum = MDL_1;
 	state->health = health;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }

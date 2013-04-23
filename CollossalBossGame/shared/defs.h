@@ -124,7 +124,7 @@ typedef struct Box {
  * Actions that are sent from the client to the server
  */
 
-typedef enum OBJ_FLAGS {
+typedef enum OBJ_FLAG {
 	//General flags
 	IS_HEALTHY,
 	IS_HARMFUL,
@@ -133,6 +133,15 @@ typedef enum OBJ_FLAGS {
 	IS_STATIC,
 	IS_PASSABLE,
 	IS_FALLING
+};
+
+typedef enum DIRECTION {
+	NORTH = 0x1,	//+z
+	EAST  = 0x2,	//+x
+	UP    = 0x4,	//+y
+	SOUTH = 0x8,	//-z
+	WEST  = 0x10,	//-x
+	DOWN  = 0x20	//-y
 };
 
 
