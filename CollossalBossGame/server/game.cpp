@@ -73,11 +73,13 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	}
 #endif
 
+
 	for(int i = 6; i < 25; i++)
 	{
 		TestSObj* tentacleRight = new TestSObj(som->genId(), (Model)i, Point_t(0,0, 0), Rot_t(M_PI/i, M_PI/i, M_PI/i), TEST_WEST);
 		som->add(tentacleRight);
 	}
+
 }
 
 
