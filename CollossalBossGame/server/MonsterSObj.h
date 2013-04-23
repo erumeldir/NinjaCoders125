@@ -4,13 +4,12 @@
 class MonsterSObj : public ServerObject
 {
 public:
-	MonsterSObj(void);
+	MonsterSObj(uint id, Model modelNum, Point_t pos, Rot_t rot);
 	virtual ~MonsterSObj(void);
 
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
-	void deserialize(char* newInput);
 	virtual ObjectType getType() { return OBJ_MONSTER; }
 	virtual void onCollision(ServerObject *obj);
 
@@ -18,6 +17,7 @@ public:
 
 private:
 	PhysicsModel *pm;
+	Model modelNum;
 	int health;
 };
 
