@@ -59,7 +59,6 @@ bool PlayerSObj::update() {
 
 	float yDist = 0.f;
 	if (istat.quit) {
-		// todo Send Client quit event
 		return true; // delete me!
 	}
 	
@@ -74,27 +73,17 @@ bool PlayerSObj::update() {
 		// This handles in the air, collisions
 		// are handled in OnCollision()
 
+		// This part discretizes jumps (so no button mashing)
 		jumping = istat.jump && newJump; // isFalling?
 		newJump = !istat.jump;
 
+		// This part gives us a buffer, so the user can bounce off the wall even 
+		// when they pressed 'jump' before they got there
 		if (jumping) jumpCounter++;
 		else jumpCounter = 0;
 
 		appliedJumpForce = false; // we apply it on collision
 
-		/*if (istat.jump) {
-			if(!getFlag(IS_FALLING)) yDist = jumpDist;
-			else
-			{
-				jumpCounter++;
-			}
-		// Making it two discrete jumps
-		jumping = true;
-		}
-		else
-		{
-			jumping = false;
-		}*/
 		if (istat.specialPower) {
 			// Determine special power logic here
 			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
@@ -141,6 +130,9 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 
 	
 	// If I started jumping a little bit ago, that's a jump
+	// appliedJumpForce is because OnCollision gets called twice
+	// on every collision, so this makes sure you only apply the
+	// jump force once every iteration
 	if(!appliedJumpForce && (jumpCounter > 0 && jumpCounter < 10))
 	{
 		// surface bouncing
@@ -153,7 +145,10 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 			Vec3f incident = pm->ref->getPos() - lastCollision;
 			Vec3f normal = wall->getNormal();
 
-			// incident is zero, so we just jump
+			// incident is zero, so we just jump upwards
+			// this happens when you jump of the same surface
+			// you were at before (so the floor, or when you
+			// slide off the wall and then jump)
 			if ((incident.x < .01 && incident.x > -.01)
 				|| (incident.y < .01 && incident.y > -.01)
 				|| (incident.z < .01 && incident.z > -.01))
@@ -174,7 +169,8 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 		// object bouncing
 		else
 		{
-			// get the normal we collided against
+			// todo: get the normal we collided against
+			// for now, jump up
 			Vec3f up = Vec3f(0, 1, 0);
 			pm->applyForce(up*jumpDist);
 		}
@@ -182,23 +178,7 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 		appliedJumpForce = true;
 	}
 
-
-	/*if(obj->getFlag(IS_WALL) && jumpCounter > 0 && jumpCounter < 20) //&& istat.jump)
-	{
-		//jump!
-		WallSObj *wall  = reinterpret_cast<WallSObj *>(obj);
-		float bounceDamp = 0.05f;
-
-		Vec3f incident = pm->ref->getPos() - lastCollision;
-		Vec3f normal = wall->getNormal();
-		Vec3f reflected = incident - (((normal - incident) * normal) * 2.f);
-		// http://www.3dkingdoms.com/weekly/weekly.php?a=2
-
-		pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) * bounceDamp;
-	}*/
-
-
-	// Set last collision pos
+	// Set last collision pos for bouncing off different surfaces
 	lastCollision = pm->ref->getPos();
 	jumping = false;
 }
