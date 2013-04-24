@@ -12,6 +12,11 @@
 #include "WallSObj.h"
 #include "PhysicsEngine.h"
 
+/*
+ * buildRoom()
+ * Builds six walls centered about the specified point, of width w, height h, and length l
+ * TODO: Currently just builds six walls centered around (0,75,0)
+ */
 void buildRoom(Point_t center, int w, int h, int l) {
 #define WIDTH 150
 	ServerObjectManager *som = SOM::get();
@@ -72,20 +77,12 @@ void buildRoom(Point_t center, int w, int h, int l) {
 		}
 	}
 #endif
-
-
-	for(int i = 6; i < 25; i++)
-	{
-		TestSObj* tentacleRight = new TestSObj(som->genId(), (Model)i, Point_t(0,0, 0), Rot_t(M_PI/i, M_PI/i, M_PI/i), TEST_WEST);
-		som->add(tentacleRight);
-	}
-
 }
 
 
 void gameInit() {
-#if 0
 	ServerObjectManager *som = SOM::get();
+#if 0
 	//Create all non-player game objects
 	TestSObj *obj0 = new TestSObj(som->genId(), MDL_1, Point_t(-50, 5, 100), TEST_WEST),
 			 *obj1 = new TestSObj(som->genId(), MDL_1, Point_t(50, 5, 80), TEST_EAST),
@@ -135,4 +132,16 @@ for(int x = -1; x < 2; ++x) {
 #endif
 
 	buildRoom(Point_t(0, WIDTH / 2, 0), 1, 1, 1);
+
+	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Rot_t(),TEST_WEST);
+	//som->add(pyr);
+
+	/*
+	for(int i = 6; i < 25; i++)
+	{
+		TestSObj* tentacleRight = new TestSObj(som->genId(), (Model)i, Point_t(0,0, 0), Rot_t(M_PI/i, M_PI/i, M_PI/i), TEST_WEST);
+		som->add(tentacleRight);
+	}
+	*/
+
 }

@@ -3,12 +3,13 @@
 #include <math.h>
 
 #define WALL_WIDTH 200 //150; increased size to reduce edge-case collision errors
-#define WALL_THICKNESS 20
+#define WALL_THICKNESS 200
 
 WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : ServerObject(id) {
 	DC::get()->print("Created new WallSObj %d ", id);
 	Box bxVol;
 	Rot_t rot;
+	uint collDir = dir;
 	switch(dir) {
 	case NORTH:
 		DC::get()->print("(north)\n");
@@ -16,6 +17,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
 		normal = Vec3f( 0, 0, 1);
 		rot = Rot_t(M_PI / 2,0,0);
+		collDir = NORTH;
 		break;
 	case SOUTH:
 		DC::get()->print("(south)\n");
@@ -23,6 +25,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
 		normal = Vec3f( 0, 0, -1);
 		rot = Rot_t(-M_PI / 2,0,0);
+		collDir = SOUTH;
 		break;
 	case EAST:
 		DC::get()->print("(east)\n");
@@ -30,6 +33,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
 		normal = Vec3f(-1, 0, 0);
 		rot = Rot_t(0,0,M_PI / 2);
+		collDir = WEST;
 		break;
 	case WEST:
 		DC::get()->print("(west)\n");
@@ -37,6 +41,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
 		normal = Vec3f( 1, 0, 0);
 		rot = Rot_t(0,0,-M_PI / 2);
+		collDir = EAST;
 		break;
 	case UP:
 		DC::get()->print("(ceiling)\n");
@@ -44,6 +49,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
 		normal = Vec3f( 0,-1, 0);
 		rot = Rot_t(0,0,M_PI);
+		collDir = DOWN;
 		break;
 	default:
 		DC::get()->print("(floor)\n");
@@ -51,9 +57,10 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
 		normal = Vec3f( 0, 1, 0);
 		rot = Rot_t(0,0,0);
+		collDir = UP;
 		break;
 	}
-	pm = new PhysicsModel(pos, rot, 500, bxVol, true);
+	pm = new PhysicsModel(pos, rot, 500, bxVol, collDir);
 	this->modelNum = modelNum;
 	pm->setColBox(CB_FLAT);
 	t = 0;

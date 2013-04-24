@@ -75,7 +75,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	//Update acceleration
 	mdl->accel = Vec3f();
 
-#if 1
+#if 0
 	//Cap position
 	Point_t pos = mdl->ref->getPos();
 	if(pos.y + mdl->vol.y < yNeg) {
@@ -107,8 +107,10 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 
 
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
-	Box bx1 = obj1->getPhysicsModel()->vol + obj1->getPhysicsModel()->ref->getPos(),
-		bx2 = obj2->getPhysicsModel()->vol + obj2->getPhysicsModel()->ref->getPos();
+	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
+				 *mdl2 = obj2->getPhysicsModel();
+	Box bx1 = mdl1->vol + mdl1->ref->getPos(),
+		bx2 = mdl2->vol + mdl2->ref->getPos();
 	Vec3f collNorm1 = Vec3f(),
 		  collNorm2 = Vec3f();
 
@@ -126,19 +128,54 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	}
 	bool applyForce = false;//true;
 
+	bool canShiftNegX = (mdl1->cdirs & EAST)  && (mdl2->cdirs & WEST),
+		 canShiftPosX = (mdl1->cdirs & WEST)  && (mdl2->cdirs & EAST),
+		 canShiftNegY = (mdl1->cdirs & UP)    && (mdl2->cdirs & DOWN),
+		 canShiftPosY = (mdl1->cdirs & DOWN)  && (mdl2->cdirs & UP),
+		 canShiftNegZ = (mdl1->cdirs & NORTH) && (mdl2->cdirs & SOUTH),
+		 canShiftPosZ = (mdl1->cdirs & SOUTH) && (mdl2->cdirs & NORTH);
+	bool canShiftX, canShiftY, canShiftZ;
+
 	//Move out bounding boxes if collision occurs
 	float fXShift1 = bx2.x - (bx1.x + bx1.w),
           fXShift2 = (bx2.x + bx2.w) - bx1.x,
-          fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
+          fXShift;//  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
     float fYShift1 = bx2.y - (bx1.y + bx1.h),
           fYShift2 = (bx2.y + bx2.h) - bx1.y,
-          fYShift  = fabs(fYShift1) < fabs(fYShift2) ? fYShift1 : fYShift2;
+          fYShift;//  = fabs(fYShift1) < fabs(fYShift2) ? fYShift1 : fYShift2;
     float fZShift1 = bx2.z - (bx1.z + bx1.l),
           fZShift2 = (bx2.z + bx2.l) - bx1.z,
-          fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
+          fZShift;//  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
+
+	if(canShiftNegX && fabs(fXShift1) < fabs(fXShift2)) {
+		fXShift = fXShift1;
+		canShiftX = canShiftNegX;
+	} else {
+		fXShift = fXShift2;
+		canShiftX = canShiftPosX;
+	}
+
+	if(fabs(fYShift1) < fabs(fYShift2)) {
+		fYShift = fYShift1;
+		canShiftY = canShiftNegY;
+	} else {
+		fYShift = fYShift2;
+		canShiftY = canShiftPosY;
+	}
+
+	if(fabs(fZShift1) < fabs(fZShift2)) {
+		fZShift = fZShift1;
+		canShiftZ = canShiftNegZ;
+	} else {
+		fZShift = fZShift2;
+		canShiftZ = canShiftPosZ;
+	}
+
+	//DC::get()->print(CONSOLE | LOGFILE, "Shift capabilities b/w obj%d, obj%d: (%d,%d,%d) ", obj1->getId(), obj2->getId(), canShiftX, canShiftY, canShiftZ);
+
 	Vec3f ptObj1Shift, ptObj2Shift;
 	float sign = 1.0;
-    if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
+    if(canShiftX && fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X
         if(obj1->getFlag(IS_STATIC)) {
             ptObj1Shift = Vec3f();
@@ -154,7 +191,10 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		sign = fXShift < 0 ? -1 : 1;
 		collNorm1 = Vec3f(sign,0,0);
 		collNorm2 = Vec3f(-sign,0,0);
-    } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
+		mdl1->vel.x = 0;
+		mdl2->vel.x = 0;
+		//DC::get()->print(CONSOLE | LOGFILE, "(shifted x %f (sign = %f))\n", fXShift, sign);
+    } else if(canShiftY && fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
         //Shift by Y (vertical)
         if(obj1->getFlag(IS_STATIC)) {
             ptObj1Shift = Vec3f();
@@ -179,6 +219,9 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 			obj1->setFlag(IS_FALLING, false);
 			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
         }
+		mdl1->vel.y = 0;
+		mdl2->vel.y = 0;
+		//DC::get()->print(CONSOLE | LOGFILE, "(shifted y %f (sign = %f))\n", fYShift, sign);
     } else {
         //Shift by Z
         if(obj1->getFlag(IS_STATIC)) {
@@ -194,15 +237,18 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		sign = fZShift < 0 ? -1 : 1;
 		collNorm1 = Vec3f(0,0,sign);
 		collNorm2 = Vec3f(0,0,-sign);
+		mdl1->vel.z = 0;
+		mdl2->vel.z = 0;
+		//DC::get()->print(CONSOLE | LOGFILE, "(shifted z %f (sign = %f))\n", fZShift, sign);
 	}
 
 #if 1
 	//Move the objects by the specified amount
-	obj1->getPhysicsModel()->ref->translate(ptObj1Shift);
-	obj2->getPhysicsModel()->ref->translate(ptObj2Shift);
+	mdl1->ref->translate(ptObj1Shift);
+	mdl2->ref->translate(ptObj2Shift);
 	if(applyForce) {
-		obj1->getPhysicsModel()->applyForce(collNorm1);
-		obj2->getPhysicsModel()->applyForce(collNorm2);
+		mdl1->applyForce(collNorm1);
+		mdl2->applyForce(collNorm2);
 	}
 #endif
 	//Inform the logic module of the collision event
