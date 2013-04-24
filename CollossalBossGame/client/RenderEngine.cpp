@@ -183,6 +183,7 @@ RenderEngine::RenderEngine() {
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
+	initTime=clock();
 }
 
 
@@ -206,6 +207,8 @@ RenderEngine::~RenderEngine() {
 	healthLine->Release();
 	backgroundLine->Release();
 	monsterLine->Release();
+	sprite->Release();
+	g_texture->Release();
 	delete cam;
 }
 
@@ -281,7 +284,7 @@ void RenderEngine::renderThis(ClientObject *obj) {
 */
 void RenderEngine::render() {
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(21, 0, 105), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
@@ -291,6 +294,27 @@ void RenderEngine::render() {
 	pos.x=0.0f;
 	pos.y=0.0f;
 	pos.z=1.0f;
+
+	// Texture being used is 64 by 64:
+	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1080.0f/2);
+
+	// Screen position of the sprite
+	D3DXVECTOR2 trans=D3DXVECTOR2(0.0f,0.0f);
+
+	// Rotate based on the time passed
+	float rotation=(clock()-initTime)/100000.0f;
+	//float rotation= 0;//100.f/500.0f;
+
+	// Build our matrix to rotate, scale and position our sprite
+	D3DXMATRIX mat;
+
+	D3DXVECTOR2 scaling(1.f,1.f);
+
+	// out, scaling centre, scaling rotation, scaling, rotation centre, rotation, translation
+	D3DXMatrixTransformation2D(&mat,NULL,0.0,&scaling,&spriteCentre,rotation,&trans);
+
+	// Tell the sprite about the matrix
+	sprite->SetTransform(&mat);
 
 	sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);

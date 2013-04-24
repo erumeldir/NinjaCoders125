@@ -22,6 +22,8 @@
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
+#include <time.h>
+
 using namespace std;
 
 
@@ -84,6 +86,7 @@ private:
 	string monsterHUDText;
 	int healthPts;
 	int monsterHealthPts;
+	clock_t initTime, final;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
