@@ -154,6 +154,7 @@ void RenderEngine::HUDInitialization() {
 					"Georgia",                //pFacename,
 					&this->direct3dText);     //ppFont
 	D3DXCreateLine(this->direct3dDevice, &healthLine);
+	D3DXCreateLine(this->direct3dDevice, &monsterLine);
 	D3DXCreateLine(this->direct3dDevice, &backgroundLine);
 
 }
@@ -177,6 +178,7 @@ RenderEngine::RenderEngine() {
 
 	cam = new Camera(cameraDist);
 	hudText = "DEFAULT";
+	this->monsterHUDText = "DEFAULT";
 }
 
 
@@ -199,16 +201,24 @@ RenderEngine::~RenderEngine() {
 	direct3dText->Release(); // close and release the Text
 	healthLine->Release();
 	backgroundLine->Release();
+	monsterLine->Release();
 	delete cam;
 }
 
 void RenderEngine::drawHUD() {
 	RECT font_rect;
+	RECT monstr_rect;
 
    //A pre-formatted string showing the current frames per second
 	SetRect(&font_rect,
 			hudTopX,
 			hudTopY,
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT);
+
+	SetRect(&monstr_rect,
+			hudTopX,
+			hudTopY + 100,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
 
@@ -219,6 +229,13 @@ void RenderEngine::drawHUD() {
                                 DT_LEFT|DT_NOCLIP,//Format,
                                 0xFFFFFFFF);//0xFF000000); //Color
 
+   this->direct3dText->DrawText(NULL,        //pSprite
+								monsterHUDText.c_str(),	 //pString
+                                -1,          //Count
+                                &monstr_rect,  //pRect
+                                DT_LEFT|DT_NOCLIP,//Format,
+                                0xFFFFFFFF);//0xFF000000); //Color
+
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
 	backgroundLine->SetWidth(15.0f);
 	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
@@ -226,6 +243,14 @@ void RenderEngine::drawHUD() {
 	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10.f , 40.0f)};
 	healthLine->SetWidth(15.0f);
 	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->healthPts) / 100.0), (int)(255.0 * this->healthPts / 100.0), 0));
+
+    blines[0] = D3DXVECTOR2(10.0f, 140.0f); blines[1] = D3DXVECTOR2(110.0f, 140.0f);
+	backgroundLine->SetWidth(15.0f);
+	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
+
+	D3DXVECTOR2 mlines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(this->monsterHealthPts + 10.f , 140.0f)};
+	monsterLine->SetWidth(15.0f);
+	monsterLine->Draw(mlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->monsterHealthPts) / 100.0), (int)(255.0 * this->monsterHealthPts / 100.0), 0));
 }
 
 /*where we actually draw a scene

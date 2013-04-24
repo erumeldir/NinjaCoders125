@@ -14,7 +14,8 @@ public:
 	void deserialize(char* newInput);
 	virtual ObjectType getType() { return OBJ_PLAYER; }
 	virtual void onCollision(ServerObject *obj);
-
+	inputstatus getInput() { return istat; }
+	int getHealth() { return health; } 
 	char serialbuffer[100];
 
 private:

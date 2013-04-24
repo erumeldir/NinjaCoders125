@@ -104,7 +104,7 @@ void PlayerSObj::deserialize(char* newInput)
 
 void PlayerSObj::onCollision(ServerObject *obj) {
 	DC::get()->print("Collided with obj %d\n", obj->getId());
-	if(obj->getFlag(IS_HARMFUL))
+	if(obj->getFlag(IS_HARMFUL) && !istat.attack)
 		this->health--;
 	if(obj->getFlag(IS_HEALTHY))
 		this->health++;
