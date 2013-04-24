@@ -74,10 +74,6 @@ PlayerSObj::~PlayerSObj(void) {
 }
 
 bool PlayerSObj::update() {
-	if (istat.start) {
-		EventManager::get()->fireEvent(EVENT_RESET, this); 
-	}
-
 	float yDist = 0.f;
 	if (istat.quit) {
 		return true; // delete me!
@@ -146,6 +142,9 @@ void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
+	if (istat.start) {
+		EventManager::get()->fireEvent(EVENT_RESET, this); 
+	}
 }
 
 void PlayerSObj::onCollision(ServerObject *obj) {

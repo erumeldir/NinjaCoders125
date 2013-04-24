@@ -2,6 +2,7 @@
 #include "WorldManager.h"
 #include "ServerObjectManager.h"
 #include "EventManager.h"
+#include "game.h"
 
 void manageEvent(EventTypes evt, void * obj) {
 	ServerObject * sobj = (ServerObject *)(obj);
@@ -52,6 +53,7 @@ void WorldManager::event_reset(ServerObject * obj) {
 		resetCount = 0;
 		// Fire some function to reset the positions of all server objects.
 		SOM::get()->reset();
+		gameInit();
 	}
 }
 

@@ -47,7 +47,7 @@ void ServerObjectManager::update() {
 			lsObjsToDelete.push_back(it->second->getId());
 			continue;
 		}
-
+		
 		//Update physics
 		if(PE::get()->applyPhysics(it->second)) {
 			//Add this object to the list of objects that have moved
@@ -180,15 +180,29 @@ ServerObject *ServerObjectManager::find(uint id) {
 	return NULL;
 }
 
-void ServerObjectManager::remove(uint id) {
-	//mObjs.erase(id);
+ServerObject *ServerObjectManager::remove(uint id) {
 	lsObjsRemoveQueue.push_back(id);
+	return find(id);
 }
 
 void ServerObjectManager::reset() {
+	list<uint> asdf;
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
 			++it) {
-				it->second->initialize();
+		ServerObject * o = it->second;
+		string s = typeid(*o).name();
+		if(s.compare("class PlayerSObj")) {
+			asdf.push_back(it->first);
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
+			// delete o;
+		} else {
+			it->second->initialize();
+		}
+	}
+	for(list<uint>::iterator it = asdf.begin();
+			it != asdf.end();
+			++it) {
+			mObjs.erase(*it);
 	}
 }

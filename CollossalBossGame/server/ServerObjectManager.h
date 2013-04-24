@@ -26,7 +26,7 @@ public:
 	void freeId(uint id);
 	void add(ServerObject *obj);
 	ServerObject *find(uint id);
-	void remove(uint id);
+	ServerObject *remove(uint id);
 
 	bool debugFlag;
 
