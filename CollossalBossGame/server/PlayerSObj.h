@@ -18,12 +18,16 @@ public:
 	int getHealth() { return health; } 
 	char serialbuffer[100];
 
+	// todo cleanup!! maybe make counter class/struct
+	bool attacking, newAttack;
+	uint jumpCounter, attackCounter;
+	int health;
+
+
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
 	Point_t lastCollision;
-	int health;
-	int jumpCounter;
 	bool jumping, newJump, appliedJumpForce;
 	// Configuration options
 	float jumpDist;

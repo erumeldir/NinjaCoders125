@@ -4,7 +4,7 @@
 
 MonsterSObj::MonsterSObj(uint id, Model modelNum, Point_t pos, Rot_t rot) : ServerObject(id)
 {
-	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");
+	Box bxVol = CM::get()->find_config_as_box("BOX_MONSTER");
 	this->modelNum = modelNum;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
@@ -37,7 +37,14 @@ void MonsterSObj::onCollision(ServerObject *obj) {
 	if(!s.compare("class PlayerSObj")) 
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
-		if(player->getInput().attack && player->getHealth() > 0) health--;
+		if(player->attacking && player->getHealth() > 0) 
+		{
+			health--;
+			player->attacking = false;
+			player->health++; // todo this is SUPER HACKY! we need to fix it
+			// todo monster pushes you back (right now it's up)
+			player->getPhysicsModel()->applyForce(Vec3f(0, 20, 0));
+		}
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
 	}

@@ -31,6 +31,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	istat.forwardDist = 0.0;
 
 	newJump = true; // any jump at this point is a new jump
+	newAttack = true; // same here
 	appliedJumpForce = false;
 }
 
@@ -47,9 +48,12 @@ bool PlayerSObj::update() {
 	
 	if(this->health > 0)
 	{
-		if (istat.attack) {
-			// Determine attack logic here
-		}
+		if(istat.attack && newAttack) attacking = true;
+		newAttack = !istat.attack;
+
+		//if (attacking) attackCounter++;
+		//else attackCounter = 0;
+
 		// Jumping can happen in two cases
 		// 1. Collisions
 		// 2. In the air
@@ -104,7 +108,7 @@ void PlayerSObj::deserialize(char* newInput)
 
 void PlayerSObj::onCollision(ServerObject *obj) {
 	DC::get()->print("Collided with obj %d\n", obj->getId());
-	if(obj->getFlag(IS_HARMFUL) && !istat.attack)
+	if(obj->getFlag(IS_HARMFUL) && !(attacking))//(attackCounter > 0 && attackCounter < 10))
 		this->health--;
 	if(obj->getFlag(IS_HEALTHY))
 		this->health++;

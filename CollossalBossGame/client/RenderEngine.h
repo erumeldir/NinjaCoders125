@@ -90,6 +90,8 @@ private:
 
 	Camera* cam;
 
+	IDirect3DTexture9 *g_texture;
+
 	//Configuration fields
 	float cameraDist;
 	int hudTopX, hudTopY;
