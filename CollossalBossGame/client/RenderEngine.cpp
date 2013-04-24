@@ -179,9 +179,10 @@ RenderEngine::RenderEngine() {
 	cam = new Camera(cameraDist);
 	hudText = "DEFAULT";
 	this->monsterHUDText = "DEFAULT";
-	//D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
-    //                         "res/nebula.jpg",       //File Name
-    //                         &g_texture);    //Texture handle
+	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
+                             "res/nebula.jpg",       //File Name
+                             &g_texture);    //Texture handle
+	D3DXCreateSprite(this->direct3dDevice,&sprite);
 }
 
 
@@ -254,7 +255,6 @@ void RenderEngine::drawHUD() {
 	D3DXVECTOR2 mlines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(this->monsterHealthPts + 10.f , 140.0f)};
 	monsterLine->SetWidth(15.0f);
 	monsterLine->Draw(mlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->monsterHealthPts) / 100.0), (int)(255.0 * this->monsterHealthPts / 100.0), 0));
-
 	//this->direct3dDevice->SetTexture(0,g_texture);
 }
 
@@ -286,6 +286,16 @@ void RenderEngine::render() {
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
 	// do 3D rendering on the back buffer here
+	D3DXVECTOR3 pos;
+
+	pos.x=0.0f;
+	pos.y=0.0f;
+	pos.z=1.0f;
+
+	sprite->Begin(D3DXSPRITE_ALPHABLEND);
+	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
+	sprite->End();
+
 	sceneDrawing();
 	drawHUD();
 

@@ -48,7 +48,7 @@ public:
 	LPD3DXLINE healthLine;
 	LPD3DXLINE monsterLine;
 	LPD3DXLINE backgroundLine;
-
+	LPD3DXSPRITE sprite;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
