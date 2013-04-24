@@ -33,6 +33,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	newJump = true; // any jump at this point is a new jump
 	newAttack = true; // same here
 	appliedJumpForce = false;
+	attacking = false;
 }
 
 
@@ -109,7 +110,7 @@ void PlayerSObj::deserialize(char* newInput)
 void PlayerSObj::onCollision(ServerObject *obj) {
 	DC::get()->print("Collided with obj %d\n", obj->getId());
 	if(obj->getFlag(IS_HARMFUL) && !(attacking))//(attackCounter > 0 && attackCounter < 10))
-		this->health--;
+		this->health-=3;
 	if(obj->getFlag(IS_HEALTHY))
 		this->health++;
 	if(this->health < 0) health = 0;

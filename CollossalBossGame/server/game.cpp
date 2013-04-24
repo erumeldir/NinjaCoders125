@@ -75,7 +75,7 @@ void buildRoom(Point_t center, int w, int h, int l) {
 #endif
 
 	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_5, Point_t(0, 0, 0), Rot_t(0, 0, 0));
-	tentacleLeft->setFlag(IS_HARMFUL, 1);
+	//tentacleLeft->setFlag(IS_HARMFUL, 1);
 	som->add(tentacleLeft);
 }
 
