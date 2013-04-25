@@ -7,33 +7,65 @@
 #include "RenderModel.h"
 #include "RenderEngine.h"
 #include "ConfigurationManager.h"
+#include <sstream>
 
-RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
+RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
+	this->scale = scale;
 	char *filename = NULL;
 	switch(modelNum) {
-	case MDL_0:
-		filename = CM::get()->find_config("MODEL_0");
+	case MDL_TENTACLE_1:
+		filename = CM::get()->find_config("MODEL_TENTACLE1");
 		break;
-	case MDL_1:
-		filename = CM::get()->find_config("MODEL_1");
+	case MDL_TENTACLE_2:
+		filename = CM::get()->find_config("MODEL_TENTACLE2");
 		break;
-	case MDL_2:
-		filename = CM::get()->find_config("MODEL_2");
+	case MDL_TENTACLE_3:
+		filename = CM::get()->find_config("MODEL_TENTACLE3");
 		break;
-	case MDL_3:
-		filename = CM::get()->find_config("MODEL_3");
+	case MDL_TENTACLE_4:
+		filename = CM::get()->find_config("MODEL_TENTACLE4");
 		break;
-	case MDL_4:
-		filename = CM::get()->find_config("MODEL_4");
+	case MDL_TENTACLE_5:
+		filename = CM::get()->find_config("MODEL_TENTACLE5");
 		break;
-	case MDL_5:
-		filename = CM::get()->find_config("MODEL_5");
+	case MDL_FLOOR:
+		filename = CM::get()->find_config("MODEL_FLOOR");
+		break;
+	case MDL_CEILING:
+		filename = CM::get()->find_config("MODEL_CEILING");
+		break;
+	case MDL_EAST_WALL:
+		filename = CM::get()->find_config("MODEL_EAST_WALL");
+		break;
+	case MDL_WEST_WALL:
+		filename = CM::get()->find_config("MODEL_WEST_WALL");
+		break;
+	case MDL_NORTH_WALL:
+		filename = CM::get()->find_config("MODEL_NORTH_WALL");
+		break;
+	case MDL_SOUTH_WALL:
+		filename = CM::get()->find_config("MODEL_SOUTH_WALL");
+		break;
+	case MDL_PLAYER:
+		filename = CM::get()->find_config("MODEL_PLAYER");
+		break;
+	case MDL_TEST_BOX:
+		filename = CM::get()->find_config("MODEL_TEST_BOX");
+		break;
+	case MDL_TEST_PYRAMID:
+		filename = CM::get()->find_config("MODEL_TEST_PYRAMID");
+		break;
+	case MDL_TEST_PLANE:
+		filename = CM::get()->find_config("MODEL_TEST_PLANE");
+		break;
+	case MDL_TEST_BALL:
+		filename = CM::get()->find_config("MODEL_TEST_BALL");
 		break;
 	default:
-		DC::get()->print("ERROR: Model %d not known\n", modelNum);
+		if(modelNum > NUM_MDLS) DC::get()->print("ERROR: Model %d not known\n", modelNum);
 	}
 
 	if(filename != NULL) {
@@ -43,9 +75,9 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded model %d\n",modelNum);
 		}
 		D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
-		float rad;
-		int numMesh;
-		RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
+	//	float rad;
+	//	int numMesh;
+	//	RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
 	/*	DC::get()->print("Bounding box for model %d = (%f,%f,%f:%f,%f,%f); center = (%f,%f,%f); rad = %f; num meshes = %d\n",
 			modelNum,
 			mdlMin.x - sphereCenter.x, mdlMin.y - sphereCenter.y, mdlMin.z - sphereCenter.z,
@@ -65,7 +97,7 @@ void RenderModel::render() {
 	Rot_t rot = ref->getRot();
 
 	//Get translation/rotation matrix
-	D3DXMATRIX trans, rotX, rotY, rotZ;
+	D3DXMATRIX trans, rotX, rotY, rotZ, scaleMat;
 	D3DXMatrixIdentity(&trans);
 	D3DXMatrixIdentity(&rotX);
 	D3DXMatrixIdentity(&rotY);
@@ -76,9 +108,11 @@ void RenderModel::render() {
 	D3DXMatrixRotationY(&rotY, rot.y);
 	D3DXMatrixRotationZ(&rotZ, rot.z);
 
+	D3DXMatrixScaling(&scaleMat,scale.x,scale.y,scale.z);  
+
 	//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 	//Render
-	RE::get()->animate(modelId, rotX * rotY * rotZ * trans);
+	RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
 }
 

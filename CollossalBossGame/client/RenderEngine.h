@@ -22,6 +22,8 @@
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
+#include <time.h>
+
 using namespace std;
 
 
@@ -46,14 +48,17 @@ public:
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
 	ID3DXFont* direct3dText; // the pointer to the device class
 	LPD3DXLINE healthLine;
+	LPD3DXLINE monsterLine;
 	LPD3DXLINE backgroundLine;
-
+	LPD3DXSPRITE sprite;
+	LPD3DXSPRITE sprite1;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
 	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
 	void setHUDText(string newText, int health) { hudText = newText; healthPts = health; }
+	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
@@ -79,12 +84,17 @@ private:
 	static IXAnimator* xAnimator;
 	D3DXMATRIX world;
 	string hudText;
+	string monsterHUDText;
 	int healthPts;
+	int monsterHealthPts;
+	clock_t initTime, final;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
 
 	Camera* cam;
+
+	IDirect3DTexture9 *g_texture;
 
 	//Configuration fields
 	float cameraDist;

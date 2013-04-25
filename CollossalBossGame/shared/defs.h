@@ -33,25 +33,25 @@ typedef struct Vec3f {
 	
 	float x, y, z;
 
-	Vec3f operator-	(Vec3f rhs) {
+	Vec3f operator-	(const Vec3f &rhs) const {
 		return Vec3f(this->x - rhs.x, 
 			this->y - rhs.y, 
 			this->z - rhs.z);
 	}
 	
-	Vec3f operator+	(Vec3f rhs) {
+	Vec3f operator+	(const Vec3f &rhs) const {
 		return Vec3f(this->x + rhs.x, 
 			this->y + rhs.y, 
 			this->z + rhs.z);
 	}
 
-	Vec3f operator*	(float rhs) {
+	Vec3f operator*	(float rhs) const {
 		return Vec3f(this->x * rhs, 
 			this->y * rhs, 
 			this->z * rhs);
 	}
 
-	Vec3f operator/	(float rhs) {
+	Vec3f operator/	(float rhs) const  {
 		if (rhs == 0)
 			return Vec3f(0, 0, 0);
 		else
@@ -60,20 +60,20 @@ typedef struct Vec3f {
 				this->z / rhs);
 	}
 
-	Vec3f operator*	(Vec3f rhs) {
+	Vec3f operator*	(const Vec3f &rhs) const {
 		return Vec3f(this->x * rhs.x, 
 			this->y * rhs.y, 
 			this->z * rhs.z);
 	}
 
 	// DOT PRODUCT!
-	float operator^	(Vec3f rhs) {
+	float operator^	(const Vec3f &rhs) const {
 		return (this->x * rhs.x +
 			this->y * rhs.y + 
 			this->z * rhs.z);
 	}
 
-	Vec3f operator/	(Vec3f rhs) {
+	Vec3f operator/	(const Vec3f &rhs) const {
 		float x = (rhs.x == 0) ? 0 : this->x / rhs.x;
 		float y = (rhs.y == 0) ? 0 : this->y / rhs.y;
 		float z = (rhs.z == 0) ? 0 : this->z / rhs.z;
@@ -124,7 +124,7 @@ typedef struct Box {
  * Actions that are sent from the client to the server
  */
 
-typedef enum OBJ_FLAGS {
+typedef enum OBJ_FLAG {
 	//General flags
 	IS_HEALTHY,
 	IS_HARMFUL,
@@ -133,6 +133,16 @@ typedef enum OBJ_FLAGS {
 	IS_STATIC,
 	IS_PASSABLE,
 	IS_FALLING
+};
+
+typedef enum DIRECTION {
+	NONE  = 0x0,
+	NORTH = 0x1,	//+z
+	EAST  = 0x2,	//+x
+	UP    = 0x4,	//+y
+	SOUTH = 0x8,	//-z
+	WEST  = 0x10,	//-x
+	DOWN  = 0x20	//-y
 };
 
 

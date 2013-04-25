@@ -14,7 +14,7 @@ TestObject::TestObject(uint id, char *serializedData) :
 
 	ObjectState *state = (ObjectState*)serializedData;
 
-	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum);
+	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum, state->scale);
 	deserialize(serializedData);
 }
 

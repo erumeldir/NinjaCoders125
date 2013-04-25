@@ -14,21 +14,27 @@ public:
 	virtual int serialize(char * buf);
 	void deserialize(char* newInput);
 	virtual ObjectType getType() { return OBJ_PLAYER; }
-	virtual void onCollision(ServerObject *obj);
 	virtual void initialize();
+	virtual void onCollision(ServerObject *obj, const Vec3f &collNorm);
+	int getHealth() { return health; } 
 
 	char serialbuffer[100];
+
+	// todo cleanup!! maybe make counter class/struct
+	bool attacking, newAttack;
+	uint jumpCounter, attackCounter;
+	int health;
+
 
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
 	Point_t lastCollision;
-	int health;
-	int jumpCounter;
 	bool jumping, newJump, appliedJumpForce;
 	// Configuration options
 	float jumpDist;
 	int movDamp;
 	bool firedeath;
+	int gravityTimer;
 };
 

@@ -62,7 +62,7 @@ void XboxController::sendInput() {
 			istat.forwardDist = 0;
 		}
 		// Set rotation
-		istat.rotAngle = 0;
+		istat.rotAngle = atan2(x / DEADZONE, y / DEADZONE);
 		istat.rotHoriz = 0;
 		istat.rotVert = 0;
 
