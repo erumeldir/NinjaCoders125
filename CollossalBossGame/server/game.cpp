@@ -37,11 +37,11 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WALL_WEST);
 	
 	som->add(floor);
-	som->add(ceiling);
-	som->add(east);
-	som->add(west);
-	som->add(north);
-	som->add(south);
+	//som->add(ceiling);
+	//som->add(east);
+	//som->add(west);
+	//som->add(north);
+	//som->add(south);
 	PE::get()->setLimits(-WIDTH / 2, 0, -WIDTH / 2,
 						  WIDTH / 2, WIDTH, WIDTH / 2);
 #else

@@ -8,10 +8,11 @@
 #include "RenderEngine.h"
 #include "ConfigurationManager.h"
 
-RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
+RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
+	this->scale = scale;
 	char *filename = NULL;
 	switch(modelNum) {
 	case MDL_0:
@@ -65,7 +66,7 @@ void RenderModel::render() {
 	Rot_t rot = ref->getRot();
 
 	//Get translation/rotation matrix
-	D3DXMATRIX trans, rotX, rotY, rotZ;
+	D3DXMATRIX trans, rotX, rotY, rotZ, scaleMat;
 	D3DXMatrixIdentity(&trans);
 	D3DXMatrixIdentity(&rotX);
 	D3DXMatrixIdentity(&rotY);
@@ -76,9 +77,11 @@ void RenderModel::render() {
 	D3DXMatrixRotationY(&rotY, rot.y);
 	D3DXMatrixRotationZ(&rotZ, rot.z);
 
+	D3DXMatrixScaling(&scaleMat,scale.x,scale.y,scale.z);  
+
 	//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 	//Render
-	RE::get()->animate(modelId, rotX * rotY * rotZ * trans);
+	RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
 }
 
