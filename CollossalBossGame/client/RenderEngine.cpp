@@ -75,11 +75,11 @@ void RenderEngine::renderInitalization()
 	deviceInfo.Windowed = TRUE; // program windowed, not fullscreen
 	deviceInfo.SwapEffect = D3DSWAPEFFECT_DISCARD; // discard old frames	//D3DSWAPEFFECT_COPY
 	deviceInfo.hDeviceWindow = windowHandle; // set the window to be used by Direct3D
-	deviceInfo.BackBufferFormat = D3DFMT_A8R8G8B8;//D3DFMT_X8R8G8B8; // set the back buffer format to 32-bit
+	deviceInfo.BackBufferFormat = D3DFMT_UNKNOWN;//D3DFMT_A8R8G8B8;//D3DFMT_X8R8G8B8; // set the back buffer format to 32-bit
 	deviceInfo.BackBufferWidth = SCREEN_WIDTH; // set the width of the buffer
 	deviceInfo.BackBufferHeight = SCREEN_HEIGHT; // set the height of the buffer
 	
-	deviceInfo.BackBufferCount = 1;
+	deviceInfo.BackBufferCount = 1;//2;
 	deviceInfo.MultiSampleType = D3DMULTISAMPLE_NONE;
 	deviceInfo.MultiSampleQuality = 0;
 	deviceInfo.hDeviceWindow = windowHandle;
@@ -94,18 +94,16 @@ void RenderEngine::renderInitalization()
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
 		windowHandle,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+//		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+		D3DCREATE_MIXED_VERTEXPROCESSING,
+//		D3DCREATE_HARDWARE_VERTEXPROCESSING,
 		&deviceInfo,
 		&direct3dDevice);
 
-	
-//	D3DXMATRIX matView;
-//	D3DXMatrixLookAtLH(&matView,&D3DXVECTOR3(0,1,-4),&D3DXVECTOR3(0,1,0), &D3DXVECTOR3(0,1,0) );
-//	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 	D3DXMATRIX matProj;
 	//TODO: determine clipping
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 400.0f );
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, 450.0f );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
@@ -130,8 +128,7 @@ void RenderEngine::renderInitalization()
 	direct3dDevice->SetLight( 0, &light );
 	direct3dDevice->LightEnable( 0, TRUE ); 
 
-	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-	
+	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );	
 }
 
 /**
@@ -177,7 +174,7 @@ RenderEngine::RenderEngine() {
 
 	cam = new Camera(cameraDist);
 	hudText = "DEFAULT";
-	this->monsterHUDText = "DEFAULT";
+	monsterHUDText = "DEFAULT";
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
@@ -229,6 +226,7 @@ void RenderEngine::drawHUD() {
 			hudTopY + 100,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
+
 	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
     this->direct3dText->DrawText(sprite1,        //pSprite
 								hudText.c_str(),	 //pString
@@ -259,7 +257,6 @@ void RenderEngine::drawHUD() {
 	D3DXVECTOR2 mlines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(this->monsterHealthPts + 10.f , 140.0f)};
 	monsterLine->SetWidth(15.0f);
 	monsterLine->Draw(mlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->monsterHealthPts) / 100.0), (int)(255.0 * this->monsterHealthPts / 100.0), 0));
-	//this->direct3dDevice->SetTexture(0,g_texture);
 }
 
 /*where we actually draw a scene
@@ -297,10 +294,10 @@ void RenderEngine::render() {
 	pos.z=1.0f;
 
 	// Texture being used is 64 by 64:
-	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1080.0f/2);
+	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1920.0f/2);
 
 	// Screen position of the sprite
-	D3DXVECTOR2 trans=D3DXVECTOR2(0.0f,0.0f);
+	D3DXVECTOR2 trans=D3DXVECTOR2(-700.0f,-700.0f);
 
 	// Rotate based on the time passed
 	float rotation=(clock()-initTime)/100000.0f;
