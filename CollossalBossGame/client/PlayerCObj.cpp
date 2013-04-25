@@ -67,5 +67,6 @@ bool PlayerCObj::update() {
 void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
+	this->getRenderModel()->setModelState(state->animationstate);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

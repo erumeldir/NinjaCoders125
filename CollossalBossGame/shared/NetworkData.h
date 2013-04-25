@@ -120,6 +120,7 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	int animationstate;
 };
 
 /*
@@ -135,4 +136,15 @@ struct ObjectState {
 struct MonsterState {
 	Model modelNum;
 	int health;
+};
+
+/*
+ * State information for the monster not encoded by the position
+ */
+enum PlayerAnimationState {
+	IDLE = 0,
+	WALK = 1,
+	JUMP = 2,
+	ATK  = 3,
+	DEAD = 4
 };

@@ -16,7 +16,7 @@ public:
 	virtual void onCollision(ServerObject *obj, const Vec3f &collNorm);
 	inputstatus getInput() { return istat; }
 	int getHealth() { return health; } 
-
+	void setAnimationState(int state) { modelAnimationState = state; }
 	char serialbuffer[100];
 
 	// todo cleanup!! maybe make counter class/struct
@@ -35,5 +35,6 @@ private:
 	int movDamp;
 
 	int gravityTimer;
+	int modelAnimationState;
 };
 
