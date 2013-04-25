@@ -19,7 +19,9 @@
  * TODO: Currently just builds six walls centered around (0,75,0)
  */
 void buildRoom(Point_t center, int w, int h, int l) {
-#define WIDTH 150
+#define WIDTH 1265 //150
+#define HEIGHT 290
+#define DEPTH 724
 	ServerObjectManager *som = SOM::get();
 
 	if(w < 1) w = 1;
@@ -34,19 +36,21 @@ void buildRoom(Point_t center, int w, int h, int l) {
 			 *east, *west;
 	DC::get()->print("Making room with bottom-corner at (%f,%f,%f)\n", center.x, center.y, center.z);
 #if 1	
-	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), DOWN);
-	ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH,0), UP);
-	north   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,-WIDTH/2), NORTH);
-	south   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,WIDTH/2), SOUTH);
-	east    = new WallSObj(som->genId(), MDL_3, Point_t(WIDTH/2,WIDTH/2,0), EAST);
-	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WEST);
+	floor   = new WallSObj(som->genId(), MDL_FLOOR, Point_t(), DOWN, Vec3f(2.5f, 1.f, 2.5f));
+	ceiling = new WallSObj(som->genId(), MDL_CEILING, Point_t(0,HEIGHT,0), UP, Vec3f(2.5f, 1.f, 2.5f));
+	north   = new WallSObj(som->genId(), MDL_NORTH_WALL, Point_t(0,HEIGHT/2,-DEPTH/2), NORTH, Vec3f(2.5f, 2.5f, 1.f));
+	south   = new WallSObj(som->genId(), MDL_SOUTH_WALL, Point_t(0,HEIGHT/2,DEPTH/2), SOUTH, Vec3f(2.5f, 2.5f, 1.f));
+	east    = new WallSObj(som->genId(), MDL_EAST_WALL, Point_t(WIDTH/2,HEIGHT/2,0), EAST, Vec3f(1.f, 2.5f, 2.5f));
+	west    = new WallSObj(som->genId(), MDL_WEST_WALL, Point_t(-WIDTH/2,HEIGHT/2,0), WEST, Vec3f(1.f, 2.5f, 2.5f));
 	
 	som->add(floor);
-	//som->add(ceiling);
-	//som->add(east);
-	//som->add(west);
-	//som->add(north);
-	//som->add(south);
+	som->add(ceiling);
+	som->add(east);
+	som->add(west);
+	som->add(north);
+	som->add(south);
+
+	// todo ask nathan if we still need this
 	PE::get()->setLimits(-WIDTH / 2, 0, -WIDTH / 2,
 						  WIDTH / 2, WIDTH, WIDTH / 2);
 #else
@@ -134,7 +138,7 @@ for(int x = -1; x < 2; ++x) {
 
 	buildRoom(Point_t(0, WIDTH / 2, 0), 1, 1, 1);
 
-	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Rot_t(),TEST_WEST);
+	//TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Rot_t(),TEST_WEST);
 	//som->add(pyr);
 
 	/*
@@ -144,10 +148,11 @@ for(int x = -1; x < 2; ++x) {
 		som->add(tentacleRight);
 	}
 	*/
-	for(int i = 6; i < 12; i++)
-	{
-	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), (Model)i, Point_t(i*20, i*20, i*20), Rot_t(M_PI/i, M_PI/i, M_PI/i));
+	//for(int i = 6; i < 7; i++)
+	//{
+	//MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), (Model)i, Point_t(i*20, i*20, i*20), Rot_t(M_PI/i, M_PI/i, M_PI/i));
+	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 0, 0), Rot_t());
 	//tentacleLeft->setFlag(IS_HARMFUL, 1);
 	som->add(tentacleLeft);
-	}
+	//}
 }

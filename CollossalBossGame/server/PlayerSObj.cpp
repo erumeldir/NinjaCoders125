@@ -116,8 +116,8 @@ bool PlayerSObj::update() {
 		int divBy = movDamp;
 		float rawRight = istat.rightDist / divBy;
 		float rawForward = istat.forwardDist / divBy;
-		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
-		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
+		float computedRight = ((rawForward * sin(yaw)) + (rawRight * (float)sin(yaw + M_PI / 2.f)));
+		float computedForward = ((rawForward * cos(yaw)) + (rawRight * (float)cos(yaw + M_PI / 2.f)));
 		/*
 		uint dir = PE::get()->getGravDir();
 		switch(dir) {
@@ -143,7 +143,7 @@ bool PlayerSObj::update() {
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_1;
+	state->modelNum = MDL_PLAYER;
 	state->health = health;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
