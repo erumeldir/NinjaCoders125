@@ -99,9 +99,9 @@ void RenderEngine::renderInitalization()
 		&direct3dDevice);
 
 	
-	D3DXMATRIX matView;
-	D3DXMatrixLookAtLH(&matView,&D3DXVECTOR3(0,1,-4),&D3DXVECTOR3(0,1,0), &D3DXVECTOR3(0,1,0) );
-	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
+//	D3DXMATRIX matView;
+//	D3DXMatrixLookAtLH(&matView,&D3DXVECTOR3(0,1,-4),&D3DXVECTOR3(0,1,0), &D3DXVECTOR3(0,1,0) );
+//	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 	D3DXMATRIX matProj;
 	//TODO: determine clipping
@@ -156,7 +156,6 @@ void RenderEngine::HUDInitialization() {
 	D3DXCreateLine(this->direct3dDevice, &healthLine);
 	D3DXCreateLine(this->direct3dDevice, &monsterLine);
 	D3DXCreateLine(this->direct3dDevice, &backgroundLine);
-
 }
 
 /*
@@ -183,6 +182,7 @@ RenderEngine::RenderEngine() {
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
+	D3DXCreateSprite(this->direct3dDevice,&sprite1);
 	initTime=clock();
 }
 
@@ -209,6 +209,7 @@ RenderEngine::~RenderEngine() {
 	monsterLine->Release();
 	sprite->Release();
 	g_texture->Release();
+	sprite1->Release();
 	delete cam;
 }
 
@@ -228,21 +229,21 @@ void RenderEngine::drawHUD() {
 			hudTopY + 100,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
-
-    this->direct3dText->DrawText(NULL,        //pSprite
+	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
+    this->direct3dText->DrawText(sprite1,        //pSprite
 								hudText.c_str(),	 //pString
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
                                 0xFFFFFFFF);//0xFF000000); //Color
 
-   this->direct3dText->DrawText(NULL,        //pSprite
+    this->direct3dText->DrawText(sprite1,        //pSprite
 								monsterHUDText.c_str(),	 //pString
                                 -1,          //Count
                                 &monstr_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
                                 0xFFFFFFFF);//0xFF000000); //Color
-
+	sprite1->End();
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
 	backgroundLine->SetWidth(15.0f);
 	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));

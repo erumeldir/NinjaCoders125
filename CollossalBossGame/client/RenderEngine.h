@@ -51,6 +51,7 @@ public:
 	LPD3DXLINE monsterLine;
 	LPD3DXLINE backgroundLine;
 	LPD3DXSPRITE sprite;
+	LPD3DXSPRITE sprite1;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
