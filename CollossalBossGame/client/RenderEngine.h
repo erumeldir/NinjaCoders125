@@ -22,6 +22,8 @@
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
+#include <time.h>
+
 using namespace std;
 
 
@@ -49,6 +51,7 @@ public:
 	LPD3DXLINE monsterLine;
 	LPD3DXLINE backgroundLine;
 	LPD3DXSPRITE sprite;
+	LPD3DXSPRITE sprite1;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
@@ -84,6 +87,7 @@ private:
 	string monsterHUDText;
 	int healthPts;
 	int monsterHealthPts;
+	clock_t initTime, final;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;

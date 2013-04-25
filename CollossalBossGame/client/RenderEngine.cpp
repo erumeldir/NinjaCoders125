@@ -99,9 +99,9 @@ void RenderEngine::renderInitalization()
 		&direct3dDevice);
 
 	
-	D3DXMATRIX matView;
-	D3DXMatrixLookAtLH(&matView,&D3DXVECTOR3(0,1,-4),&D3DXVECTOR3(0,1,0), &D3DXVECTOR3(0,1,0) );
-	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
+//	D3DXMATRIX matView;
+//	D3DXMatrixLookAtLH(&matView,&D3DXVECTOR3(0,1,-4),&D3DXVECTOR3(0,1,0), &D3DXVECTOR3(0,1,0) );
+//	direct3dDevice->SetTransform( D3DTS_VIEW, &matView );
 
 	D3DXMATRIX matProj;
 	//TODO: determine clipping
@@ -156,7 +156,6 @@ void RenderEngine::HUDInitialization() {
 	D3DXCreateLine(this->direct3dDevice, &healthLine);
 	D3DXCreateLine(this->direct3dDevice, &monsterLine);
 	D3DXCreateLine(this->direct3dDevice, &backgroundLine);
-
 }
 
 /*
@@ -183,6 +182,8 @@ RenderEngine::RenderEngine() {
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
+	D3DXCreateSprite(this->direct3dDevice,&sprite1);
+	initTime=clock();
 }
 
 
@@ -206,6 +207,9 @@ RenderEngine::~RenderEngine() {
 	healthLine->Release();
 	backgroundLine->Release();
 	monsterLine->Release();
+	sprite->Release();
+	g_texture->Release();
+	sprite1->Release();
 	delete cam;
 }
 
@@ -225,21 +229,21 @@ void RenderEngine::drawHUD() {
 			hudTopY + 100,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT);
-
-    this->direct3dText->DrawText(NULL,        //pSprite
+	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
+    this->direct3dText->DrawText(sprite1,        //pSprite
 								hudText.c_str(),	 //pString
                                 -1,          //Count
                                 &font_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
                                 0xFFFFFFFF);//0xFF000000); //Color
 
-   this->direct3dText->DrawText(NULL,        //pSprite
+    this->direct3dText->DrawText(sprite1,        //pSprite
 								monsterHUDText.c_str(),	 //pString
                                 -1,          //Count
                                 &monstr_rect,  //pRect
                                 DT_LEFT|DT_NOCLIP,//Format,
                                 0xFFFFFFFF);//0xFF000000); //Color
-
+	sprite1->End();
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
 	backgroundLine->SetWidth(15.0f);
 	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
@@ -281,7 +285,7 @@ void RenderEngine::renderThis(ClientObject *obj) {
 */
 void RenderEngine::render() {
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(21, 0, 105), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
@@ -291,6 +295,27 @@ void RenderEngine::render() {
 	pos.x=0.0f;
 	pos.y=0.0f;
 	pos.z=1.0f;
+
+	// Texture being used is 64 by 64:
+	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1080.0f/2);
+
+	// Screen position of the sprite
+	D3DXVECTOR2 trans=D3DXVECTOR2(0.0f,0.0f);
+
+	// Rotate based on the time passed
+	float rotation=(clock()-initTime)/100000.0f;
+	//float rotation= 0;//100.f/500.0f;
+
+	// Build our matrix to rotate, scale and position our sprite
+	D3DXMATRIX mat;
+
+	D3DXVECTOR2 scaling(1.f,1.f);
+
+	// out, scaling centre, scaling rotation, scaling, rotation centre, rotation, translation
+	D3DXMatrixTransformation2D(&mat,NULL,0.0,&scaling,&spriteCentre,rotation,&trans);
+
+	// Tell the sprite about the matrix
+	sprite->SetTransform(&mat);
 
 	sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
