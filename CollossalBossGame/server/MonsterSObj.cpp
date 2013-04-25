@@ -56,7 +56,7 @@ int MonsterSObj::serialize(char * buf) {
 	return pm->ref->serialize(buf + sizeof(MonsterState)) + sizeof(MonsterState);
 }
 
-void MonsterSObj::onCollision(ServerObject *obj) {
+void MonsterSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 	// if I collided against the player, AND they're attacking me, loose health
 	string s = typeid(*obj).name();
 

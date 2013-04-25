@@ -7,6 +7,7 @@
 #include "RenderModel.h"
 #include "RenderEngine.h"
 #include "ConfigurationManager.h"
+#include <sstream>
 
 RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 {
@@ -33,8 +34,65 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 	case MDL_5:
 		filename = CM::get()->find_config("MODEL_5");
 		break;
+	case MDL_6:
+		filename = CM::get()->find_config("MODEL_6");
+		break;
+	case MDL_7:
+		filename = CM::get()->find_config("MODEL_7");
+		break;
+	case MDL_8:
+		filename = CM::get()->find_config("MODEL_8");
+		break;
+	case MDL_9:
+		filename = CM::get()->find_config("MODEL_9");
+		break;
+	case MDL_10:
+		filename = CM::get()->find_config("MODEL_10");
+		break;
+	case MDL_11:
+		filename = CM::get()->find_config("MODEL_11");
+		break;
+	case MDL_12:
+		filename = CM::get()->find_config("MODEL_12");
+		break;
+	case MDL_13:
+		filename = CM::get()->find_config("MODEL_13");
+		break;
+	case MDL_14:
+		filename = CM::get()->find_config("MODEL_14");
+		break;
+	case MDL_15:
+		filename = CM::get()->find_config("MODEL_15");
+		break;
+	case MDL_16:
+		filename = CM::get()->find_config("MODEL_16");
+		break;
+	case MDL_17:
+		filename = CM::get()->find_config("MODEL_17");
+		break;
+	case MDL_18:
+		filename = CM::get()->find_config("MODEL_18");
+		break;
+	case MDL_19:
+		filename = CM::get()->find_config("MODEL_19");
+		break;
+	case MDL_20:
+		filename = CM::get()->find_config("MODEL_20");
+		break;
+	case MDL_21:
+		filename = CM::get()->find_config("MODEL_21");
+		break;
+	case MDL_22:
+		filename = CM::get()->find_config("MODEL_22");
+		break;
+	case MDL_23:
+		filename = CM::get()->find_config("MODEL_23");
+		break;
+	case MDL_24:
+		filename = CM::get()->find_config("MODEL_24");
+		break;
 	default:
-		DC::get()->print("ERROR: Model %d not known\n", modelNum);
+		if(modelNum > NUM_MDLS) DC::get()->print("ERROR: Model %d not known\n", modelNum);
 	}
 
 	if(filename != NULL) {

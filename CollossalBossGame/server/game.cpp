@@ -13,6 +13,11 @@
 #include "MonsterSObj.h"
 #include "PhysicsEngine.h"
 
+/*
+ * buildRoom()
+ * Builds six walls centered about the specified point, of width w, height h, and length l
+ * TODO: Currently just builds six walls centered around (0,75,0)
+ */
 void buildRoom(Point_t center, int w, int h, int l) {
 #define WIDTH 150
 	ServerObjectManager *som = SOM::get();
@@ -29,12 +34,12 @@ void buildRoom(Point_t center, int w, int h, int l) {
 			 *east, *west;
 	DC::get()->print("Making room with bottom-corner at (%f,%f,%f)\n", center.x, center.y, center.z);
 #if 1	
-	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), WALL_DOWN);
-	ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH,0), WALL_UP);
-	north   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,-WIDTH/2), WALL_NORTH);
-	south   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,WIDTH/2), WALL_SOUTH);
-	east    = new WallSObj(som->genId(), MDL_3, Point_t(WIDTH/2,WIDTH/2,0), WALL_EAST);
-	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WALL_WEST);
+	floor   = new WallSObj(som->genId(), MDL_3, Point_t(), DOWN);
+	ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH,0), UP);
+	north   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,-WIDTH/2), NORTH);
+	south   = new WallSObj(som->genId(), MDL_3, Point_t(0,WIDTH/2,WIDTH/2), SOUTH);
+	east    = new WallSObj(som->genId(), MDL_3, Point_t(WIDTH/2,WIDTH/2,0), EAST);
+	west    = new WallSObj(som->genId(), MDL_3, Point_t(-WIDTH/2,WIDTH/2,0), WEST);
 	
 	som->add(floor);
 	//som->add(ceiling);
@@ -48,8 +53,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//floor/ceiling
 	for(x = 0; x < w; ++x) {
 		for(z = 0; z < l; ++z) {
-			floor   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y,             center.z + z * WIDTH), WALL_DOWN);
-			ceiling = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + h * WIDTH, center.z + z * WIDTH), WALL_UP);
+			floor   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y,             center.z + z * WIDTH), DOWN);
+			ceiling = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + h * WIDTH, center.z + z * WIDTH), UP);
 			som->add(floor);
 			som->add(ceiling);
 		}
@@ -57,8 +62,8 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//north/south
 	for(x = 0; x < w; ++x) {
 		for(y = 0; y < h; ++y) {
-			north   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z),             WALL_NORTH);
-			south   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z + l * WIDTH), WALL_SOUTH);
+			north   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z),             NORTH);
+			south   = new WallSObj(som->genId(), MDL_3, Point_t(center.x + x * WIDTH, center.y + y * WIDTH, center.z + l * WIDTH), SOUTH);
 			som->add(north);
 			som->add(south);
 		}
@@ -66,23 +71,19 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//east/west
 	for(z = 0; z < l; ++z) {
 		for(y = 0; y < h; ++y) {
-			east    = new WallSObj(som->genId(), MDL_3, Point_t(center.x + w * WIDTH, center.y + y * WIDTH, center.z + z * WIDTH), WALL_EAST);
-			west    = new WallSObj(som->genId(), MDL_3, Point_t(center.x,             center.y + y * WIDTH, center.z + z * WIDTH), WALL_WEST);
+			east    = new WallSObj(som->genId(), MDL_3, Point_t(center.x + w * WIDTH, center.y + y * WIDTH, center.z + z * WIDTH), EAST);
+			west    = new WallSObj(som->genId(), MDL_3, Point_t(center.x,             center.y + y * WIDTH, center.z + z * WIDTH), WEST);
 			som->add(east);
 			som->add(west);
 		}
 	}
 #endif
-
-	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_5, Point_t(0, 0, 0), Rot_t(0, 0, 0));
-	//tentacleLeft->setFlag(IS_HARMFUL, 1);
-	som->add(tentacleLeft);
 }
 
 
 void gameInit() {
-#if 0
 	ServerObjectManager *som = SOM::get();
+#if 0
 	//Create all non-player game objects
 	TestSObj *obj0 = new TestSObj(som->genId(), MDL_1, Point_t(-50, 5, 100), TEST_WEST),
 			 *obj1 = new TestSObj(som->genId(), MDL_1, Point_t(50, 5, 80), TEST_EAST),
@@ -132,4 +133,18 @@ for(int x = -1; x < 2; ++x) {
 #endif
 
 	buildRoom(Point_t(0, WIDTH / 2, 0), 1, 1, 1);
+
+	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Rot_t(),TEST_WEST);
+	//som->add(pyr);
+
+	/*
+	for(int i = 6; i < 25; i++)
+	{
+		TestSObj* tentacleRight = new TestSObj(som->genId(), (Model)i, Point_t(0,0, 0), Rot_t(M_PI/i, M_PI/i, M_PI/i), TEST_WEST);
+		som->add(tentacleRight);
+	}
+	*/
+	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_5, Point_t(0, 0, 0), Rot_t(0, 0, 0));
+	//tentacleLeft->setFlag(IS_HARMFUL, 1);
+	som->add(tentacleLeft);
 }
