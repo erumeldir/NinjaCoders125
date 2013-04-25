@@ -21,7 +21,8 @@ PhysicsEngine::PhysicsEngine(void)
 
 	xPos = yPos = zPos = 500;
 	xNeg = yNeg = zNeg = 0;
-	gravDir = Vec3f(0, -1, 0);
+	gravVec = Vec3f(0, -1, 0);
+	gravDir = DOWN;
 }
 
 
@@ -45,7 +46,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	//Apply gravity if not falling; otherwise, apply friction
 	if(obj->getFlag(IS_FALLING)) {
 		//gravity
-		mdl->applyAccel(gravDir*gravMag);
+		mdl->applyAccel(gravVec*gravMag);
 	} else {
 		//friction
 	}
@@ -126,7 +127,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		obj2->onCollision(obj1, collNorm2);
 		return;
 	}
-	bool applyForce = false;//true;
+	bool applyForce = ((gravVec.x == 0) && (gravVec.y == 0) && (gravVec.z == 0));
 
 	bool canShiftNegX = (mdl1->cdirs & EAST)  && (mdl2->cdirs & WEST),
 		 canShiftPosX = (mdl1->cdirs & WEST)  && (mdl2->cdirs & EAST),
@@ -209,7 +210,6 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		sign = fYShift < 0 ? -1 : 1;
 		collNorm1 = Vec3f(0,sign,0);
 		collNorm2 = Vec3f(0,-sign,0);
-		applyForce = false;
 		
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {

@@ -15,7 +15,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 		DC::get()->print("(north)\n");
 		bxVol = Box(-WALL_WIDTH / 2, -WALL_WIDTH / 2, -WALL_THICKNESS,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
-		normal = Vec3f( 0, 0, 1);
 		rot = Rot_t(M_PI / 2,0,0);
 		collDir = NORTH;
 		break;
@@ -23,7 +22,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 		DC::get()->print("(south)\n");
 		bxVol = Box(-WALL_WIDTH / 2, -WALL_WIDTH / 2, 0,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
-		normal = Vec3f( 0, 0, -1);
 		rot = Rot_t(-M_PI / 2,0,0);
 		collDir = SOUTH;
 		break;
@@ -31,7 +29,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 		DC::get()->print("(east)\n");
 		bxVol = Box(0, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
-		normal = Vec3f(-1, 0, 0);
 		rot = Rot_t(0,0,M_PI / 2);
 		collDir = WEST;
 		break;
@@ -39,7 +36,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 		DC::get()->print("(west)\n");
 		bxVol = Box(-WALL_THICKNESS, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
-		normal = Vec3f( 1, 0, 0);
 		rot = Rot_t(0,0,-M_PI / 2);
 		collDir = EAST;
 		break;
@@ -47,7 +43,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 		DC::get()->print("(ceiling)\n");
 		bxVol = Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
-		normal = Vec3f( 0,-1, 0);
 		rot = Rot_t(0,0,M_PI);
 		collDir = DOWN;
 		break;
@@ -55,7 +50,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : Server
 		DC::get()->print("(floor)\n");
 		bxVol = Box(-WALL_WIDTH / 2, -WALL_THICKNESS, -WALL_WIDTH / 2,
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
-		normal = Vec3f( 0, 1, 0);
 		rot = Rot_t(0,0,0);
 		collDir = UP;
 		break;

@@ -41,17 +41,17 @@ PlayerSObj::~PlayerSObj(void) {
 
 bool PlayerSObj::update() {
 	//gravity
-#if 0
+#if 1
 	gravityTimer++;
 	static char cdir = 'v';
 	if(gravityTimer == 500) {
-		PE::get()->setGravDir(Vec3f(0,0,0));
+		PE::get()->setGravDir(DOWN);
 		cdir = 'o';
 	} else if(gravityTimer == 1000) {
-		PE::get()->setGravDir(Vec3f(1,0,0));
+		PE::get()->setGravDir(NONE);
 		cdir = '>';
 	} else if(gravityTimer > 1500) {
-		PE::get()->setGravDir(Vec3f(0,-1,0));
+		PE::get()->setGravDir(EAST);
 		gravityTimer = 0;
 		cdir = 'v';
 	}
@@ -89,20 +89,47 @@ bool PlayerSObj::update() {
 			// Determine special power logic here
 			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
 		}
-	
+#if 1
 		Rot_t rt = pm->ref->getRot();
 		float yaw = rt.y + istat.rotHoriz,
 			  pitch = rt.x + istat.rotVert;
 		if (yaw > M_TAU || yaw < -M_TAU) yaw = 0;
 		if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
 		pm->ref->setRot(Rot_t(0, yaw, 0));
+#else
+		float yaw;
+		if(istat.forwardDist > 0) {
+			yaw = istat.rotAngle;
+			pm->ref->setRot(Rot_t(0, yaw, 0));
+		} else {
+			yaw = pm->ref->getRot().y;
+		}
+#endif
 	
 		int divBy = movDamp;
 		float rawRight = istat.rightDist / divBy;
 		float rawForward = istat.forwardDist / divBy;
 		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
 		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
-		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+		/*
+		uint dir = PE::get()->getGravDir();
+		switch(dir) {
+		case EAST:
+		case WEST:
+			pm->applyForce(Vec3f(yDist, computedForward, computedRight));
+			break;
+		case NORTH:
+		case SOUTH:
+			pm->applyForce(Vec3f(computedRight, computedForward, yDist));
+			break;
+		case UP:
+		case DOWN:
+		default:
+			pm->applyForce(Vec3f(computedRight, yDist, computedForward));
+			break;
+		}
+		*/
+		pm->applyForce(Vec3f(computedRight, yDist, computedForward));
 	}
 	return false;
 }
@@ -136,43 +163,29 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
 	if(!appliedJumpForce && (jumpCounter > 0 && jumpCounter < 10))
 	{
 		// surface bouncing
-		if(obj->getFlag(IS_WALL))
+		// Get the collNorm from the surface
+		float bounceDamp = 0.05f;
+
+		Vec3f incident = pm->ref->getPos() - lastCollision;
+
+		// incident is zero, so we just jump upwards
+		// this happens when you jump of the same surface
+		// you were at before (so the floor, or when you
+		// slide off the wall and then jump)
+		if ((incident.x < .01 && incident.x > -.01)
+			|| (incident.y < .01 && incident.y > -.01)
+			|| (incident.z < .01 && incident.z > -.01))
 		{
-			// Get the normal from the surface
-			WallSObj *wall  = reinterpret_cast<WallSObj *>(obj);
-			float bounceDamp = 0.05f;
-
-			Vec3f incident = pm->ref->getPos() - lastCollision;
-			Vec3f normal = wall->getNormal();
-
-			// incident is zero, so we just jump upwards
-			// this happens when you jump of the same surface
-			// you were at before (so the floor, or when you
-			// slide off the wall and then jump)
-			if ((incident.x < .01 && incident.x > -.01)
-				|| (incident.y < .01 && incident.y > -.01)
-				|| (incident.z < .01 && incident.z > -.01))
-			{
-				Vec3f up = Vec3f(0, 1, 0);
-				Vec3f force = up + normal;
-				pm->vel = Vec3f();
-				pm->applyForce(force*jumpDist);
-			}
-			// we have incident! so we bounce
-			else
-			{
-				// http://www.3dkingdoms.com/weekly/weekly.php?a=2
-				// optimize: *= ^= better!
-				pm->vel = (normal * (((incident ^ normal) * -2.f )) + incident) * bounceDamp;
-			}
+			Vec3f force = (PE::get()->getGravVec() * -1) + collNorm;
+			pm->vel = Vec3f();
+			pm->applyForce(force*jumpDist);
 		}
-		// object bouncing
+		// we have incident! so we bounce
 		else
 		{
-			// todo: get the normal we collided against
-			// for now, jump up
-			Vec3f up = Vec3f(0, 1, 0);
-			pm->applyForce(up*jumpDist);
+			// http://www.3dkingdoms.com/weekly/weekly.php?a=2
+			// optimize: *= ^= better!
+			pm->vel = (collNorm * (((incident ^ collNorm) * -2.f )) + incident) * bounceDamp;
 		}
 
 		appliedJumpForce = true;
