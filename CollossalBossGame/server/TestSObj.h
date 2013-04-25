@@ -19,6 +19,7 @@ public:
 	virtual int serialize(char * buf);
 	virtual ObjectType getType() { return OBJ_GENERAL; }
 	virtual void onCollision(ServerObject *obj) {}
+	virtual void initialize();
 
 	char serialbuffer[100];
 

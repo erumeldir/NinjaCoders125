@@ -16,6 +16,7 @@ public:
 	virtual int serialize(char * buf) = 0;				//Write all pertinent information to the specified buffer
 	virtual ObjectType getType() = 0;					//Get object type for client-side creation
 	virtual void onCollision(ServerObject *obj) = 0;	//Perform any logic ops on collision
+	virtual void initialize() = 0;						//Initial position/rotation/etc of the object
 
 	// Can be overriden, but should be only used by objects that receive
 	// input from the client (a.k.a. playerobjects)

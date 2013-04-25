@@ -1,6 +1,7 @@
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
+#include "WorldManager.h"
 #include "WallSObj.h"
 #include "defs.h"
 
@@ -23,6 +24,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	istat.attack = false;
 	istat.jump = false;
 	istat.quit = false;
+	istat.start = false;
 	istat.specialPower = false;
 	istat.rotAngle = 0.0;
 	istat.rotHoriz = 0.0;
@@ -32,8 +34,40 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 
 	newJump = true; // any jump at this point is a new jump
 	appliedJumpForce = false;
+	bool firedeath = false;
 }
 
+void PlayerSObj::initialize() {
+	// Configuration options
+	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
+	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
+
+
+	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
+
+	Point_t pos = Point_t(0, 5, 10);
+	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
+
+	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	lastCollision = pos;
+	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
+	// Initialize input status
+	istat.attack = false;
+	istat.jump = false;
+	istat.quit = false;
+	istat.start = false;
+	istat.specialPower = false;
+	istat.rotAngle = 0.0;
+	istat.rotHoriz = 0.0;
+	istat.rotVert = 0.0;
+	istat.rightDist = 0.0;
+	istat.forwardDist = 0.0;
+
+	newJump = true; // any jump at this point is a new jump
+	appliedJumpForce = false;
+	bool firedeath = false;
+}
 
 PlayerSObj::~PlayerSObj(void) {
 	delete pm;
@@ -47,6 +81,7 @@ bool PlayerSObj::update() {
 	
 	if(this->health > 0)
 	{
+		firedeath = false;
 		if (istat.attack) {
 			// Determine attack logic here
 		}
@@ -85,6 +120,13 @@ bool PlayerSObj::update() {
 		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
 		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
 		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+	} else {
+		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
+		// NOTE: Player should probably be also getting their client id.
+		if(!firedeath) {
+			firedeath = true;
+			EventManager::get()->fireEvent(EVENT_DEATH, this); 
+		}
 	}
 	return false;
 }
@@ -100,6 +142,9 @@ void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
+	if (istat.start) {
+		EventManager::get()->fireEvent(EVENT_RESET, this); 
+	}
 }
 
 void PlayerSObj::onCollision(ServerObject *obj) {

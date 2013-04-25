@@ -73,3 +73,7 @@ int TestSObj::serialize(char * buf) {
 	state->modelNum = modelNum;
 	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
 }
+
+void TestSObj::initialize() {
+	// Dunno.
+}

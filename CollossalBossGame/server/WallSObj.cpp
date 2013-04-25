@@ -71,6 +71,10 @@ bool WallSObj::update() {
 	return false;
 }
 
+void WallSObj::initialize() {
+	// Walls don't have to reinit.
+}
+
 int WallSObj::serialize(char * buf) {
 	ObjectState *state = (ObjectState*)buf;
 	state->modelNum = modelNum;

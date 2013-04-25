@@ -1,5 +1,6 @@
 #pragma once
 #include "ServerObject.h"
+#include "WorldManager.h"
 #include "Action.h"
 
 class PlayerSObj : public ServerObject
@@ -14,6 +15,7 @@ public:
 	void deserialize(char* newInput);
 	virtual ObjectType getType() { return OBJ_PLAYER; }
 	virtual void onCollision(ServerObject *obj);
+	virtual void initialize();
 
 	char serialbuffer[100];
 
@@ -27,6 +29,6 @@ private:
 	// Configuration options
 	float jumpDist;
 	int movDamp;
-
+	bool firedeath;
 };
 
