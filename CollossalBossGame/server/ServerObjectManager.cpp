@@ -186,23 +186,34 @@ ServerObject *ServerObjectManager::remove(uint id) {
 }
 
 void ServerObjectManager::reset() {
-	list<uint> asdf;
+	//list<uint> asdf;
+	list<ServerObject*> lsPlayers;
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
 			++it) {
 		ServerObject * o = it->second;
 		string s = typeid(*o).name();
 		if(s.compare("class PlayerSObj")) {
-			asdf.push_back(it->first);
+			//asdf.push_back(it->first);
 			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
 			// delete o;
 		} else {
-			it->second->initialize();
+			o->initialize();
+			lsPlayers.push_back(o);
 		}
 	}
+	mObjs.clear();
+	/*
 	for(list<uint>::iterator it = asdf.begin();
 			it != asdf.end();
 			++it) {
 			mObjs.erase(*it);
 	}
+	*/
+	for(list<ServerObject*>::iterator it = lsPlayers.begin();
+			it != lsPlayers.end();
+			++it) {
+		add(*it);
+	}
+	lsPlayers.clear();
 }
