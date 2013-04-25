@@ -11,7 +11,7 @@
 #include "TestSObj.h"
 #include "WallSObj.h"
 #include "PhysicsEngine.h"
-#include "MonsterSObj.h"
+#include "TentacleSObj.h"
 
 void buildRoom(Point_t center, int w, int h, int l) {
 #define WIDTH 150
@@ -84,7 +84,7 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//tentacleRight->setFlag(IS_STATIC, 1);
 	som->add(tentacleLeft);
 	//som->add(tentacleRight);
-	MonsterSObj * tentacrule = new MonsterSObj(som->genId());
+	TentacleSObj * tentacrule = new TentacleSObj(som->genId());
 	som->add(tentacrule);
 }
 

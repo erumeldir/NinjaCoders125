@@ -42,7 +42,7 @@
     <ClCompile Include="WallSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterSObj.cpp">
+    <ClCompile Include="TentacleSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,7 +77,7 @@
     <ClInclude Include="WallSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterSObj.h">
+    <ClInclude Include="TentacleSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
