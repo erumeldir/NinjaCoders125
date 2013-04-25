@@ -3,7 +3,7 @@
 #include "defs.h"
 #include <math.h>
 
-#define WALL_WIDTH 200 //150; increased size to reduce edge-case collision errors
+#define WALL_WIDTH 2000 //150; increased size to reduce edge-case collision errors
 #define WALL_THICKNESS 20
 
 WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, WallDir dir) : ServerObject(id) {
