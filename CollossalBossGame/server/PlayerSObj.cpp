@@ -36,6 +36,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	appliedJumpForce = false;
 	attacking = false;
 	gravityTimer = 0;
+	modelAnimationState = IDLE;
 }
 
 
@@ -61,6 +62,7 @@ bool PlayerSObj::update() {
 	}
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 #endif
+
 
 	float yDist = 0.f;
 	if (istat.quit) {
@@ -88,7 +90,7 @@ bool PlayerSObj::update() {
 		// This part gives us a buffer, so the user can bounce off the wall even 
 		// when they pressed 'jump' before they got there
 		if (jumping) jumpCounter++;
-		else jumpCounter = 0;
+		else jumpCounter = 0; 
 
 		appliedJumpForce = false; // we apply it on collision
 
@@ -137,6 +139,11 @@ bool PlayerSObj::update() {
 		}
 		*/
 		pm->applyForce(Vec3f(computedRight, yDist, computedForward));
+		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
+			this->setAnimationState(IDLE);
+		} else {
+			this->setAnimationState(WALK);
+		}
 	}
 	return false;
 }
@@ -145,6 +152,8 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_PLAYER;
 	state->health = health;
+	DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
+	state->animationstate = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
 

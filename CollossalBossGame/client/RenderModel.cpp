@@ -15,6 +15,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 	ref = new Frame(pos, rot);
 	this->scale = scale;
 	char *filename = NULL;
+	modelState = IDLE;
 	switch(modelNum) {
 	case MDL_TENTACLE_1:
 		filename = CM::get()->find_config("MODEL_TENTACLE1");
@@ -113,6 +114,11 @@ void RenderModel::render() {
 	//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 	//Render
+	DC::get()->print("ANIMATION STATE %d\n", modelState);
+	RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
 	RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
 }
 
+void RenderModel::setModelState(int state_id) {
+	this->modelState = state_id;
+}

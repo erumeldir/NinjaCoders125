@@ -148,11 +148,13 @@ for(int x = -1; x < 2; ++x) {
 		som->add(tentacleRight);
 	}
 	*/
+
 	//for(int i = 6; i < 7; i++)
 	//{
 	//MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), (Model)i, Point_t(i*20, i*20, i*20), Rot_t(M_PI/i, M_PI/i, M_PI/i));
 	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 0, 0), Rot_t());
-	//tentacleLeft->setFlag(IS_HARMFUL, 1);
+
+//tentacleLeft->setFlag(IS_HARMFUL, 1);
 	som->add(tentacleLeft);
 	//}
 }
