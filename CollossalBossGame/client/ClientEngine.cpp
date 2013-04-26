@@ -7,8 +7,6 @@
 #include "RenderEngine.h"
 #include "ClientObjectManager.h"
 #include "AudioEngine.h"
-#include "game.h"
-
 
 //Static members
 ClientEngine *ClientEngine::ce;

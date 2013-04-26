@@ -3,6 +3,7 @@
  * Handles the audio playback
  */
 #include "AudioEngine.h"
+#include "ConfigurationManager.h"
 #include <iostream>
 
 //static members
@@ -28,13 +29,15 @@ AudioEngine::AudioEngine() {
 		DC::get()->print("[Audio] Init successful");
 	}	
 
+	//test audio
+	loadStream();
 }
 
 /*
  * Engine destructor. Deletes all audio assets and cleans all buffers.
  */
 AudioEngine::~AudioEngine() {
-	
+	//add shut down code here
 }
 
 /*
@@ -45,7 +48,7 @@ AudioEngine::~AudioEngine() {
  */
 int AudioEngine::startFMOD() {
 
-	bool fmodErrThrown = false;
+	fmodErrThrown = false;
 	bool computerHasAudio = true;
 
 	DC::get()->print("[Audio] Initializing Audio Engine\n");
@@ -143,4 +146,22 @@ int AudioEngine::startFMOD() {
 		return 1;
 	else
 		return 0;
+}
+
+bool AudioEngine::loadStream()
+{
+	FMOD::Sound *testing;
+	char* filename = CM::get()->find_config("MUSIC");
+	result = system->createStream(filename, FMOD_DEFAULT, 0, &testing);
+	FMOD_ERRCHECK(result);
+	if(fmodErrThrown)
+		return false;
+
+	FMOD::Channel *chan1;
+	result = system->playSound(FMOD_CHANNEL_FREE, testing, false, &chan1);
+	FMOD_ERRCHECK(result);
+	if(fmodErrThrown)
+		return false;
+
+	return true;
 }

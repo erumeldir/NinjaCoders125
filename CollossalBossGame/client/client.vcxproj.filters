@@ -69,9 +69,6 @@
     <ClInclude Include="FMOD\inc\fmod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterCObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>

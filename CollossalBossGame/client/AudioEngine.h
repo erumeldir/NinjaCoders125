@@ -33,6 +33,9 @@ private:
 	//FMOD init
 	int startFMOD();
 
+	//load file
+	bool loadStream();
+
 	//FMOD objects
 	FMOD::System	 *system;
 	FMOD_RESULT		 result;
@@ -41,6 +44,7 @@ private:
 	FMOD_SPEAKERMODE speakermode; //number of channels
 	FMOD_CAPS	     caps;
 	char			 drivername[256];
+	bool			 fmodErrThrown; //used to check success without fatal exits/crashes
 };
 typedef AudioEngine AE;
 #endif

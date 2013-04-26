@@ -92,7 +92,6 @@
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
     <ClInclude Include="FMOD\inc\fmod.h" />
-    <ClInclude Include="game.h" />
     <ClInclude Include="MonsterCObj.h" />
     <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="RenderEngine.h" />
