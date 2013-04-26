@@ -1,22 +1,44 @@
 #pragma once
 #include "defs.h"
 #include "Frame.h"
-#define AIR_FRICTION 1.3f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.1f	//A bit excessive, but it works for now
+#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
+#define UNITOFHALFLENGTH 25		//as in half the length of a box
+
+/* Bounding Enum
+ *  Definition of all general types of collision. We map each model type to a boundary type
+ *
+ * Author: Bryan
+ */
+typedef enum CollisionBox {
+	CB_SMALL,
+	CB_LARGE,
+	CB_FLAT,
+	NUM_CBS
+};
 
 //All physics data should be known to the frames
 struct PhysicsModel
 {
-	PhysicsModel(Point_t pos, Rot_t rot, float mass) {
+	PhysicsModel(Point_t pos, Rot_t rot, float mass, const Box &vol, uint collisionDirs = (NORTH | SOUTH | EAST | WEST | UP | DOWN)) {
 		ref = new Frame(pos,rot);
-//		appliedAccel = Vec3f();
+		this->lastPos = pos;
 		vel = Vec3f();
 		accel = Vec3f();
 		this->mass = mass;
-		frictCoeff = AIR_FRICTION;
+		frictCoeff = GROUND_FRICTION;
+		this->colBox = CB_SMALL;
+		this->vol = vol;
+		this->cdirs = collisionDirs;
 	}
 
 	virtual ~PhysicsModel() {
 		delete ref;
+	}
+
+	void setColBox(CollisionBox cb)
+	{
+		this->colBox = cb;
 	}
 
 	void applyForce(const Vec3f &force) {
@@ -30,11 +52,23 @@ struct PhysicsModel
 		this->accel.y += accel.y;
 		this->accel.z += accel.z;
 	}
+	
+	/* getColBox
+	 *
+	 * Author: Bryan
+	 */
+	CollisionBox getColBox () {
+		return colBox;
+	}
 
 	Frame *ref;	//Frame of Reference/skeleton; also root position and collision info
 	Vec3f vel;			//Current velocity
 	Vec3f accel;		//Current acceleration
+	Point_t lastPos;
 	float mass;			//Mass of this object
 	float frictCoeff;	//Friction coefficient
 	Vec3f frictNorm;	//Normal on which the friction will be applied
+	CollisionBox colBox;
+	Box vol;
+	uint cdirs;			//Which faces of the collision volume are valid for collision checking?
 };

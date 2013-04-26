@@ -1,13 +1,18 @@
 #include "ClientObjectManager.h"
 #include "RenderEngine.h"
+#include "ConfigurationManager.h"
 
 //Objects the COM can create
 #include "TestObject.h"
+#include "PlayerCObj.h"
+#include "MonsterCObj.h"
+#include "TentacleCObj.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
 ClientObjectManager::ClientObjectManager(void) {
 	curId = 0;
+	debugFlag = CM::get()->find_config_as_bool("COM_DEBUG_FLAG");
 }
 
 
@@ -63,17 +68,15 @@ ClientObject *ClientObjectManager::find(uint id) {
 
 void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
 	map<uint,ClientObject*>::iterator it;
-	CreateHeader *h;
 	switch(cmd) {
-	case CMD_CREATE:
-		h = (CreateHeader*)data;
-		create(id, h->type, data);
-		break;
 	case CMD_UPDATE:
-		//In case a packet gets dropped, I'm lumping these two together.
+	case CMD_CREATE:
+		//The client may connect AFTER all the objects have been created.
 		it = mObjs.find(id);
 		if(it != mObjs.end()) {
-			it->second->deserialize(data);
+			it->second->deserialize(data + sizeof(CreateHeader));
+		} else {
+			create(id, data);
 		}
 		break;
 	case CMD_DELETE:
@@ -90,12 +93,23 @@ void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
 /*
  * Creates the specified object and adds it to the list
  */
-void ClientObjectManager::create(uint id, ObjectType type, char *data) {
+void ClientObjectManager::create(uint id, char *data) {
 	ClientObject *obj;
-	switch(type) {
+	CreateHeader *h = (CreateHeader*)data;
+	switch(h->type) {
 	case OBJ_PLAYER:
+		obj = new PlayerCObj(id, data + sizeof(CreateHeader));
+		break;
+	case OBJ_MONSTER:
+		obj = new MonsterCObj(id, data + sizeof(CreateHeader));
+		break;
+	case OBJ_TENTACLE:
+		obj = new TentacleCObj(id, data + sizeof(CreateHeader));
+		break;
+	//case OBJ_ARENA:
+	//	obj = new WallCObj(id, data + sizeof(CreateHeader));
 	default:	//OBJ_GENERAL
-		obj = new TestObject(id, data, "tiny.x");
+		obj = new TestObject(id, data + sizeof(CreateHeader));
 		break;
 	}
 	add(obj);

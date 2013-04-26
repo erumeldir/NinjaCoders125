@@ -9,6 +9,7 @@
 #include "AudioEngine.h"
 #include "game.h"
 
+
 //Static members
 ClientEngine *ClientEngine::ce;
 int ClientEngine::exitStatus;
@@ -54,16 +55,19 @@ void ClientEngine::exit(int i) {
  * The main game loop of the engine.  Initializes and runs the game.
  */
 void ClientEngine::run() {
-	//Initialize the client side game information
-	gameInit();
+
+	// Wait until we connect to a server
+	while(!ClientNetworkManager::get()->isConnected()) { 
+		ClientNetworkManager::get()->update(); 
+	}
 
 	while(isRunning) {
 		
 		//Send event information to the server
 		xctrl->sendInput();
 		
-		// Fetch Data From the Server
-		ClientNetworkManager::get()->update();
+		// Fetch all Data From the Server 
+		while(ClientNetworkManager::get()->update()) {}
 
 		//Update game logic/physics (will be moved to the server)
 		COM::get()->update();
@@ -74,7 +78,6 @@ void ClientEngine::run() {
 		//Poll events
 		
 
-		Sleep(10);
+		//Sleep(10);
 	}
-	gameClean();
 }

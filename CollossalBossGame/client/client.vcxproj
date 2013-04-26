@@ -70,29 +70,34 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClientEngine.cpp" />
     <ClCompile Include="ClientNetworkManager.cpp" />
     <ClCompile Include="ClientObject.cpp" />
     <ClCompile Include="ClientObjectManager.cpp" />
-    <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MonsterCObj.cpp" />
     <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
+    <ClCompile Include="TentacleCObj.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ClientEngine.h" />
     <ClInclude Include="ClientNetworkManager.h" />
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
     <ClInclude Include="FMOD\inc\fmod.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="MonsterCObj.h" />
     <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
+    <ClInclude Include="TentacleCObj.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="XAnimator\XAnimator_lib.h" />
     <ClInclude Include="XboxController.h" />
@@ -107,8 +112,15 @@
     <None Include="BONES.BMP" />
     <None Include="bones_all.x" />
     <None Include="face.bmp" />
+    <None Include="pyramidofDOOM.X" />
     <None Include="rabbit.x" />
     <None Include="renderC.jpg" />
+    <None Include="res\ballbounce.X" />
+    <None Include="res\cute propeller.X" />
+    <None Include="res\plane.X" />
+    <None Include="res\tentacle1.X" />
+    <None Include="res\tentacle_anim_1.X" />
+    <None Include="smallBox.X" />
     <None Include="tiny.x" />
     <None Include="tiny_skin.bmp" />
     <None Include="wispwind.x" />

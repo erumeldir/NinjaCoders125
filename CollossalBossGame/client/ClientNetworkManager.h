@@ -27,8 +27,9 @@ public:
 
 	static ClientNetworkManager * get();
 	int receivePackets(char *);
-	void update();
+	bool update();
 	void sendData(char * data, int datalen, int objectID);
+	bool isConnected();
 private:
 	// ctor/dtor
     ClientNetworkManager(void);
@@ -36,6 +37,10 @@ private:
 
 	static ClientNetworkManager CNM;
 	static unsigned int exper;
+	unsigned int iteration_count;
+	unsigned int response_packet_number;
+	bool connected;
+	int debugFlag;
 };
 
 #endif

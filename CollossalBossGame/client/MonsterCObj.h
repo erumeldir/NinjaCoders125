@@ -1,14 +1,11 @@
 #pragma once
-#include "RenderModel.h"
 #include "ClientObject.h"
 
-class PlayerCObj : public ClientObject
+class MonsterCObj : public ClientObject
 {
 public:
-	PlayerCObj(uint id, char *data);
-	virtual ~PlayerCObj(void);
-
-	void showStatus();
+	MonsterCObj(uint id, char *serializedData);
+	virtual ~MonsterCObj(void);
 
 	virtual bool update();
 
@@ -19,6 +16,5 @@ public:
 private:
 	int health;
 	RenderModel *rm;
-	float cameraPitch;
 };
 

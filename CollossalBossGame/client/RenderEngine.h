@@ -18,8 +18,12 @@
 
 #include <list>
 #include <stdio.h>
+#include <string>
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
+#include "Camera.h"
+#include <time.h>
+
 using namespace std;
 
 
@@ -42,23 +46,35 @@ public:
 
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
-
-	D3DXMATRIX getViewOffset() { return camera; }
-
+	ID3DXFont* direct3dText; // the pointer to the device class
+	LPD3DXLINE healthLine;
+	LPD3DXLINE monsterLine;
+	LPD3DXLINE backgroundLine;
+	LPD3DXSPRITE sprite;
+	LPD3DXSPRITE sprite1;
 	void renderThis(ClientObject *obj);
 	
-	void setCameraPos(const Point_t &pos, const Point_t &rot);
+	Camera * getCamera() { return cam; }
+	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
-	void setCameraInfo(const Point_t &lookAt, const Point_t &pos, const Point_t &up);
+	void setHUDText(string newText, int health) { hudText = newText; healthPts = health; }
+	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
 	bool loadModel(const char * filename, int * idAddr);
 
+	bool debugFlag;
+	//Debug
+	IXAnimator *getAnim() { return xAnimator; }
+
+
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
+	void drawHUD();
+	void HUDInitialization();
 
 	RenderEngine();
 	virtual ~RenderEngine();
@@ -66,13 +82,23 @@ private:
 	//Static members
 	static RenderEngine *re;
 	static IXAnimator* xAnimator;
-	D3DXMATRIX camera, world;
-	D3DXVECTOR3 camLookAt, camPos, camUp;
-
-	float xpos, ypos, zpos;
+	D3DXMATRIX world;
+	string hudText;
+	string monsterHUDText;
+	int healthPts;
+	int monsterHealthPts;
+	clock_t initTime, final;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
+
+	Camera* cam;
+
+	IDirect3DTexture9 *g_texture;
+
+	//Configuration fields
+	float cameraDist;
+	int hudTopX, hudTopY;
 };
 typedef RenderEngine RE;
 

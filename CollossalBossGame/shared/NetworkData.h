@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <Windows.h>
+#include "defs.h"
 
 #define MAX_PACKET_SIZE 1000000
 #define PACKET_SIZE 1024
@@ -11,13 +12,15 @@ enum PacketTypes {
     INIT_CONNECTION = 0,
     ACTION_EVENT = 1,
 	MESSAGE = 2,
+	COMPLETE
 };
 
 // Commands sent from the ServerObjectManager to the ClientObjectManager.
 enum CommandTypes {
     CMD_CREATE,
     CMD_UPDATE,
-	CMD_DELETE
+	CMD_DELETE,
+	CMD_ACTION
 };
 
 struct Packet {
@@ -46,6 +49,30 @@ struct Packet {
 
 
 /*
+ * Model info
+ * These enumerations are used for specifying models
+ */
+enum Model {
+    MDL_TENTACLE_1,
+    MDL_TENTACLE_2,
+    MDL_TENTACLE_3,
+    MDL_TENTACLE_4,
+    MDL_TENTACLE_5,
+    MDL_FLOOR,
+    MDL_CEILING,
+	MDL_EAST_WALL,
+	MDL_WEST_WALL,
+	MDL_NORTH_WALL,
+	MDL_SOUTH_WALL,
+    MDL_PLAYER,
+	MDL_TEST_BOX,
+	MDL_TEST_PYRAMID,
+	MDL_TEST_PLANE,
+	MDL_TEST_BALL,
+    NUM_MDLS
+};
+
+/*
  * Object types
  * These types exist to tell teh ClientObjectManager how to create an object
  * when the server declares a new object should be created
@@ -53,6 +80,8 @@ struct Packet {
 enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
+	OBJ_MONSTER,
+	OBJ_TENTACLE,
 	NUM_OBJS
 };
 
@@ -69,24 +98,6 @@ enum ObjectType {
  * memory-access safety reasons.
  */
 
-#if 0
-/*
- * General world state information not encoded in a specific object
- */
-struct WorldState {
-	int flags;	//Paused? Menu? Still running?
-};
-
-/*
- * Header information that prepends each object
- */
-struct ObjectHeader {
-	unsigned int id;	//Object id
-	CommandTypes cmd;	//Command for the client about this object
-	unsigned int size;	//Size does not include header size
-};
-#endif
-
 /*
  * This header provides information necessary for creating an
  * object.  For now it will be applied to all objects, in case
@@ -100,10 +111,30 @@ struct CreateHeader {
  * State information for the player not encoded by the position
  */
 struct PlayerState {
+    Model modelNum;
+	int health;
 };
 
 /*
  * State information for more general objects that might not be encoded
  */
 struct ObjectState {
+    Model modelNum;
+	Vec3f scale;
+};
+
+/*
+ * State information for the monster not encoded by the position
+ */
+struct MonsterState {
+	//Model modelNum;
+	int health;
+};
+
+/*
+ * State information for the tentacle not encoded by the position
+ */
+struct TentacleState {
+	Model modelNum;
+	//int health;
 };

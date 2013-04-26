@@ -4,11 +4,10 @@
 #include "Action.h"
 #include "XboxController.h"
 
-
 class TestObject : public ClientObject
 {
 public:
-	TestObject(uint id, char *data, const char *filename);
+	TestObject(uint id, char *serializedData);
 	virtual ~TestObject(void);
 
 	virtual bool update();

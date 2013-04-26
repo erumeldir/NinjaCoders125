@@ -21,6 +21,9 @@ public:
 	//Object handling
 	ClientObject *find(uint id);
 	void serverUpdate(uint id, CommandTypes cmd, char *data);
+
+	int player_id;
+	bool debugFlag;	
 /*  Needs to receive a server update
 	uint genId();
 	void freeId(uint id);
@@ -30,7 +33,7 @@ public:
 private:
 	ClientObjectManager(void);
 	virtual ~ClientObjectManager(void);
-	void create(uint id, ObjectType type, char *data);
+	void create(uint id, char *data);
 	void add(ClientObject *obj);
 
 	static ClientObjectManager *com;

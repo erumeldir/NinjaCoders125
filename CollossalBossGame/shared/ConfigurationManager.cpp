@@ -8,9 +8,10 @@
 #include <assert.h>
 #include <algorithm>
 
-using namespace std;
-
 #define CONFIGFILEPATH "../config.ini"
+#define USERCONFIGFILEPATH "../config_dev.ini"
+
+#pragma region Helper Functions.
 
 /* Split - Takes in a string, a delimiter, and a vector.
  * returns the vector with the string split by the delimiter.
@@ -44,6 +45,8 @@ bool comp(string s, char * c, int length) {
 	return true;
 }
 
+#pragma endregion split, stripSpaces, and comp[are]
+
 // Constructor - zeros out memory and sets initialized to false.
 ConfigurationManager::ConfigurationManager() {
 	SecureZeroMemory(&keytable, sizeof(keytable));
@@ -54,36 +57,39 @@ ConfigurationManager::ConfigurationManager() {
 }
 
 // Initializes the Configuration Manager. Parses the file and stores data.
-void ConfigurationManager::init(ConfigurationManager * cm) {
-	ifstream conf(CONFIGFILEPATH, ios::in);
+void ConfigurationManager::initializefile(char * filepath) {
+	ifstream conf(filepath, ios::in);
 	string line;
 	int x = 0;
 	vector<string> chunk;
 	if(conf.is_open()) {
-		cout << "Begin Configuration File Parsing..." << endl;
+		// cout << "Begin Configuration File Parsing..." << endl;
 		while(conf.good()) {
 			getline(conf,line);
-			if(!(line.length() == 0) && !(line.at(0) == '#')) {
-				cout << "Parsing line: " << line << endl;
+			if(!(line.length() < 2) && !(line.at(0) == '#')) {
+				// cout << "Parsing line: " << line << endl;
 				chunk.clear();
 				split(line, '=', chunk);
-				cout << "Number of Chunks: " << chunk.size() << endl;
+				// cout << "Number of Chunks: " << chunk.size() << endl;
 				// Assert. If the configuration file fails, it should fail hard.
+                printf("Chunk size = %d, len = %d (%s)\n", chunk.size(), line.length(), line.c_str());
 				assert(chunk.size() == 2 && "Config file must have 1 key=value pair per line. All spaces are ignored. Comment with leading # symbol(no spaces before #).");
 				string key = chunk[0];
 				string value = chunk[1];
-				cout << "Line split by = 1) " << key << " with length :" << key.length() << endl;
-				cout << "Line split by = 2) " << value << " with length :" << value.length() << endl;
+				// cout << "Line split by = 1) " << key << " with length :" << key.length() << endl;
+				// cout << "Line split by = 2) " << value << " with length :" << value.length() << endl;
 				stripSpaces(key);
 				stripSpaces(value);
-				cout << "Line split, trimmed, and stored 1) " << key << " with length : " << key.length() << endl;
-				cout << "Line split, trimmed, and stored 2) " << value << " with length : " << value.length() << endl;
+				// cout << "Line split, trimmed, and stored 1) " << key << " with length : " << key.length() << endl;
+				// cout << "Line split, trimmed, and stored 2) " << value << " with length : " << value.length() << endl;
 				memcpy(&(keytable[x][0]), key.c_str(), key.size());
 				memcpy(&(valuetable[x][0]), value.c_str(), value.size());
 				keylen[x] = key.size();
 				valuelen[x] = value.size();
-				cout << "Line length 1) " << key.size() << endl;
-				cout << "Line length 2) " << value.size() << endl;
+
+printf(__FILE__" %d: (k,v) = (%s,%s)\n", __LINE__, &(keytable[x][0]), &(valuetable[x][0]));
+
+
 				x++;
 			}
 		}
@@ -91,15 +97,68 @@ void ConfigurationManager::init(ConfigurationManager * cm) {
 	}
 }
 
+// Code blatantly yoinked from the interwebs. Source: http://www.gamedev.net/topic/399558-how-to-copy-a-file-in-c/
+int CopyFileHelper(string initialFilePath, string outputFilePath)
+{
+	ifstream initialFile(initialFilePath.c_str(), ios::in|ios::binary);
+	ofstream outputFile(outputFilePath.c_str(), ios::out|ios::binary);
+	//defines the size of the buffer
+	initialFile.seekg(0, ios::end);
+	long fileSize = initialFile.tellg();
+	//Requests the buffer of the predefined size
+
+	//As long as both the input and output files are open...
+	if(initialFile.is_open() && outputFile.is_open())
+	{
+		short * buffer = new short[fileSize/2];
+		//Determine the file's size
+		//Then starts from the beginning
+		initialFile.seekg(0, ios::beg);
+		//Then read enough of the file to fill the buffer
+		initialFile.read((char*)buffer, fileSize);
+		//And then write out all that was read
+		outputFile.write((char*)buffer, fileSize);
+		delete[] buffer;
+	}
+	//If there were any problems with the copying process, let the user know
+	else if(!outputFile.is_open())
+	{
+		cout<<"I couldn't open "<<outputFilePath<<" for copying!\n";
+		return 0;
+	}
+	else if(!initialFile.is_open())
+	{
+		cout<<"I couldn't open "<<initialFilePath<<" for copying!\n";
+		return 0;
+	}
+		
+	initialFile.close();
+	outputFile.close();
+
+	return 1;
+}
+
+// Initializes the static Configuration Manager.
+void ConfigurationManager::init() {
+	ifstream ifile(USERCONFIGFILEPATH);
+	if (!ifile) {	// If config.user doesn't exist, we should copy config.ini and make one.
+		ifile.close();
+		CopyFileHelper(CONFIGFILEPATH, USERCONFIGFILEPATH);
+	}
+	initializefile(USERCONFIGFILEPATH);
+}
+
 // Fetches the singleton Configuration Manager object
 ConfigurationManager * ConfigurationManager::get() {
 	static ConfigurationManager ConfigManager;
 	if (ConfigManager.initialized == false) {
-		ConfigManager.init(&ConfigManager);
+		ConfigManager.init();
 		ConfigManager.initialized = true;
 	}
 	return &ConfigManager;
 }
+
+#pragma region Functions to find a configuration value given a key
 
 // Looks for a key and returns the value.
 char * ConfigurationManager::find_config(string key) {
@@ -116,7 +175,7 @@ int ConfigurationManager::find_config_index(string key) {
 		}
 	}
 	cout << key << endl;
-	assert(false && "Could not find configuration key specified.");
+	assert(false && "Could not find configuration key specified. DELETE YOUR Config_dev.ini FILE TO USE THE LATEST CONFIGS!");
 	return NULL;
 }
 
@@ -130,16 +189,52 @@ int ConfigurationManager::find_config_as_int(string key) {
 	return atoi(&(valuetable[index][0]));
 }
 
+float ConfigurationManager::find_config_as_float(string key) {
+	int index = find_config_index(key);
+	return (float)atof(&(valuetable[index][0]));
+}
+
 bool ConfigurationManager::find_config_as_bool(string key) {
 	int index = find_config_index(key);
 	string boolean((const char *)&(valuetable[index][0]), valuelen[index]);
 	std::transform(boolean.begin(), boolean.end(), boolean.begin(), ::tolower);
-	if(boolean.compare("true")) {
+	if(comp(boolean, "true", 4)) {
 		return true;
 	}
-	if(boolean.compare("false")) {
+	if(comp(boolean, "false", 5)) {
 		return false;
 	}
 	assert(false && "Invalid Configuration value as boolean.");
 	return false;
 }
+
+Vec3f ConfigurationManager::find_config_as_point(string key) {
+	vector<string> chunk;
+	string point = find_config_as_string(key);
+	split(point, ',', chunk);
+	assert(chunk.size() == 3 && "Config Error: Points are represented as <floatx> , <floaty> , <floatz>. Spaces will ignored.");
+	string x = chunk[0], y = chunk[1], z = chunk[2];
+	stripSpaces(x); stripSpaces(y); stripSpaces(z);
+	float fx = (float)atof(x.c_str()), fy = (float)atof(y.c_str()), fz = (float)atof(z.c_str());
+	return Vec3f(fx, fy, fz);
+}
+
+Box ConfigurationManager::find_config_as_box(string key) {
+	vector<string> chunk;
+	string box = find_config_as_string(key);
+	split(box, ',', chunk);
+	assert(chunk.size() == 6 && "Config Error: Points are represented as <floatx> , <floaty> , <floatz> , <floatw> , <floath> , <floatl>. Spaces will ignored.");
+	string x = chunk[0], y = chunk[1], z = chunk[2],
+		   w = chunk[3], h = chunk[4], l = chunk[5];
+	stripSpaces(x); stripSpaces(y); stripSpaces(z);
+	stripSpaces(w); stripSpaces(h); stripSpaces(l);
+	float fx = (float)atof(x.c_str()),
+		  fy = (float)atof(y.c_str()),
+		  fz = (float)atof(z.c_str()),
+		  fw = (float)atof(w.c_str()),
+		  fh = (float)atof(h.c_str()),
+		  fl = (float)atof(l.c_str());
+	return Box(fx, fy, fz, fw, fh, fl);
+}
+
+#pragma endregion

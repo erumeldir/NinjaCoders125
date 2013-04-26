@@ -1,11 +1,13 @@
 #include "ServerNetworkManager.h"
 #include "ServerObjectManager.h"
+#include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 
 ServerObjectManager *ServerObjectManager::som;
 
 ServerObjectManager::ServerObjectManager(void) {
 	curId = 0;
+	debugFlag = CM::get()->find_config_as_bool("SOM_DEBUG_FLAG");
 }
 
 
@@ -45,9 +47,9 @@ void ServerObjectManager::update() {
 			lsObjsToDelete.push_back(it->second->getId());
 			continue;
 		}
-
+		
 		//Update physics
-		if(PE::get()->applyPhysics(it->second->getPhysicsModel())) {
+		if(PE::get()->applyPhysics(it->second)) {
 			//Add this object to the list of objects that have moved
 			lsObjsThatMoved.push_back(it->second);
 		} else {
@@ -63,7 +65,7 @@ void ServerObjectManager::update() {
 	for(idIter = lsObjsToDelete.begin(); idIter != lsObjsToDelete.end(); ++idIter) {
 		map<uint, ServerObject *>::iterator itObj = mObjs.find(*idIter);
 		if(itObj != mObjs.end()) {
-			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,*objIter));
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,itObj->second));
 			//ServerObject *obj = itObj->second;
 			mObjs.erase(itObj);
 			//delete obj;	We don't perform this until the object is sent
@@ -110,21 +112,21 @@ void ServerObjectManager::sendState()
 {
 	char *buf;
 	int datalen;
+	int totalData = 0;
 	for(list<pair<CommandTypes,ServerObject*> >::iterator it = lsObjsToSend.begin();
 			it != lsObjsToSend.end(); ++it) {
 		//Initialize the buffer with the object header
 		buf = SNM::get()->getSendBuffer();
 		switch(it->first) {
 		case CMD_UPDATE:
-			datalen = it->second->serialize(buf);
-			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
-			break;
 		case CMD_CREATE: {
 			//Fill out the header
 			CreateHeader *h = (CreateHeader*)buf;
 			h->type = it->second->getType();
 
+			//Serialize the object
 			datalen = it->second->serialize(buf + sizeof(CreateHeader)) + sizeof(CreateHeader);
+			totalData += datalen;
 			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
 			break;
 			}
@@ -135,6 +137,9 @@ void ServerObjectManager::sendState()
 		}
 	}
 	lsObjsToSend.clear();
+	//DC::get()->print("Total data sent to client is %d\n", totalData);
+	SNM::get()->getSendBuffer();
+	SNM::get()->sendToAll(COMPLETE, 0);
 /*
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
@@ -175,7 +180,40 @@ ServerObject *ServerObjectManager::find(uint id) {
 	return NULL;
 }
 
-void ServerObjectManager::remove(uint id) {
-	//mObjs.erase(id);
+ServerObject *ServerObjectManager::remove(uint id) {
 	lsObjsRemoveQueue.push_back(id);
+	return find(id);
+}
+
+void ServerObjectManager::reset() {
+	//list<uint> asdf;
+	list<ServerObject*> lsPlayers;
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+		ServerObject * o = it->second;
+		string s = typeid(*o).name();
+		if(s.compare("class PlayerSObj")) {
+			//asdf.push_back(it->first);
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
+			// delete o;
+		} else {
+			o->initialize();
+			lsPlayers.push_back(o);
+		}
+	}
+	mObjs.clear();
+	/*
+	for(list<uint>::iterator it = asdf.begin();
+			it != asdf.end();
+			++it) {
+			mObjs.erase(*it);
+	}
+	*/
+	for(list<ServerObject*>::iterator it = lsPlayers.begin();
+			it != lsPlayers.end();
+			++it) {
+		add(*it);
+	}
+	lsPlayers.clear();
 }
