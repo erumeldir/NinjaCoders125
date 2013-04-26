@@ -14,7 +14,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 	switch(dir) {
 	case NORTH:
 		DC::get()->print("(north)\n");
-		bxVol = Box(-WALL_WIDTH / 2, -WALL_WIDTH / 2, -WALL_THICKNESS,
+		bxVol = Box((-WALL_WIDTH / 2), -WALL_WIDTH / 2, -WALL_THICKNESS + 5,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
 		//rot = Rot_t(M_PI / 2,0,0);
 		rot = Rot_t();
@@ -22,7 +22,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 		break;
 	case SOUTH:
 		DC::get()->print("(south)\n");
-		bxVol = Box(-WALL_WIDTH / 2, -WALL_WIDTH / 2, 0,
+		bxVol = Box((-WALL_WIDTH / 2), -WALL_WIDTH / 2, 0 - 5 ,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
 		//rot = Rot_t(-M_PI / 2,0,0);
 		rot = Rot_t();
@@ -30,7 +30,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 		break;
 	case EAST:
 		DC::get()->print("(east)\n");
-		bxVol = Box(0, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
+		bxVol = Box(0 - 5, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
 		//rot = Rot_t(0,0,M_PI / 2);
 		rot = Rot_t();
@@ -53,7 +53,7 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 		break;
 	default:
 		DC::get()->print("(floor)\n");
-		bxVol = Box(-WALL_WIDTH / 2, -WALL_THICKNESS, -WALL_WIDTH / 2,
+		bxVol = Box(-WALL_WIDTH / 2, -WALL_THICKNESS + 5, -WALL_WIDTH / 2,
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
 		rot = Rot_t(0,0,0);
 		collDir = UP;
