@@ -4,7 +4,7 @@
 
 //Movement Defines
 #define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
-#define AIR_FRICTION 1.01f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.1f	//A bit excessive, but it works for now
 #define MAX_VEL 5.0f
 
 //Collision Defines
@@ -210,7 +210,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		sign = fYShift < 0 ? -1 : 1;
 		collNorm1 = Vec3f(0,sign,0);
 		collNorm2 = Vec3f(0,-sign,0);
-		
+#if 0
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {
             obj2->setFlag(IS_FALLING, false);
@@ -218,7 +218,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
         } else {
 			obj1->setFlag(IS_FALLING, false);
 			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
-        }
+		}
+#endif
 		mdl1->vel.y = 0;
 		mdl2->vel.y = 0;
 		//DC::get()->print(CONSOLE | LOGFILE, "(shifted y %f (sign = %f))\n", fYShift, sign);

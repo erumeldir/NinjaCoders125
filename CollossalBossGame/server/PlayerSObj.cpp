@@ -14,7 +14,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 
 	DC::get()->print("Created new PlayerSObj %d\n", id);
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, Quat_t(0,0,0,1), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
@@ -32,6 +32,9 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	appliedJumpForce = false;
 	
 	gravityTimer = 0;
+	fwd = Vec3f(0,0,1);
+	up = Vec3f(0,1,0);
+	right = Vec3f(1,0,0);
 }
 
 
@@ -41,24 +44,26 @@ PlayerSObj::~PlayerSObj(void) {
 
 bool PlayerSObj::update() {
 	//gravity
-#if 1
+#if 0
+#define INTERVAL 200
 	gravityTimer++;
 	static char cdir = 'v';
-	if(gravityTimer == 500) {
-		PE::get()->setGravDir(DOWN);
-		cdir = 'o';
-	} else if(gravityTimer == 1000) {
-		PE::get()->setGravDir(NONE);
-		cdir = '>';
-	} else if(gravityTimer > 1500) {
+	if(gravityTimer == INTERVAL) {
 		PE::get()->setGravDir(EAST);
+		cdir = 'o';
+	} else if(gravityTimer == INTERVAL * 2) {
+		PE::get()->setGravDir(NORTH);
+		cdir = '>';
+	} else if(gravityTimer > INTERVAL * 3) {
+		PE::get()->setGravDir(DOWN);
 		gravityTimer = 0;
 		cdir = 'v';
 	}
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 #endif
 
-	float yDist = 0.f;
+
+
 	if (istat.quit) {
 		return true; // delete me!
 	}
@@ -89,14 +94,14 @@ bool PlayerSObj::update() {
 			// Determine special power logic here
 			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
 		}
-#if 1
-		Rot_t rt = pm->ref->getRot();
+#if 0
+		Quat_t rt = pm->ref->getRot();
 		float yaw = rt.y + istat.rotHoriz,
 			  pitch = rt.x + istat.rotVert;
 		if (yaw > M_TAU || yaw < -M_TAU) yaw = 0;
 		if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
 		pm->ref->setRot(Rot_t(0, yaw, 0));
-#else
+//#else
 		float yaw;
 		if(istat.forwardDist > 0) {
 			yaw = istat.rotAngle;
@@ -105,7 +110,23 @@ bool PlayerSObj::update() {
 			yaw = pm->ref->getRot().y;
 		}
 #endif
-	
+		pm->ref->rotate(Quat_t(up,istat.rotHoriz));
+		Quat_t qRot = pm->ref->getRot();
+		qRot.normalize();
+		int divBy = movDamp;
+		float rawRight = istat.rightDist / divBy;
+		float rawForward = istat.forwardDist / divBy;
+		Vec3f total = fwd * rawForward;// + right *rawRight;
+		Quat_t totalWithRot = qRot * (total) * inverse(qRot);
+		total = Vec3f(totalWithRot.x, totalWithRot.y, totalWithRot.z);
+
+		Quat_t fwdWithRot = qRot * fwd * inverse(qRot);
+		Vec3f res = Vec3f(fwdWithRot.x, fwdWithRot.y, fwdWithRot.z);
+		float angle = acos((res ^ up) / (magnitude(fwdWithRot) * magnitude(up)));
+		//DC::get()->print(CONSOLE, "Angle b/w total and up vector: %f                       \r", angle * 180 / M_PI);
+		DC::get()->print("(%f,%f,%f) %f            \r", res.x, res.y, res.z, magnitude(res));
+
+#if 0
 		int divBy = movDamp;
 		float rawRight = istat.rightDist / divBy;
 		float rawForward = istat.forwardDist / divBy;
@@ -129,7 +150,10 @@ bool PlayerSObj::update() {
 			break;
 		}
 		*/
-		pm->applyForce(Vec3f(computedRight, yDist, computedForward));
+#endif
+		//pm->applyForce(Vec3f(computedRight, 0, computedForward));
+		//pm->applyForce(total);
+		pm->applyForce(Vec3f(totalWithRot.x, totalWithRot.y, totalWithRot.z));
 	}
 	return false;
 }
@@ -138,6 +162,9 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_1;
 	state->health = health;
+	state->up = this->up;
+	state->fwd = this->fwd;
+	state->pos = pm->ref->getPos();
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
 

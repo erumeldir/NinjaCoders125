@@ -6,7 +6,7 @@ Frame::Frame()
 	this->rot = Vec3f();
 }
 
-Frame::Frame(const Point_t &pos, const Rot_t &rot)
+Frame::Frame(const Point_t &pos, const Quat_t &rot)
 {
 	this->pos = pos;
 	this->rot = rot;
@@ -29,10 +29,9 @@ void Frame::translate(const Vec3f &dv) {
 	pos.z += dv.z;
 }
 
-void Frame::rotate(const Vec3f &dr) {
-	rot.x += dr.x;
-	rot.y += dr.y;
-	rot.z += dr.z;
+void Frame::rotate(const Quat_t &dr) {
+	rot *= dr;
+	rot.normalize();
 }
 
 int Frame::serialize(char * buf) {

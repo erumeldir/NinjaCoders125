@@ -35,6 +35,9 @@ public:
 	void setYaw(float angle); // left-right rotation
 	void setPitch(float angle);
 	void setTargetPosAndRot(const Point_t &pos, const Rot_t &rot);	//Sets position and rotation of the target
+	void setTargetUp(const Vec3f &up);
+
+	//void setViewProps(const Point_t &tarPos, const Vec3f &tarDir, const Vec3f &up);
 
 	D3DXMATRIX* getViewMatrix() { return &viewMatrix; }
 

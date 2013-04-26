@@ -43,7 +43,6 @@ bool PlayerCObj::update() {
 	if(COM::get()->player_id == getId()) {
 		XboxController *xctrl = CE::getController();
 		if(xctrl->isConnected()) {
-			
 			if(xctrl->getState().Gamepad.bLeftTrigger) {
 				cameraPitch = 0.174532925f; //10
 			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
@@ -55,10 +54,11 @@ bool PlayerCObj::update() {
 				}
 			}
 		}
+
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		Rot_t objDir = rm->getFrameOfRef()->getRot();
+		Quat_t objDir = rm->getFrameOfRef()->getRot();
 		objDir.x = cameraPitch;
-		RE::get()->updateCamera(objPos, objDir);
+		RE::get()->updateCamera(objPos, Rot_t());
 		showStatus();
 	}
 	return false;
@@ -67,5 +67,8 @@ bool PlayerCObj::update() {
 void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
+	//rm->getFrameOfRef()->setPos(state->pos);
+	//rm->getFrameOfRef()->setRot(Quat_t());
+	//RE::get()->getCamera()->setTargetUp(state->up);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

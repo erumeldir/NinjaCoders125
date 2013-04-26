@@ -117,6 +117,42 @@ void Camera::setTargetPosAndRot(const Point_t &pos, const Rot_t &rot) {
 }
 
 
+/*
+ * This tutorial might be better for what we need to do:
+ * http://www.two-kings.de/tutorials/basics/basics01.html
+ */
+void Camera::setTargetUp(const Vec3f &up)
+{
+
+
+	tarUp.x = up.x;
+	tarUp.y = up.y;
+	tarUp.z = up.z;
+
+	camUp = tarUp;
+
+	D3DXVec3Normalize(&tarUp, &tarUp);
+
+	D3DXVec3Cross(&tarRight, &tarUp, &tarView);
+	D3DXVec3Normalize(&tarRight, &tarRight);
+
+	/*
+	D3DXVec3Cross(&tarUp, &tarView, &tarRight);
+	D3DXVec3Normalize(&tarUp, &tarUp);
+	*/
+
+	// Do the same for the camera’s vectors
+	D3DXVec3Normalize(&camView, &camView);
+
+	D3DXVec3Cross(&camRight, &camUp, &camView);
+	D3DXVec3Normalize(&camRight, &camRight);
+	/*
+	D3DXVec3Cross(&camUp, &camView, &camRight);
+	D3DXVec3Normalize(&camUp, &camUp);
+	*/
+}
+
+
 /**
  * Updates view matrix
  */
@@ -166,3 +202,21 @@ void Camera::viewTarget()
 	(viewMatrix)(2, 3) = 0.0f;
 	(viewMatrix)(3, 3) = 1.0f;
 }
+
+/*
+void Camera::setViewProps(const Point_t &tarPos, const Vec3f &tarDir, const Vec3f &tarUp) {
+	D3DXVECTOR3 eye, at, up;
+	Vec3f myEye = tarPos - (tarDir * viewDistance);
+	at.x = tarPos.x;
+	at.y = tarPos.y;
+	at.z = tarPos.z;
+	eye.x = myEye.x;
+	eye.y = myEye.y;
+	eye.z = myEye.z;
+	up.x = tarUp.x;
+	up.y = tarUp.y;
+	up.z = tarUp.z;
+	
+	D3DXMatrixLookAtLH(&viewMatrix, &eye, &at, &up);
+}
+*/

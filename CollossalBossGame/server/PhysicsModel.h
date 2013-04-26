@@ -20,7 +20,7 @@ typedef enum CollisionBox {
 //All physics data should be known to the frames
 struct PhysicsModel
 {
-	PhysicsModel(Point_t pos, Rot_t rot, float mass, const Box &vol, uint collisionDirs = (NORTH | SOUTH | EAST | WEST | UP | DOWN)) {
+	PhysicsModel(Point_t pos, Quat_t rot, float mass, const Box &vol, uint collisionDirs = (NORTH | SOUTH | EAST | WEST | UP | DOWN)) {
 		ref = new Frame(pos,rot);
 		this->lastPos = pos;
 		vel = Vec3f();

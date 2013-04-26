@@ -45,6 +45,18 @@ typedef struct Vec3f {
 			this->z + rhs.z);
 	}
 
+	void operator+= (const Vec3f &rhs) {
+		x += rhs.x;
+		y += rhs.y;
+		z += rhs.z;
+	}
+
+	void operator-= (const Vec3f &rhs) {
+		x -= rhs.x;
+		y -= rhs.y;
+		z -= rhs.z;
+	}
+
 	Vec3f operator*	(float rhs) const {
 		return Vec3f(this->x * rhs, 
 			this->y * rhs, 
@@ -94,6 +106,68 @@ typedef struct Vec3f {
 	}
 
 } Point_t, Rot_t;
+
+typedef struct Vec4f {
+	//   (0, 1, 2, 3)
+	float w, x, y, z;
+
+	Vec4f() {
+		w = x = y = z = 0.0f;
+	}
+
+	Vec4f(const Vec3f &v) {
+		w = 1.0f;
+		x = v.x;
+		y = v.y;
+		z = v.z;
+	}
+
+	Vec4f(float x, float y, float z, float w = 1.0f) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->w = w;
+	}
+
+	Vec4f(const Vec3f &axis, float angle) {
+		float s = cos(angle / 2),
+			  t = sin(angle / 2);
+		this->w = s;
+		this->x = axis.x * t;
+		this->y = axis.y * t;
+		this->z = axis.z * t;
+	}
+
+	//http://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
+	void operator*=(const Vec4f &rhs) {
+				  //r0 * q1 + r1  *  q0 - r2  *  q3 + r3  *  q2
+		this->x = rhs.w * x + rhs.x * w - rhs.y * z + rhs.z * y;
+				  //r0 * q2 + r1  *  q3 + r2  *  q0 - r3  *  q1
+		this->y = rhs.w * y + rhs.x * z + rhs.y * w - rhs.z * x;
+				  //r0 * q3 - r1  *  q2 + r2  *  q1 + r3  *  q0
+		this->z = rhs.w * z - rhs.x * y + rhs.y * x + rhs.z * w;
+				  //r0 * q0 - r1  *  q1 - r2  *  q2 - r3  *  q3
+		this->w = rhs.w * w - rhs.x * x - rhs.y * y - rhs.z * z;
+	}
+
+	Vec4f operator*(const Vec4f &rhs) const {
+		Vec4f res = *this;
+		res *= rhs;
+		return res;
+	}
+
+	inline void normalize() {
+		float mag = sqrt(x * x + y * y + z * z + w * w);
+		x /= mag;
+		y /= mag;
+		z /= mag;
+		w /= mag;
+	}
+} Quat_t;
+
+Quat_t inverse(const Quat_t &q);
+float magnitude(const Vec3f &v);
+float magnitude(const Vec4f &v);
 
 //Axis-aligned bounding box
 typedef struct Box {

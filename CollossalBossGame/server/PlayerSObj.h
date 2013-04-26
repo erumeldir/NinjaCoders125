@@ -28,6 +28,11 @@ private:
 	float jumpDist;
 	int movDamp;
 
+	//direction-related
+	Vec3f fwd;
+	Vec3f up;
+	Vec3f right;
+
 	int gravityTimer;
 };
 

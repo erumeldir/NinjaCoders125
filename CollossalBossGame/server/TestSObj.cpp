@@ -2,7 +2,7 @@
 #include <math.h>
 #include "ConfigurationManager.h"
 
-TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, int dir) : ServerObject(id) {
+TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, int dir) : ServerObject(id) {
 	DC::get()->print("Created new TestSObj %d\n", id);
 	Box bxVol;
 	this->dir = dir;

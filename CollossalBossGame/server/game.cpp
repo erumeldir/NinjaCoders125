@@ -104,7 +104,7 @@ void gameInit() {
 
 	// Build arena (todo maybe these should be planeObjects? ArenaObjects?)
 
-	WallSObj *floor,// = new WallSObj(som->genId(), MDL_3, Point_t(), Rot_t(), Vec3f(0, 1, 0)),
+	WallSObj *floor,// = new WallSObj(som->genId(), MDL_3, Point_t(), Quat_t(), Vec3f(0, 1, 0)),
 			 *ceiling = new WallSObj(som->genId(), MDL_3, Point_t(0.f, 40.f, 0.f), WALL_UP), //Rot_t(0.f, 0.f, M_PI), Vec3f(0, -1, 0)),
 			 *rightWall = new WallSObj(som->genId(), MDL_3, Point_t(75.f, 75.f, 0.f), WALL_EAST), //Rot_t(0.f, 0.f, M_PI/2), Vec3f(-1, 0, 0)),
 			 *leftWall = new WallSObj(som->genId(), MDL_3, Point_t(0.f, 75.f, 0.f), WALL_WEST), //Rot_t(0.f, 0.f, -M_PI/2), Vec3f(1, 0, 0));
@@ -133,7 +133,7 @@ for(int x = -1; x < 2; ++x) {
 
 	buildRoom(Point_t(0, WIDTH / 2, 0), 1, 1, 1);
 
-	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Rot_t(),TEST_WEST);
+	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Quat_t(),TEST_WEST);
 	//som->add(pyr);
 
 	/*

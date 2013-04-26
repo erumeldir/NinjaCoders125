@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <Windows.h>
+#include "defs.h"
 
 #define MAX_PACKET_SIZE 1000000
 #define PACKET_SIZE 1024
@@ -119,6 +120,9 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	Vec3f up;
+	Vec3f fwd;
+	Vec3f pos;
 };
 
 /*
