@@ -114,7 +114,7 @@ int AudioEngine::startFMOD() {
 	if(fmodErrThrown)
 		return -1;
 
-	DC::get()->print("[Audio] Driver: %s\n", drivername);
+	DC::get()->print("[Audio] Driver: %s\n\n", drivername);
 
 	if(strstr(drivername, "SigmaTel"))
 	{
@@ -126,7 +126,8 @@ int AudioEngine::startFMOD() {
 			return -1;
 	}
 
-	result = system->init(100, FMOD_INIT_NORMAL, 0);
+	//System::init(Max channels, init flags, extra driver data) only change max channels/flags
+	result = system->init(100, FMOD_INIT_NORMAL | FMOD_INIT_VOL0_BECOMES_VIRTUAL, 0);
 	if(result == FMOD_ERR_OUTPUT_CREATEBUFFER)
 	{
 		//selected speaker mode not supported by the soundcard, switch back to stereo and retry init
