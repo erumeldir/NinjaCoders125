@@ -5,24 +5,24 @@
 #include "PlayerSObj.h"
 #include <time.h>
 
-MonsterSObj::MonsterSObj(uint id, Model modelNum, Point_t pos, Rot_t rot) : ServerObject(id)
+MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
 {
-	if(SOM::get()->debugFlag) DC::get()->print("Created new TentacleObj %d\n", id);
+	if(SOM::get()->debugFlag) DC::get()->print("Created new MonsterObj %d\n", id);
 	Box bxVol = CM::get()->find_config_as_box("BOX_MONSTER");
-	this->modelNum = modelNum;
-	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
-	attackCounter = 0;
+	//this->modelNum = modelNum;
+	this->health = 0;
+	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	//attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
+	maxTentacles = 0;
+	//srand(time(NULL)); // initialize our random number generator
 
-	srand(time(NULL)); // initialize our random number generator
-
-	stateCounter = 1;
-	state=IDLE;
+//	stateCounter = 1;
+//	state=IDLE;
 
 	// todo configuration stuff
-	attackBuffer = 20;
-	attackFrames = 2;
+	//attackBuffer = 20;
+	//attackFrames = 2;
 }
 
 
@@ -41,11 +41,23 @@ MonsterSObj::~MonsterSObj(void)
  * Author: Bryan
  */
 bool MonsterSObj::update() {
-	if (health <= 0) {
-		return true; // I died!
+	int numTentacles = tentacles.size();
+	health = 0;
+	if(numTentacles > 0) {
+		for (set<TentacleSObj*>::iterator it = tentacles.begin();
+			it != tentacles.end();
+			++it)
+			health += (*it)->getHealth();
+		health /= maxTentacles;
 	}
 
-	attackCounter++;
+	if (health <= 0) {
+		//return true; // I died!
+		// DO NOTHING
+		// DONT YOU DARE
+	}
+
+	/*attackCounter++;
 
 	// this emulates an attack
 
@@ -59,9 +71,11 @@ bool MonsterSObj::update() {
 		this->setFlag(IS_HARMFUL, 0);
 		attackBuffer = rand() % 40;
 		attackFrames = rand() % 15;
-	}
+	}*/
 
+	// UNSURE for now!
 	// Monster AI
+	/*
 	if (!stateCounter--)
 	{
 		distribution = std::uniform_int_distribution<int> (CYCLE*9, CYCLE*50);
@@ -79,23 +93,23 @@ bool MonsterSObj::update() {
 	default:
 		break;
 	}
-
+	*/
 	return false;
 }
 
 int MonsterSObj::serialize(char * buf) {
 	MonsterState *state = (MonsterState*)buf;
-	state->modelNum = this->modelNum;
+	//state->modelNum = this->modelNum;
 	state->health = health;
 	return pm->ref->serialize(buf + sizeof(MonsterState)) + sizeof(MonsterState);
 }
 
 void MonsterSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 	// if I collided against the player, AND they're attacking me, loose health
-	string s = typeid(*obj).name();
+	//string s = typeid(*obj).name();
 
 	// if the monster is attacking, it pushes everything off it on the last attack frame
-	if (attackCounter == (attackBuffer + attackFrames))
+	/*if (attackCounter == (attackBuffer + attackFrames))
 	{
 		// todo, this should use the normal too
 		const int monsterForce = 30;
@@ -113,7 +127,9 @@ void MonsterSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 		}
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
-	}
+	}*/
+
+	// should only collide on tentacle this is a container class
 }
 
 void MonsterSObj::initialize()

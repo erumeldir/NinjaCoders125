@@ -13,6 +13,7 @@
 #include "MonsterSObj.h"
 #include "PhysicsEngine.h"
 #include "MonsterSObj.h"
+#include "TentacleSObj.h"
 
 /*
  * buildRoom()
@@ -155,8 +156,19 @@ for(int x = -1; x < 2; ++x) {
 	//for(int i = 6; i < 7; i++)
 	//{
 	//MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), (Model)i, Point_t(i*20, i*20, i*20), Rot_t(M_PI/i, M_PI/i, M_PI/i));
-	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 0, 0), Rot_t());
+//	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 0, 0), Rot_t());
 	//tentacleLeft->setFlag(IS_HARMFUL, 1);
-	som->add(tentacleLeft);
+//	som->add(tentacleLeft);
 	//}
+
+	//MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t());
+	//MonsterSObj* tentacleRight = new MonsterSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t(M_PI,0,0));
+	//som->add(tentacleLeft);
+	//som->add(tentacleRight);
+	MonsterSObj* monster = new MonsterSObj(som->genId());
+	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t(), monster);
+	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t(M_PI,0,0), monster);
+	som->add(tentacleLeft);
+	som->add(tentacleRight);
+	som->add(monster);
 }

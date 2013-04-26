@@ -15,7 +15,12 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 	ref = new Frame(pos, rot);
 	this->scale = scale;
 	char *filename = NULL;
+	bool isInvisible = false;
 	switch(modelNum) {
+	case -1: 
+		//container object
+		isInvisible = true;
+		break;
 	case MDL_TENTACLE_1:
 		filename = CM::get()->find_config("MODEL_TENTACLE1");
 		break;
@@ -68,13 +73,13 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 		if(modelNum > NUM_MDLS) DC::get()->print("ERROR: Model %d not known\n", modelNum);
 	}
 
-	if(filename != NULL) {
+	if(filename != NULL && !isInvisible) {
 		if (HRESULT hr = !RE::get()->loadModel(filename, &modelId)) {
 			DC::get()->print("Didn't load the model!\n");
 		} else {
 			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded model %d\n",modelNum);
 		}
-		D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
+	//	D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
 	//	float rad;
 	//	int numMesh;
 	//	RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
@@ -93,26 +98,30 @@ RenderModel::~RenderModel(void)
 }
 
 void RenderModel::render() {
-	Point_t pos = ref->getPos();
-	Rot_t rot = ref->getRot();
+	// negative id are for invisible/container objects
+	if(modelId >= 0)
+	{
+		Point_t pos = ref->getPos();
+		Rot_t rot = ref->getRot();
 
-	//Get translation/rotation matrix
-	D3DXMATRIX trans, rotX, rotY, rotZ, scaleMat;
-	D3DXMatrixIdentity(&trans);
-	D3DXMatrixIdentity(&rotX);
-	D3DXMatrixIdentity(&rotY);
-	D3DXMatrixIdentity(&rotZ);
+		//Get translation/rotation matrix
+		D3DXMATRIX trans, rotX, rotY, rotZ, scaleMat;
+		D3DXMatrixIdentity(&trans);
+		D3DXMatrixIdentity(&rotX);
+		D3DXMatrixIdentity(&rotY);
+		D3DXMatrixIdentity(&rotZ);
 
-	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
-	D3DXMatrixRotationX(&rotX, rot.x);
-	D3DXMatrixRotationY(&rotY, rot.y);
-	D3DXMatrixRotationZ(&rotZ, rot.z);
+		D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
+		D3DXMatrixRotationX(&rotX, rot.x);
+		D3DXMatrixRotationY(&rotY, rot.y);
+		D3DXMatrixRotationZ(&rotZ, rot.z);
 
-	D3DXMatrixScaling(&scaleMat,scale.x,scale.y,scale.z);  
+		D3DXMatrixScaling(&scaleMat,scale.x,scale.y,scale.z);  
 
-	//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
+		//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
-	//Render
-	RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
+		//Render
+		RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
+	}
 }
 
