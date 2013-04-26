@@ -11,7 +11,8 @@ MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
 	Box bxVol = CM::get()->find_config_as_box("BOX_MONSTER");
 	//this->modelNum = modelNum;
 	this->health = 0;
-	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
 	//attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
 	maxTentacles = 0;
@@ -51,8 +52,8 @@ bool MonsterSObj::update() {
 		health /= maxTentacles;
 	}
 
-	if (health <= 0) {
-		//return true; // I died!
+	if (health <= 0 && numTentacles == 0) {
+		return true; // I died!
 		// DO NOTHING
 		// DONT YOU DARE
 	}

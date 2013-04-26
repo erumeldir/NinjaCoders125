@@ -29,5 +29,7 @@ private:
 	Vec3f scale;
 	int dir;
 	int t;
+	Box bxVol;
+	int i;
 };
 

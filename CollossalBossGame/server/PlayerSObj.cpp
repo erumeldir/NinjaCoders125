@@ -18,7 +18,8 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
@@ -53,7 +54,8 @@ void PlayerSObj::initialize() {
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status

@@ -5,8 +5,7 @@
 
 TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale, int dir) : ServerObject(id) {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new TestSObj %d\n", id);
-	Box bxVol;
-
+	setFlag(IS_FALLING,1);
 	this->dir = dir;
 	this->modelNum = modelNum;
 	this->scale = scale;
@@ -28,8 +27,8 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale,
 			bxVol = Box();
 			break;
 	}
-	
-	pm = new PhysicsModel(pos, rot, 500, bxVol);
+	pm = new PhysicsModel(pos, rot, 50);
+	i = pm->addBox(bxVol);
 	t = 0;
 }
 
@@ -63,6 +62,15 @@ bool TestSObj::update() {
 		break;
 	}
 	++t;
+
+	// update box randomly
+	//bxVol.w++;
+	//bxVol.l++;
+	//bxVol.x--;
+	//bxVol.y--;
+	//pm->updateBox(i, bxVol);
+
+
 
 	return false;
 }

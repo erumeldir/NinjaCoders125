@@ -15,7 +15,9 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	Box bxVol = CM::get()->find_config_as_box("BOX_MONSTER");
 	this->modelNum = modelNum;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
+	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
 
@@ -33,6 +35,10 @@ TentacleSObj::~TentacleSObj(void)
 }
 
 bool TentacleSObj::update() {
+	//changing collision boxes
+	//updatableBox.y = -updatableBox.y;
+	//pm->updateBox(this->updatableBoxIndex,this->updatableBox);
+
 	attackCounter++;
 
 	// this emulates an attack

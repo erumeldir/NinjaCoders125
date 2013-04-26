@@ -60,10 +60,11 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 		break;
 	}
 
-	pm = new PhysicsModel(pos, rot, 500, bxVol, collDir);
+	pm = new PhysicsModel(pos, rot, 500, collDir);
+	pm->addBox(bxVol);
 	this->modelNum = modelNum;
 	this->scale = scale;
-	pm->setColBox(CB_FLAT);
+	//pm->setColBox(CB_FLAT);
 	t = 0;
 	this->setFlag(IS_STATIC, true);
 	this->setFlag(IS_WALL, true);

@@ -70,4 +70,8 @@ void gameInit() {
 	som->add(tentacleLeft);
 	som->add(tentacleRight);
 	som->add(monster);
+
+	TestSObj* pyramid = new TestSObj(som->genId(), MDL_TEST_PYRAMID, Point_t(100,0,100), Rot_t());
+	som->add(pyramid);
+
 }
