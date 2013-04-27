@@ -111,24 +111,11 @@ bool PlayerSObj::update() {
 		}
 #endif
 		pm->ref->rotate(Quat_t(up,istat.rotHoriz));
-		Quat_t qRot = pm->ref->getRot(),
-			   qNRot = inverse(qRot);
-		//qRot.normalize();
-		//qNRot.normalize();
-		int divBy = movDamp;
-		float rawRight = istat.rightDist / divBy;
-		float rawForward = istat.forwardDist / divBy;
-		Vec3f total = fwd * rawForward;// + right *rawRight;
-		Quat_t totalWithRot = qRot * (total) * qNRot;
-		total = Vec3f(totalWithRot.x, totalWithRot.y, totalWithRot.z);
-
-		Quat_t fwdWithRot = qRot;//qRot * fwd * qNRot;
-		fwdWithRot *= fwd;
-		//fwdWithRot *= qNRot;
-		float angle = acos(qRot.w) * 360 /M_PI;
-		Vec3f res = Vec3f(fwdWithRot.x, fwdWithRot.y, fwdWithRot.z);
-		DC::get()->print(CONSOLE, "(%f,%f,%f) %f @ %f            \r", res.x, res.y, res.z, magnitude(res), angle);
-
+		Quat_t qRot = pm->ref->getRot();
+		float rawRight = istat.rightDist / movDamp;
+		float rawForward = istat.forwardDist / movDamp;
+		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
+		
 #if 0
 		int divBy = movDamp;
 		float rawRight = istat.rightDist / divBy;
@@ -155,8 +142,8 @@ bool PlayerSObj::update() {
 		*/
 #endif
 		//pm->applyForce(Vec3f(computedRight, 0, computedForward));
-		//pm->applyForce(total);
-		pm->applyForce(Vec3f(totalWithRot.x, totalWithRot.y, totalWithRot.z));
+		pm->applyForce(total);
+		//pm->applyForce(Vec3f(totalWithRot.x, totalWithRot.y, totalWithRot.z));
 	}
 	return false;
 }

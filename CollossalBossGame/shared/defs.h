@@ -169,6 +169,7 @@ typedef struct Vec4f {
 Quat_t inverse(const Quat_t &q);
 float magnitude(const Vec3f &v);
 float magnitude(const Vec4f &v);
+Vec3f rotate(const Vec3f &v, const Quat_t &q);
 
 //Axis-aligned bounding box
 typedef struct Box {
