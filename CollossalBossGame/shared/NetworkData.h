@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <Windows.h>
+#include "defs.h"
 
 #define MAX_PACKET_SIZE 1000000
 #define PACKET_SIZE 1024
@@ -52,31 +53,22 @@ struct Packet {
  * These enumerations are used for specifying models
  */
 enum Model {
-    MDL_0,
-    MDL_1,
-    MDL_2,
-    MDL_3,
-    MDL_4,
-    MDL_5,
-    MDL_6,
-    MDL_7,
-    MDL_8,
-    MDL_9,
-    MDL_10,
-    MDL_11,
-    MDL_12,
-    MDL_13,
-    MDL_14,
-    MDL_15,
-    MDL_16,
-    MDL_17,
-    MDL_18,
-    MDL_19,
-    MDL_20,
-    MDL_21,
-    MDL_22,
-    MDL_23,
-    MDL_24,
+    MDL_TENTACLE_1,
+    MDL_TENTACLE_2,
+    MDL_TENTACLE_3,
+    MDL_TENTACLE_4,
+    MDL_TENTACLE_5,
+    MDL_FLOOR,
+    MDL_CEILING,
+	MDL_EAST_WALL,
+	MDL_WEST_WALL,
+	MDL_NORTH_WALL,
+	MDL_SOUTH_WALL,
+    MDL_PLAYER,
+	MDL_TEST_BOX,
+	MDL_TEST_PYRAMID,
+	MDL_TEST_PLANE,
+	MDL_TEST_BALL,
     NUM_MDLS
 };
 
@@ -88,8 +80,8 @@ enum Model {
 enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
-	OBJ_TENTACLE,
 	OBJ_MONSTER,
+	OBJ_TENTACLE,
 	NUM_OBJS
 };
 
@@ -129,23 +121,21 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
+	Vec3f scale;
 };
 
 /*
  * State information for the monster not encoded by the position
  */
 struct MonsterState {
-	Model modelNum;
+	//Model modelNum;
 	int health;
 };
 
 /*
- * State information for the monster not encoded by the position
+ * State information for the tentacle not encoded by the position
  */
-enum PlayerAnimationState {
-	IDLE = 0,
-	WALK = 1,
-	JUMP = 2,
-	ATK  = 3,
-	DEAD = 4
+struct TentacleState {
+	Model modelNum;
+	//int health;
 };

@@ -68,6 +68,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MonsterSObj.cpp" />
@@ -79,8 +80,10 @@
     <ClCompile Include="TentacleSObj.cpp" />
     <ClCompile Include="TestSObj.cpp" />
     <ClCompile Include="WallSObj.cpp" />
+    <ClCompile Include="WorldManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MonsterSObj.h" />
@@ -93,6 +96,7 @@
     <ClInclude Include="TentacleSObj.h" />
     <ClInclude Include="TestSObj.h" />
     <ClInclude Include="WallSObj.h" />
+    <ClInclude Include="WorldManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">

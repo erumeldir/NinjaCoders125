@@ -15,6 +15,7 @@ public:
 	virtual PhysicsModel *getPhysicsModel() = 0;		//Get this object's physics model
 	virtual int serialize(char * buf) = 0;				//Write all pertinent information to the specified buffer
 	virtual ObjectType getType() = 0;					//Get object type for client-side creation
+	virtual void initialize() = 0;						//Initial position/rotation/etc of the object
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal) = 0;	//Perform any logic ops on collision
 
 	// Can be overriden, but should be only used by objects that receive

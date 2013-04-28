@@ -122,19 +122,26 @@ RenderModel::~RenderModel(void)
 
 void RenderModel::render() {
 	Point_t pos = ref->getPos();
-	Rot_t rot = ref->getRot();
+	Quat_t rot = ref->getRot();
 
-	//Get translation/rotation matrix
-	D3DXMATRIX trans, rotX, rotY, rotZ, scaleMat;
+	D3DXMATRIX trans, rotMat;//rotX, rotY, rotZ;
+	D3DXQUATERNION q(rot.x, rot.y, rot.z, rot.w);
+
 	D3DXMatrixIdentity(&trans);
+	D3DXMatrixIdentity(&rotMat);
+	/*
 	D3DXMatrixIdentity(&rotX);
 	D3DXMatrixIdentity(&rotY);
 	D3DXMatrixIdentity(&rotZ);
+	*/
 
 	D3DXMatrixTranslation(&trans, pos.x, pos.y, pos.z);
+	D3DXMatrixRotationQuaternion(&rotMat, &q);
+	/*
 	D3DXMatrixRotationX(&rotX, rot.x);
 	D3DXMatrixRotationY(&rotY, rot.y);
 	D3DXMatrixRotationZ(&rotZ, rot.z);
+	*/
 
 	D3DXMatrixScaling(&scaleMat,scale.x,scale.y,scale.z);  
 

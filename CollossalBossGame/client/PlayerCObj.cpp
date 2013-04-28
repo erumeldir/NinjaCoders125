@@ -8,6 +8,8 @@
 #include <math.h>
 #include <sstream>
 
+#define DEFAULT_PITCH 0.174532925f	//10 degrees or stg like that
+
 PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id)
 {
@@ -43,9 +45,8 @@ bool PlayerCObj::update() {
 	if(COM::get()->player_id == getId()) {
 		XboxController *xctrl = CE::getController();
 		if(xctrl->isConnected()) {
-			
 			if(xctrl->getState().Gamepad.bLeftTrigger) {
-				cameraPitch = 0.174532925f; //10
+				cameraPitch = DEFAULT_PITCH; //10
 			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
 				cameraPitch += atan(((float)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
 				if (cameraPitch > M_PI / 2.f) {
@@ -55,10 +56,12 @@ bool PlayerCObj::update() {
 				}
 			}
 		}
+
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		Rot_t objDir = rm->getFrameOfRef()->getRot();
-		objDir.x = cameraPitch;
-		RE::get()->updateCamera(objPos, objDir);
+		Quat_t objDir = rm->getFrameOfRef()->getRot();
+		//objDir.x = cameraPitch;
+		//RE::get()->updateCamera(objPos, Rot_t());
+		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
 		showStatus();
 	}
 	return false;
@@ -68,5 +71,8 @@ void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
 	this->getRenderModel()->setModelState(state->animationstate);
+	//rm->getFrameOfRef()->setPos(state->pos);
+	//rm->getFrameOfRef()->setRot(Quat_t());
+	//RE::get()->getCamera()->setTargetUp(state->up);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }
