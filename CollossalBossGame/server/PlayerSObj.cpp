@@ -32,9 +32,6 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	appliedJumpForce = false;
 	
 	gravityTimer = 0;
-	fwd = Vec3f(0,0,1);
-	up = Vec3f(0,1,0);
-	right = Vec3f(1,0,0);
 }
 
 
@@ -94,56 +91,20 @@ bool PlayerSObj::update() {
 			// Determine special power logic here
 			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
 		}
-#if 0
-		Quat_t rt = pm->ref->getRot();
-		float yaw = rt.y + istat.rotHoriz,
-			  pitch = rt.x + istat.rotVert;
-		if (yaw > M_TAU || yaw < -M_TAU) yaw = 0;
-		if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
-		pm->ref->setRot(Rot_t(0, yaw, 0));
-//#else
-		float yaw;
-		if(istat.forwardDist > 0) {
-			yaw = istat.rotAngle;
-			pm->ref->setRot(Rot_t(0, yaw, 0));
-		} else {
-			yaw = pm->ref->getRot().y;
-		}
-#endif
+
+		//Update up direction
+		Vec3f up = rotateUp(pm->ref->getRot());
+
+		//Rotate by amount specified by player (does not affect up direction)
 		pm->ref->rotate(Quat_t(up,istat.rotHoriz));
+
+		//Move the player: apply a force in the appropriate direction
 		Quat_t qRot = pm->ref->getRot();
 		float rawRight = istat.rightDist / movDamp;
 		float rawForward = istat.forwardDist / movDamp;
 		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
 		
-#if 0
-		int divBy = movDamp;
-		float rawRight = istat.rightDist / divBy;
-		float rawForward = istat.forwardDist / divBy;
-		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
-		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
-		/*
-		uint dir = PE::get()->getGravDir();
-		switch(dir) {
-		case EAST:
-		case WEST:
-			pm->applyForce(Vec3f(yDist, computedForward, computedRight));
-			break;
-		case NORTH:
-		case SOUTH:
-			pm->applyForce(Vec3f(computedRight, computedForward, yDist));
-			break;
-		case UP:
-		case DOWN:
-		default:
-			pm->applyForce(Vec3f(computedRight, yDist, computedForward));
-			break;
-		}
-		*/
-#endif
-		//pm->applyForce(Vec3f(computedRight, 0, computedForward));
 		pm->applyForce(total);
-		//pm->applyForce(Vec3f(totalWithRot.x, totalWithRot.y, totalWithRot.z));
 	}
 	return false;
 }
@@ -152,9 +113,6 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_1;
 	state->health = health;
-	state->up = this->up;
-	state->fwd = this->fwd;
-	state->pos = pm->ref->getPos();
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
 

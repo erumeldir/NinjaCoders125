@@ -3,12 +3,13 @@
 
 Camera::Camera(float distance)
 {
+	viewDistance = distance;
+#if 0
 	tarPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // Set at origin
 	tarView = D3DXVECTOR3(0.0f, 0.0f, 1.0f); // Look along Z-axis
 	tarUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f); // Normal along Y-axis
 	tarRight = D3DXVECTOR3(1.0f, 0.0f, 0.0f); // Right along X-axis
 
-	viewDistance = distance;
 
 	// Set camera to be essentially the same as the target
 	camPos = tarPos; // Pos will auto updated in the View routine
@@ -17,13 +18,14 @@ Camera::Camera(float distance)
 	camRight = tarRight;
 
 	currentPitch = 0;
+#endif
 }
 
 
 Camera::~Camera(void)
 {
 }
-
+#if 0
 /**
  * Rotates left and right
  */
@@ -202,21 +204,42 @@ void Camera::viewTarget()
 	(viewMatrix)(2, 3) = 0.0f;
 	(viewMatrix)(3, 3) = 1.0f;
 }
+#endif
 
-/*
-void Camera::setViewProps(const Point_t &tarPos, const Vec3f &tarDir, const Vec3f &tarUp) {
-	D3DXVECTOR3 eye, at, up;
-	Vec3f myEye = tarPos - (tarDir * viewDistance);
-	at.x = tarPos.x;
-	at.y = tarPos.y;
-	at.z = tarPos.z;
-	eye.x = myEye.x;
-	eye.y = myEye.y;
-	eye.z = myEye.z;
-	up.x = tarUp.x;
-	up.y = tarUp.y;
-	up.z = tarUp.z;
+void Camera::update(const Point_t &tarPos, const Quat_t &tarRot, float pitch) {
+	Vec3f camRight = rotateRight(tarRot);
+	Quat_t pitchRot = Quat_t(camRight, pitch);	//Rotate by pitch amount
+
+	Vec3f camUp = rotate(rotateUp(tarRot), pitchRot),
+		  camFwd = rotate(rotateFwd(tarRot), pitchRot);
 	
-	D3DXMatrixLookAtLH(&viewMatrix, &eye, &at, &up);
+
+	//Correct vectors
+	cross(&camRight, camUp, camFwd);
+	camRight.normalize();
+	cross(&camUp, camFwd, camRight);
+	camUp.normalize();
+
+	Point_t camPos = tarPos - camFwd * viewDistance;
+
+	//Construct the view matrix
+	(viewMatrix)(0, 0) = camRight.x;
+	(viewMatrix)(1, 0) = camRight.y;
+	(viewMatrix)(2, 0) = camRight.z;
+	(viewMatrix)(3, 0) = -(camRight ^ camPos);	//D3DXVec3Dot(&camRight, &camPos);
+
+	(viewMatrix)(0, 1) = camUp.x;
+	(viewMatrix)(1, 1) = camUp.y;
+	(viewMatrix)(2, 1) = camUp.z;
+	(viewMatrix)(3, 1) = -(camUp ^ camPos);		//D3DXVec3Dot(&camUp, &camPos);
+
+	(viewMatrix)(0, 2) = camFwd.x;
+	(viewMatrix)(1, 2) = camFwd.y;
+	(viewMatrix)(2, 2) = camFwd.z;
+	(viewMatrix)(3, 2) = -(camFwd ^ camPos);	//D3DXVec3Dot(&camView, &camPos);
+
+	(viewMatrix)(0, 3) = 0.0f;
+	(viewMatrix)(1, 3) = 0.0f;
+	(viewMatrix)(2, 3) = 0.0f;
+	(viewMatrix)(3, 3) = 1.0f;
 }
-*/

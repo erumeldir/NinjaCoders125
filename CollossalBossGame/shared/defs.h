@@ -104,7 +104,12 @@ typedef struct Vec3f {
 		y /= s;
 		z /= s;
 	}
-
+	void normalize() {
+		float mag = sqrt(x * x + y * y + z * z);
+		x /= mag;
+		y /= mag;
+		z /= mag;
+	}
 } Point_t, Rot_t;
 
 typedef struct Vec4f {
@@ -170,6 +175,10 @@ Quat_t inverse(const Quat_t &q);
 float magnitude(const Vec3f &v);
 float magnitude(const Vec4f &v);
 Vec3f rotate(const Vec3f &v, const Quat_t &q);
+Vec3f rotateUp(const Quat_t &q);
+Vec3f rotateRight(const Quat_t &q);
+Vec3f rotateFwd(const Quat_t &q);
+void cross(Vec3f *res, const Vec3f &v1, const Vec3f &v2);
 
 //Axis-aligned bounding box
 typedef struct Box {

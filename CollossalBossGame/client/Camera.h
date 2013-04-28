@@ -20,7 +20,7 @@ class Camera
 public:
 	Camera(float distance);
 	~Camera(void);
-
+#if 0
 	void viewTarget(); // View target
 
 	// Relative position/rotation
@@ -36,6 +36,9 @@ public:
 	void setPitch(float angle);
 	void setTargetPosAndRot(const Point_t &pos, const Rot_t &rot);	//Sets position and rotation of the target
 	void setTargetUp(const Vec3f &up);
+#endif
+	//New camera update information
+	void update(const Point_t &tarPos, const Quat_t &tarRot, float pitch);
 
 	//void setViewProps(const Point_t &tarPos, const Vec3f &tarDir, const Vec3f &up);
 
@@ -43,11 +46,13 @@ public:
 
 private:
 	D3DXMATRIX viewMatrix;
+	float viewDistance;
+#if 0
 	// Vectors for the target and camera
 	D3DXVECTOR3 tarView, tarUp, tarRight, tarPos;
 	D3DXVECTOR3 camView, camUp, camRight, camPos;
 	// Store the pitch and distance
 	float currentPitch;
-	float viewDistance;
+#endif
 };
 

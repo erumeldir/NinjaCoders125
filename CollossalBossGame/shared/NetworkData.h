@@ -120,9 +120,6 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
-	Vec3f up;
-	Vec3f fwd;
-	Vec3f pos;
 };
 
 /*
