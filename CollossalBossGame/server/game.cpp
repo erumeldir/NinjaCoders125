@@ -81,7 +81,6 @@ void buildRoom(Point_t center, int w, int h, int l) {
 		}
 	}
 #endif
-<<<<<<< HEAD
 
 	TestSObj* tentacleLeft = new TestSObj(som->genId(), MDL_5, Point_t(0, 100, 0), Rot_t(0, 0, 0), TEST_STILL);
 	TestSObj* tentacleRight = new TestSObj(som->genId(), MDL_5, Point_t(0,0, 0), Rot_t(M_PI / 4, 0, 0), TEST_WEST);
@@ -91,10 +90,6 @@ void buildRoom(Point_t center, int w, int h, int l) {
 	//tentacleRight->setFlag(IS_STATIC, 1);
 	som->add(tentacleLeft);
 	//som->add(tentacleRight);
-	TentacleSObj * tentacrule = new TentacleSObj(som->genId());
-	som->add(tentacrule);
-=======
->>>>>>> develop_attack_animation_states
 }
 
 
@@ -163,8 +158,9 @@ for(int x = -1; x < 2; ++x) {
 	*/
 	for(int i = 6; i < 7; i++)
 	{
-	MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), (Model)5, Point_t(0, 0, 0), Rot_t(0, 0, 0)); //Point_t(i*20, i*20, i*20), Rot_t(M_PI/i, M_PI/i, M_PI/i));
+		MonsterSObj* tentacleLeft = new MonsterSObj(som->genId(), som->genId(), (Model)5, Point_t(0, 0, 0), Rot_t(0, 0, 0)); //Point_t(i*20, i*20, i*20), Rot_t(M_PI/i, M_PI/i, M_PI/i));
 	//tentacleLeft->setFlag(IS_HARMFUL, 1);
-	som->add(tentacleLeft);
+		som->add(tentacleLeft->getTentacle());
+		som->add(tentacleLeft);
 	}
 }
