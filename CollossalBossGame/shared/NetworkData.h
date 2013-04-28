@@ -58,6 +58,25 @@ enum Model {
     MDL_3,
     MDL_4,
     MDL_5,
+    MDL_6,
+    MDL_7,
+    MDL_8,
+    MDL_9,
+    MDL_10,
+    MDL_11,
+    MDL_12,
+    MDL_13,
+    MDL_14,
+    MDL_15,
+    MDL_16,
+    MDL_17,
+    MDL_18,
+    MDL_19,
+    MDL_20,
+    MDL_21,
+    MDL_22,
+    MDL_23,
+    MDL_24,
     NUM_MDLS
 };
 
@@ -70,6 +89,7 @@ enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
 	OBJ_TENTACLE,
+	OBJ_MONSTER,
 	NUM_OBJS
 };
 
@@ -101,6 +121,7 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	int animationstate;
 };
 
 /*
@@ -108,4 +129,23 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
+};
+
+/*
+ * State information for the monster not encoded by the position
+ */
+struct MonsterState {
+	Model modelNum;
+	int health;
+};
+
+/*
+ * State information for the monster not encoded by the position
+ */
+enum PlayerAnimationState {
+	IDLE = 0,
+	WALK = 1,
+	JUMP = 2,
+	ATK  = 3,
+	DEAD = 4
 };

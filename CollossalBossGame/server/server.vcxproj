@@ -70,6 +70,7 @@
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="MonsterSObj.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PlayerSObj.cpp" />
     <ClCompile Include="ServerNetworkManager.cpp" />
@@ -82,6 +83,7 @@
   <ItemGroup>
     <ClInclude Include="game.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="MonsterSObj.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PhysicsModel.h" />
     <ClInclude Include="PlayerSObj.h" />
