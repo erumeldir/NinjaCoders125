@@ -43,7 +43,9 @@ void XboxController::sendInput() {
 		istat.jump =			(gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;
 		istat.specialPower =	(gamepad.wButtons & XINPUT_GAMEPAD_B) != 0;
 		istat.quit =			(gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;
+		istat.start =			(gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
 		istat.attack =			(gamepad.bRightTrigger) != 0;
+
 
 		// Get joystick positions
 		float x = gamepad.sThumbLX,

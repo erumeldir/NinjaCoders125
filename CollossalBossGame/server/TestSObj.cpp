@@ -3,23 +3,21 @@
 #include <math.h>
 #include "ConfigurationManager.h"
 
-TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, int dir) : ServerObject(id) {
+TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale, int dir) : ServerObject(id) {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new TestSObj %d\n", id);
-	Box bxVol;
-
+	setFlag(IS_FALLING,1);
 	this->dir = dir;
 	this->modelNum = modelNum;
+	this->scale = scale;
 	switch (modelNum) {
-		case MDL_4:
-		case MDL_5:
-		case MDL_1:	//box
+		case MDL_TEST_BOX:
 			bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-5, 0, -5, 10, 10, 10);
 			break;
-		case MDL_2:	//Pyramid
+		case MDL_TEST_PYRAMID:
 			bxVol = CM::get()->find_config_as_box("BOX_PYRAMID");//Box(-20, 0, -20, 40, 40, 40);
 			//pm->setColBox(CB_LARGE);
 			break;
-		case MDL_3:	//plane
+		case MDL_TEST_PLANE:
 #define WALL_WIDTH 150
 			bxVol = Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
 					WALL_WIDTH, 10, WALL_WIDTH);
@@ -29,8 +27,8 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, int dir) : S
 			bxVol = Box();
 			break;
 	}
-	
-	pm = new PhysicsModel(pos, rot, 500, bxVol);
+	pm = new PhysicsModel(pos, rot, 50);
+	i = pm->addBox(bxVol);
 	t = 0;
 }
 
@@ -65,11 +63,25 @@ bool TestSObj::update() {
 	}
 	++t;
 
+	// update box randomly
+	//bxVol.w++;
+	//bxVol.l++;
+	//bxVol.x--;
+	//bxVol.y--;
+	//pm->updateBox(i, bxVol);
+
+
+
 	return false;
 }
 
 int TestSObj::serialize(char * buf) {
 	ObjectState *state = (ObjectState*)buf;
 	state->modelNum = modelNum;
+	state->scale = scale;
 	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
+}
+
+void TestSObj::initialize() {
+	// Dunno.
 }

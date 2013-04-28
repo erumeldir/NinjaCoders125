@@ -1,45 +1,29 @@
 #pragma once
 #include "defs.h"
 #include "Frame.h"
+#include <vector>
 #define AIR_FRICTION 1.1f	//A bit excessive, but it works for now
 #define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
 #define UNITOFHALFLENGTH 25		//as in half the length of a box
 
-/* Bounding Enum
- *  Definition of all general types of collision. We map each model type to a boundary type
- *
- * Author: Bryan
- */
-typedef enum CollisionBox {
-	CB_SMALL,
-	CB_LARGE,
-	CB_FLAT,
-	NUM_CBS
-};
-
 //All physics data should be known to the frames
 struct PhysicsModel
 {
-	PhysicsModel(Point_t pos, Rot_t rot, float mass, const Box &vol, uint collisionDirs = (NORTH | SOUTH | EAST | WEST | UP | DOWN)) {
+	PhysicsModel(Point_t pos, Rot_t rot, float mass, uint collisionDirs = (NORTH | SOUTH | EAST | WEST | UP | DOWN)) {
 		ref = new Frame(pos,rot);
 		this->lastPos = pos;
 		vel = Vec3f();
 		accel = Vec3f();
 		this->mass = mass;
 		frictCoeff = GROUND_FRICTION;
-		this->colBox = CB_SMALL;
-		this->vol = vol;
 		this->cdirs = collisionDirs;
 	}
 
 	virtual ~PhysicsModel() {
+		colBoxes.clear();
 		delete ref;
 	}
 
-	void setColBox(CollisionBox cb)
-	{
-		this->colBox = cb;
-	}
 
 	void applyForce(const Vec3f &force) {
 		this->accel.x += force.x / mass;
@@ -53,12 +37,15 @@ struct PhysicsModel
 		this->accel.z += accel.z;
 	}
 	
-	/* getColBox
-	 *
-	 * Author: Bryan
-	 */
-	CollisionBox getColBox () {
-		return colBox;
+	int addBox(Box b) { colBoxes.push_back(b); return colBoxes.size() - 1; }
+	bool updateBox(int i, Box b) 
+	{ 
+		if(i < colBoxes.size())
+		{
+			colBoxes[i] = b; 
+			return true;
+		}
+		return false;
 	}
 
 	Frame *ref;	//Frame of Reference/skeleton; also root position and collision info
@@ -68,7 +55,7 @@ struct PhysicsModel
 	float mass;			//Mass of this object
 	float frictCoeff;	//Friction coefficient
 	Vec3f frictNorm;	//Normal on which the friction will be applied
-	CollisionBox colBox;
-	Box vol;
+	//Box vol;
 	uint cdirs;			//Which faces of the collision volume are valid for collision checking?
+	vector<Box> colBoxes;
 };

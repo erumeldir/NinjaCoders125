@@ -1,6 +1,7 @@
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
+#include "WorldManager.h"
 #include "WallSObj.h"
 #include "defs.h"
 #include "PhysicsEngine.h"
@@ -11,19 +12,21 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
 
-	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", id);
+	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
 
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
 	istat.attack = false;
 	istat.jump = false;
 	istat.quit = false;
+	istat.start = false;
 	istat.specialPower = false;
 	istat.rotAngle = 0.0;
 	istat.rotHoriz = 0.0;
@@ -34,11 +37,48 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	newJump = true; // any jump at this point is a new jump
 	newAttack = true; // same here
 	appliedJumpForce = false;
+	bool firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
 	modelAnimationState = IDLE;
 }
 
+void PlayerSObj::initialize() {
+	// Configuration options
+	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
+	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
+
+
+	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", this->getId());
+
+	Point_t pos = Point_t(0, 5, 10);
+	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
+
+	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
+	delete pm;
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
+	lastCollision = pos;
+	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
+	// Initialize input status
+	istat.attack = false;
+	istat.jump = false;
+	istat.quit = false;
+	istat.start = false;
+	istat.specialPower = false;
+	istat.rotAngle = 0.0;
+	istat.rotHoriz = 0.0;
+	istat.rotVert = 0.0;
+	istat.rightDist = 0.0;
+	istat.forwardDist = 0.0;
+
+	newJump = true; // any jump at this point is a new jump
+	newAttack = true; // same here
+	appliedJumpForce = false;
+	bool firedeath = false;
+	attacking = false;
+	gravityTimer = 0;
+}
 
 PlayerSObj::~PlayerSObj(void) {
 	delete pm;
@@ -71,6 +111,8 @@ bool PlayerSObj::update() {
 	
 	if(this->health > 0)
 	{
+		firedeath = false;
+
 		if(istat.attack && newAttack) attacking = true;
 		newAttack = !istat.attack;
 
@@ -120,29 +162,13 @@ bool PlayerSObj::update() {
 		float rawForward = istat.forwardDist / divBy;
 		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
 		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
-		/*
-		uint dir = PE::get()->getGravDir();
-		switch(dir) {
-		case EAST:
-		case WEST:
-			pm->applyForce(Vec3f(yDist, computedForward, computedRight));
-			break;
-		case NORTH:
-		case SOUTH:
-			pm->applyForce(Vec3f(computedRight, computedForward, yDist));
-			break;
-		case UP:
-		case DOWN:
-		default:
-			pm->applyForce(Vec3f(computedRight, yDist, computedForward));
-			break;
-		}
-		*/
-		pm->applyForce(Vec3f(computedRight, yDist, computedForward));
-		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
-			this->setAnimationState(IDLE);
-		} else {
-			this->setAnimationState(WALK);
+		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+	} else {
+		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
+		// NOTE: Player should probably be also getting their client id.
+		if(!firedeath) {
+			firedeath = true;
+			EventManager::get()->fireEvent(EVENT_DEATH, this); 
 		}
 	}
 	return false;
@@ -150,7 +176,7 @@ bool PlayerSObj::update() {
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_1;
+	state->modelNum = MDL_PLAYER;
 	state->health = health;
 	DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
@@ -161,6 +187,9 @@ void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
+	if (istat.start) {
+		EventManager::get()->fireEvent(EVENT_RESET, this); 
+	}
 }
 
 void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
