@@ -46,7 +46,6 @@ bool TentacleSObj::update()
 		stateCounter = distribution(generator);
 		DC::get()->print("stateCounter %d\n", stateCounter);
 		state = T_SWEEP;
-
 	}
 	switch (state) 
 	{
