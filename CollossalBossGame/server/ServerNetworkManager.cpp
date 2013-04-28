@@ -3,7 +3,6 @@
 #include "ServerObjectManager.h"
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
-#include "WorldManager.h"
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
@@ -162,7 +161,6 @@ void ServerNetworkManager::update() {
 			if(temp_c_id == client_id) {
 				client_id++;
 			}
-			EventManager::get()->fireEvent(EVENT_CONNECTION, o);
 		}
 	} while (sessions.empty());
 	// Collect data from clients

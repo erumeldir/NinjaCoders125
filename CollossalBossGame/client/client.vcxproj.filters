@@ -51,9 +51,6 @@
     <ClCompile Include="MonsterCObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TentacleCObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEngine.h">
@@ -90,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MonsterCObj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TentacleCObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

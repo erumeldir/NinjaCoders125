@@ -79,7 +79,6 @@
     <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
-    <ClCompile Include="TentacleCObj.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="XboxController.cpp" />
   </ItemGroup>
@@ -93,7 +92,6 @@
     <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
-    <ClInclude Include="TentacleCObj.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="XAnimator\XAnimator_lib.h" />
     <ClInclude Include="XboxController.h" />

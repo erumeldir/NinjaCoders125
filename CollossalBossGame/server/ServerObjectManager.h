@@ -17,7 +17,6 @@ public:
 	static ServerObjectManager *get() { return som; }
 	static void clean() { delete som; }
 
-	void reset();
 	void update();
 	void sendState();
 
@@ -26,7 +25,7 @@ public:
 	void freeId(uint id);
 	void add(ServerObject *obj);
 	ServerObject *find(uint id);
-	ServerObject *remove(uint id);
+	void remove(uint id);
 
 	bool debugFlag;
 

@@ -8,7 +8,6 @@
 //Standard includes
 #include <stdio.h>
 #include "DebugConsole.h"
-#include <set>
 
 //Constants (that we don't want to change, if we might, they should go in the config file)
 #define M_PI 3.14159
