@@ -32,5 +32,7 @@ private:
 	int attackCounter; // number of frames in between when the monster is harmful (emulates an 'attack')
 	int attackBuffer; // how many frames pass before we're harmful again
 	int attackFrames; // how many continuous frames we are harmful
+
+	TentacleActionState modelAnimationState;
 };
 

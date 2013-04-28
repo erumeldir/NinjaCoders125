@@ -3,6 +3,12 @@
 #include "WorldManager.h"
 #include "Action.h"
 
+enum PlayerAnimState {
+	P_IDLE,
+	P_ATTACK,
+	NUM_P
+};
+
 class PlayerSObj : public ServerObject
 {
 public:

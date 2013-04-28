@@ -137,5 +137,5 @@ struct MonsterState {
  */
 struct TentacleState {
 	Model modelNum;
-	//int health;
+	int animationState;
 };

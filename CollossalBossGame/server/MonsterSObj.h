@@ -3,13 +3,7 @@
 #include "TentacleSObj.h"
 #include <random>
 //#include <vector>
-/*
-typedef enum TentacleState {
-	IDLE,
-	SWEEP,
-	NUM_States
-};
-*/
+
 #define CYCLE 30
 
 /* MonsterSObj.h

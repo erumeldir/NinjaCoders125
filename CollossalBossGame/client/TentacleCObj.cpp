@@ -8,7 +8,6 @@ TentacleCObj::TentacleCObj(uint id, char *data) : ClientObject(id)
 	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum, Vec3f(1.f,1.f,1.f));
 }
 
-
 TentacleCObj::~TentacleCObj(void)
 {
 	delete rm;
@@ -20,5 +19,6 @@ bool TentacleCObj::update() {
 
 void TentacleCObj::deserialize(char* newState) {
 	TentacleState *state = (TentacleState*)newState;
+	this->getRenderModel()->setModelState(state->animationState);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(TentacleState));
 }

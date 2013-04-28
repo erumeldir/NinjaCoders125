@@ -20,6 +20,7 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
+	modelAnimationState = T_SWEEP;
 
 	srand(time(NULL)); // initialize our random number generator
 
@@ -73,6 +74,7 @@ int TentacleSObj::serialize(char * buf) {
 	TentacleState *state = (TentacleState*)buf;
 	state->modelNum = this->modelNum;
 	//state->health = health;
+	state->animationState = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(TentacleState)) + sizeof(TentacleState);
 }
 

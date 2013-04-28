@@ -40,8 +40,9 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	bool firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
-	modelAnimationState = IDLE;
+	modelAnimationState = P_IDLE;
 }
+
 
 void PlayerSObj::initialize() {
 	// Configuration options

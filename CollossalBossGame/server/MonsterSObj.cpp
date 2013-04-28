@@ -18,8 +18,6 @@ MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
 	maxTentacles = 0;
 	//srand(time(NULL)); // initialize our random number generator
 
-	numTentacles = 0;
-
 }
 
 MonsterSObj::~MonsterSObj(void)
