@@ -9,7 +9,7 @@
 #include "ConfigurationManager.h"
 #include <sstream>
 
-RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
+RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, int state, Vec3f scale)
 {
 	//Create the reference frame
 	ref = new Frame(pos, rot);
@@ -78,6 +78,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale)
 			DC::get()->print("Didn't load the model!\n");
 		} else {
 			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded model %d\n",modelNum);
+			this->setModelState(state);
 		}
 	//	D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
 	//	float rad;
@@ -121,6 +122,8 @@ void RenderModel::render() {
 		//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 		//Render
+		DC::get()->print("ANIMATION STATE %d\n", modelState);
+		RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
 		RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
 	}
 }

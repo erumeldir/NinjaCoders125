@@ -5,7 +5,7 @@ TentacleCObj::TentacleCObj(uint id, char *data) : ClientObject(id)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new TentacleCObj %d\n", id);
 	TentacleState *state = (TentacleState*)data;
-	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum, Vec3f(1.f,1.f,1.f));
+	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum, state->animationState, Vec3f(1.f,1.f,1.f));
 }
 
 TentacleCObj::~TentacleCObj(void)

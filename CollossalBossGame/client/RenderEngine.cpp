@@ -263,6 +263,7 @@ void RenderEngine::drawHUD() {
 * Bryan
 */
 void RenderEngine::sceneDrawing() {
+	//Telling the world to advance any animations we have
 	for(list<ClientObject *>::iterator it = lsObjs.begin();
 			it != lsObjs.end();
 			++it) {
@@ -331,6 +332,13 @@ void RenderEngine::render() {
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
+}
+
+void RenderEngine::setAnimation(int id, int animationNumber) {
+	RenderEngine::xAnimator->ChangeAnimationSet(id, animationNumber);
+	std::string name;
+	RenderEngine::xAnimator->GetAnimationSetName(id, animationNumber, &name);
+	DC::get()->print("BR, setAnimation. Animation name is %s\n", name);
 }
 
 bool RenderEngine::loadModel(const char * filename, int * idAddr) { 

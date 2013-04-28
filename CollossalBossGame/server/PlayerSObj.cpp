@@ -164,6 +164,11 @@ bool PlayerSObj::update() {
 		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
 		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
 		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
+			this->setAnimationState(P_IDLE);
+		} else {
+			this->setAnimationState(P_WALK);
+		}
 	} else {
 		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
 		// NOTE: Player should probably be also getting their client id.

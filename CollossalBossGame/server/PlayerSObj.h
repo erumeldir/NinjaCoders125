@@ -5,6 +5,7 @@
 
 enum PlayerAnimState {
 	P_IDLE,
+	P_WALK,
 	P_ATTACK,
 	NUM_P
 };
