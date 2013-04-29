@@ -12,13 +12,14 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
 
-	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", id);
+	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
 
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
@@ -39,6 +40,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	bool firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
+	modelAnimationState = IDLE;
 }
 
 void PlayerSObj::initialize() {
@@ -47,13 +49,15 @@ void PlayerSObj::initialize() {
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
 
 
-	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
+	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", this->getId());
 
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
 	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	delete pm;
+	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	// Initialize input status
@@ -69,8 +73,11 @@ void PlayerSObj::initialize() {
 	istat.forwardDist = 0.0;
 
 	newJump = true; // any jump at this point is a new jump
+	newAttack = true; // same here
 	appliedJumpForce = false;
 	bool firedeath = false;
+	attacking = false;
+	gravityTimer = 0;
 }
 
 PlayerSObj::~PlayerSObj(void) {
@@ -95,6 +102,7 @@ bool PlayerSObj::update() {
 	}
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 #endif
+
 
 	float yDist = 0.f;
 	if (istat.quit) {
@@ -124,7 +132,7 @@ bool PlayerSObj::update() {
 		// This part gives us a buffer, so the user can bounce off the wall even 
 		// when they pressed 'jump' before they got there
 		if (jumping) jumpCounter++;
-		else jumpCounter = 0;
+		else jumpCounter = 0; 
 
 		appliedJumpForce = false; // we apply it on collision
 
@@ -152,15 +160,22 @@ bool PlayerSObj::update() {
 		int divBy = movDamp;
 		float rawRight = istat.rightDist / divBy;
 		float rawForward = istat.forwardDist / divBy;
-		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
-		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
+		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + (float)M_PI / 2.f)));
+		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + (float)M_PI / 2.f)));
 		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+		
+		// change animation according to state
+		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
+			this->setAnimationState(IDLE);
+		} else {
+			this->setAnimationState(WALK);
+		}
 	} else {
 		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
 			firedeath = true;
-			EventManager::get()->fireEvent(EVENT_DEATH, this); 
+			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
 	return false;
@@ -170,6 +185,8 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_PLAYER;
 	state->health = health;
+	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
+	state->animationstate = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
 

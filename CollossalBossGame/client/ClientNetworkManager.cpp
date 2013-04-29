@@ -170,7 +170,6 @@ bool ClientNetworkManager::update()
     int data_length = receivePackets(network_data);
 	bool ret = true;
 
-	// TODO how to make sure you get all the packets the server wants to send? O_O
     while (data_length <= 0) 
     {
         //no data recieved

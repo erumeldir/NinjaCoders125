@@ -104,7 +104,7 @@ int CopyFileHelper(string initialFilePath, string outputFilePath)
 	ofstream outputFile(outputFilePath.c_str(), ios::out|ios::binary);
 	//defines the size of the buffer
 	initialFile.seekg(0, ios::end);
-	long fileSize = initialFile.tellg();
+	long fileSize = (long)initialFile.tellg();
 	//Requests the buffer of the predefined size
 
 	//As long as both the input and output files are open...

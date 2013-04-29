@@ -25,7 +25,7 @@ void EventManager::registerHandler(eventHandler handler) {
 }
 
 void EventManager::fireEvent(EventTypes evt, void* obj) {
-	for(int i = 0; i < handlers.size(); i++) {
+	for(uint i = 0; i < handlers.size(); i++) {
 		handlers[i](evt, obj);
 	}
 }

@@ -4,10 +4,12 @@
 #include <vector>
 
 enum EventTypes {
-	EVENT_DEATH = 1,
-	EVENT_RESET = 2,
-	EVENT_CONNECTION = 4,
-	EVENT_DISCONNECT = 8
+	EVENT_PLAYER_DEATH = 1,
+	EVENT_MONSTER_DEATH = 2,
+	EVENT_RESET = 4,
+	EVENT_CONNECTION = 8,
+	EVENT_MONSTER_SPAWN = 16,
+	EVENT_DISCONNECT = 32
 };
 
 typedef void (*eventHandler)(EventTypes, void*);

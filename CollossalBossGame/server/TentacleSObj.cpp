@@ -3,6 +3,7 @@
 #include "ServerObjectManager.h"
 #include "defs.h"
 #include "PlayerSObj.h"
+#include "ConfigurationManager.h"
 #include <time.h>
 
 
@@ -15,15 +16,20 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	Box bxVol = CM::get()->find_config_as_box("BOX_MONSTER");
 	this->modelNum = modelNum;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"), bxVol);
+	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm->addBox(bxVol);
+	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
 
-	srand(time(NULL)); // initialize our random number generator
+	srand((uint)time(NULL)); // initialize our random number generator
 
-	// todo configuration stuff
-	attackBuffer = 20;
-	attackFrames = 2;
+	// Configuration options
+	attackBuffer = CM::get()->find_config_as_int("TENTACLE_ATTACK_BUF");
+	attackFrames = CM::get()->find_config_as_int("TENTACLE_ATTACK_FRAMES");
+	pushForce = CM::get()->find_config_as_int("TENTACLE_PUSH_FORCE");
+
+	EventManager::get()->fireEvent(EVENT_MONSTER_SPAWN, NULL);
 }
 
 
@@ -33,6 +39,10 @@ TentacleSObj::~TentacleSObj(void)
 }
 
 bool TentacleSObj::update() {
+	//changing collision boxes
+	//updatableBox.y = -updatableBox.y;
+	//pm->updateBox(this->updatableBoxIndex,this->updatableBox);
+
 	attackCounter++;
 
 	// this emulates an attack
@@ -52,6 +62,7 @@ bool TentacleSObj::update() {
 	if (health <= 0) {
 		health = 0;
 		overlord->removeTentacle(this);
+		EventManager::get()->fireEvent(EVENT_MONSTER_DEATH, NULL);
 		return true; // I died!
 		//health = 0;
 		// fancy animation 
@@ -77,10 +88,8 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 	// if the monster is attacking, it pushes everything off it on the last attack frame
 	if (attackCounter == (attackBuffer + attackFrames))
 	{
-		// todo, this should use the normal too
-		const int monsterForce = 30;
 		Vec3f up = Vec3f(0, 1, 0);
-		obj->getPhysicsModel()->applyForce(up*monsterForce);
+		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);
 	}
 
 	if(!s.compare("class PlayerSObj")) 
@@ -94,10 +103,4 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
 	}
-}
-
-void TentacleSObj::initialize()
-{
-	// todo franklin?
-	// idk franklin? -suman
 }

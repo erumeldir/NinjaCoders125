@@ -56,7 +56,7 @@ int main()
 		totalLoopTime = difftime(endLoopTimer, beginLoopTimer)  * 1000; // in ms
 		// Be sure to set debug to the right thing!
 		if (totalLoopTime < TICK) {
-			Sleep(TICK - totalLoopTime);
+			Sleep((DWORD)(TICK - totalLoopTime));
 		}
 		else
 		{
