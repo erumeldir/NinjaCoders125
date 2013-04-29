@@ -5,6 +5,9 @@
 // fwd decl
 class MonsterSObj;
 
+
+#define CYCLE 30
+
 class TentacleSObj : public ServerObject
 {
 public:
@@ -17,6 +20,7 @@ public:
 	virtual ObjectType getType() { return OBJ_TENTACLE; }
 	virtual void initialize();						//Initial position/rotation/etc of the object
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
+	void setAnimationState(TentacleActionState state) { modelAnimationState = state; }
 
 	int getHealth() { return health; }
 

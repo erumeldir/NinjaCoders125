@@ -139,3 +139,20 @@ struct TentacleState {
 	Model modelNum;
 	int animationState;
 };
+
+/*
+ * State information for the monster not encoded by the position
+ */
+enum PlayerAnimationState {
+  P_IDLE = 0,
+  P_WALK = 1,
+  P_JUMP = 2,
+  P_ATK  = 3,
+  P_DEAD = 4
+};
+
+enum TentacleActionState {
+	T_IDLE,
+	T_SWEEP,
+	NUM_T
+};

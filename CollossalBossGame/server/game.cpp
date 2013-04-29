@@ -65,9 +65,9 @@ void gameInit() {
 
 	MonsterSObj* monster = new MonsterSObj(som->genId());
 	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t(), monster);
-	//TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t(M_PI,0,0), monster);
+	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t(M_PI,0,0), monster);
 	som->add(tentacleLeft);
-	//som->add(tentacleRight);
+	som->add(tentacleRight);
 	som->add(monster);
 
 	TestSObj* pyramid = new TestSObj(som->genId(), MDL_TEST_PYRAMID, Point_t(100,0,100), Rot_t());

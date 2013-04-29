@@ -5,7 +5,6 @@
 #include "PlayerSObj.h"
 #include <time.h>
 
-
 TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, MonsterSObj* master) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new TentacleObj %d\n", id);
@@ -19,7 +18,7 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
-	modelAnimationState = T_SWEEP;
+	modelAnimationState = T_IDLE;
 
 	srand(time(NULL)); // initialize our random number generator
 
@@ -44,15 +43,20 @@ bool TentacleSObj::update() {
 	// this emulates an attack
 
 	// start attacking!
-	if (attackCounter > attackBuffer) this->setFlag(IS_HARMFUL, 1);
+	if (attackCounter > attackBuffer){
+		this->setFlag(IS_HARMFUL, 1);
+		modelAnimationState = T_SWEEP;
+
+	}
 
 	// now we're done attacking, reset
-	if (attackCounter > (attackBuffer + attackFrames))
+	if (attackCounter > (attackBuffer + CYCLE*2))
 	{
 		attackCounter = 0;
 		this->setFlag(IS_HARMFUL, 0);
 		attackBuffer = rand() % 40;
 		attackFrames = rand() % 15;
+		modelAnimationState = T_IDLE;
 	}
 
 	if (health <= 0) {

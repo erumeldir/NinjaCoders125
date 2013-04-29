@@ -159,11 +159,4 @@ typedef enum ACTION {
 	ACT_NUM_ACTIONS
 };
 
-
-typedef enum TentacleActionState {
-	T_IDLE,
-	T_SWEEP,
-	NUM_T
-};
-
 #endif

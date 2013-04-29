@@ -48,7 +48,7 @@ void RenderEngine::startWindow()
 	windowHandle = CreateWindowEx(
 		NULL,
 		"WindowClass",
-		"Our First Direct3D Program",
+		"Seek, Scavenge, Slay",
 		WS_EX_TOPMOST | WS_POPUP,
 		CW_USEDEFAULT, CW_USEDEFAULT, //0, 0,
 		SCREEN_WIDTH, SCREEN_HEIGHT,
@@ -332,13 +332,6 @@ void RenderEngine::render() {
 void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 	//RenderEngine::direct3dDevice->SetTransform(D3DTS_VIEW, &pos);
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
-}
-
-void RenderEngine::setAnimation(int id, int animationNumber) {
-	RenderEngine::xAnimator->ChangeAnimationSet(id, animationNumber);
-	std::string name;
-	RenderEngine::xAnimator->GetAnimationSetName(id, animationNumber, &name);
-	DC::get()->print("BR, setAnimation. Animation name is %s\n", name);
 }
 
 bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
