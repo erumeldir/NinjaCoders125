@@ -27,7 +27,9 @@ public:
 	void setPos(const Point_t &pt) { pos = pt; }
 	void setRot(const Quat_t &rt) { rot = rt; }
 	Point_t getPos() { return pos; }
-	Quat_t getRot() { return rot; }
+	Quat_t getRot() {
+		return rot;
+	}
 
 	int serialize(char * buf);
 	void deserialize(char* newState);

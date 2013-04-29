@@ -18,6 +18,8 @@ public:
 
 	void update();
 
+	WorldState *getWorldState() { return &worldState; }
+
 	//Object handling
 	ClientObject *find(uint id);
 	void serverUpdate(uint id, CommandTypes cmd, char *data);
@@ -40,5 +42,6 @@ private:
 	map<uint, ClientObject *> mObjs;
 	vector<uint> vFreeIds;
 	int curId;
+	WorldState worldState;
 };
 typedef ClientObjectManager COM;

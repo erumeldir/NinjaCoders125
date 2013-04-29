@@ -31,7 +31,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	newJump = true; // any jump at this point is a new jump
 	appliedJumpForce = false;
 	
-	gravityTimer = 0;
+	lastGravDir = PE::get()->getGravDir();
 }
 
 
@@ -39,28 +39,10 @@ PlayerSObj::~PlayerSObj(void) {
 	delete pm;
 }
 
+
+
+
 bool PlayerSObj::update() {
-	//gravity
-#if 0
-#define INTERVAL 200
-	gravityTimer++;
-	static char cdir = 'v';
-	if(gravityTimer == INTERVAL) {
-		PE::get()->setGravDir(EAST);
-		cdir = 'o';
-	} else if(gravityTimer == INTERVAL * 2) {
-		PE::get()->setGravDir(NORTH);
-		cdir = '>';
-	} else if(gravityTimer > INTERVAL * 3) {
-		PE::get()->setGravDir(DOWN);
-		gravityTimer = 0;
-		cdir = 'v';
-	}
-	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
-#endif
-
-
-
 	if (istat.quit) {
 		return true; // delete me!
 	}
@@ -93,6 +75,11 @@ bool PlayerSObj::update() {
 		}
 
 		//Update up direction
+		PE *pe = PE::get();
+		if(lastGravDir != pe->getGravDir()) {
+			lastGravDir = pe->getGravDir();
+			pm->ref->rotate(pe->getCurGravRot());
+		}
 		Vec3f up = rotateUp(pm->ref->getRot());
 
 		//Rotate by amount specified by player (does not affect up direction)

@@ -11,6 +11,7 @@
 #include "TestSObj.h"
 #include "WallSObj.h"
 #include "PhysicsEngine.h"
+#include "WorldSObj.h"
 
 /*
  * buildRoom()
@@ -20,6 +21,9 @@
 void buildRoom(Point_t center, int w, int h, int l) {
 #define WIDTH 150
 	ServerObjectManager *som = SOM::get();
+
+	WorldSObj *worldStateObj = new WorldSObj(som->genId());
+	som->add(worldStateObj);
 
 	if(w < 1) w = 1;
 	if(l < 1) l = 1;

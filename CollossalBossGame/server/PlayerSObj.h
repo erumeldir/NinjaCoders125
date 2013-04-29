@@ -28,6 +28,6 @@ private:
 	float jumpDist;
 	int movDamp;
 
-	int gravityTimer;
+	DIRECTION lastGravDir;
 };
 

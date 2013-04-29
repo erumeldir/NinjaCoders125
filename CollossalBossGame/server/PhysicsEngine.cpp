@@ -110,6 +110,10 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
 				 *mdl2 = obj2->getPhysicsModel();
+	if(mdl1 == NULL || mdl2 == NULL) {
+		return;
+	}
+
 	Box bx1 = mdl1->vol + mdl1->ref->getPos(),
 		bx2 = mdl2->vol + mdl2->ref->getPos();
 	Vec3f collNorm1 = Vec3f(),
@@ -264,4 +268,36 @@ bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
 			 bx1.x > bx2.x + bx2.w ||
 			 bx1.y > bx2.y + bx2.h ||
 			 bx1.z > bx2.z + bx2.l);
+}
+
+void PhysicsEngine::setGravDir(DIRECTION dir) {
+	gravDir = dir;
+
+	Vec3f newVec, crossVec;
+	switch(dir) {
+	case NORTH:
+		newVec = Vec3f(0,0,1);
+		break;
+	case SOUTH:
+		newVec = Vec3f(0,0,-1);
+		break;
+	case EAST:
+		newVec = Vec3f(1,0,0);
+		break;
+	case WEST:
+		newVec = Vec3f(-1,0,0);
+		break;
+	case UP:
+		newVec = Vec3f(0,1,0);
+		break;
+	case DOWN:
+		newVec = Vec3f(0,-1,0);
+		break;
+	}
+	cross(&crossVec, newVec, gravVec);
+	crossVec.normalize();
+	float ang = angle(newVec, gravVec);
+	curGravRot = Quat_t(crossVec, ang);
+	//DC::get()->print("Axis: (%f,%f,%f)\n", crossVec.x, crossVec.y, crossVec.z);
+	gravVec = newVec;
 }

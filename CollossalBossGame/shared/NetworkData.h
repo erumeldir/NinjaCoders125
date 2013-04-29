@@ -88,6 +88,7 @@ enum Model {
  */
 enum ObjectType {
 	OBJ_GENERAL,
+	OBJ_WORLD,
 	OBJ_PLAYER,
 	NUM_OBJS
 };
@@ -127,4 +128,11 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
+};
+
+/*
+ * State information for the WorldObject
+ */
+struct WorldState {
+	DIRECTION gravDir;
 };

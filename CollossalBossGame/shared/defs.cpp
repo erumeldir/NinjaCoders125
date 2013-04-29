@@ -95,3 +95,8 @@ void cross(Vec3f *res, const Vec3f &v1, const Vec3f &v2) {
 	res->y = v1.z * v2.x - v1.x * v2.z;
 	res->z = v1.x * v2.y - v1.y * v2.x;
 }
+
+
+float angle(const Vec3f &v1, const Vec3f &v2) {
+	return acos((v1 ^ v2) / (magnitude(v1) * magnitude(v2)));
+}

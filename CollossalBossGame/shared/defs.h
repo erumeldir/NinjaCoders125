@@ -142,18 +142,19 @@ typedef struct Vec4f {
 		this->x = axis.x * t;
 		this->y = axis.y * t;
 		this->z = axis.z * t;
+		normalize();
 	}
 
 	//http://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
 	void operator*=(const Vec4f &rhs) {
-				  //r0 * q1 + r1  *  q0 - r2  *  q3 + r3  *  q2
-		this->x = rhs.w * x + rhs.x * w - rhs.y * z + rhs.z * y;
-				  //r0 * q2 + r1  *  q3 + r2  *  q0 - r3  *  q1
-		this->y = rhs.w * y + rhs.x * z + rhs.y * w - rhs.z * x;
-				  //r0 * q3 - r1  *  q2 + r2  *  q1 + r3  *  q0
-		this->z = rhs.w * z - rhs.x * y + rhs.y * x + rhs.z * w;
-				  //r0 * q0 - r1  *  q1 - r2  *  q2 - r3  *  q3
-		this->w = rhs.w * w - rhs.x * x - rhs.y * y - rhs.z * z;
+		float w2 = w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z,
+			  x2 = w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y,
+			  y2 = w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x,
+			  z2 = w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w;
+		w = w2;
+		x = x2;
+		y = y2;
+		z = z2;
 	}
 
 	Vec4f operator*(const Vec4f &rhs) const {
@@ -174,6 +175,7 @@ typedef struct Vec4f {
 Quat_t inverse(const Quat_t &q);
 float magnitude(const Vec3f &v);
 float magnitude(const Vec4f &v);
+float angle(const Vec3f &v1, const Vec3f &v2);
 Vec3f rotate(const Vec3f &v, const Quat_t &q);
 Vec3f rotateUp(const Quat_t &q);
 Vec3f rotateRight(const Quat_t &q);
@@ -214,6 +216,7 @@ typedef enum OBJ_FLAG {
 	IS_HEALTHY,
 	IS_HARMFUL,
 	IS_WALL,
+
 	//Physics flags
 	IS_STATIC,
 	IS_PASSABLE,

@@ -77,6 +77,7 @@
     <ClCompile Include="ServerObjectManager.cpp" />
     <ClCompile Include="TestSObj.cpp" />
     <ClCompile Include="WallSObj.cpp" />
+    <ClCompile Include="WorldSObj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="ServerObjectManager.h" />
     <ClInclude Include="TestSObj.h" />
     <ClInclude Include="WallSObj.h" />
+    <ClInclude Include="WorldSObj.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">
