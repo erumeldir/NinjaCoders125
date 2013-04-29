@@ -166,7 +166,7 @@ bool PlayerSObj::update() {
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
 			firedeath = true;
-			EventManager::get()->fireEvent(EVENT_DEATH, this); 
+			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
 	return false;
