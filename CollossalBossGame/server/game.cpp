@@ -57,6 +57,8 @@ void gameInit() {
 	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 100, 300), Rot_t(), monster);
 	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(0, 0, 0), Rot_t((float)M_PI,0,0), monster);
 	tentacleRight->getPhysicsModel()->updateBox(0, *(new Box(-10, 0, 0, 20, 50, 100)));
+	tentacleRight->getPhysicsModel()->updateBox(0, *(new Box(-10, 0, 100, 20, 50, 100)));
+	tentacleRight->getPhysicsModel()->addBox(*(new Box(-10, 0, 200, 20, 50, 100)));
 	som->add(tentacleLeft);
 	som->add(tentacleRight);
 	som->add(monster);
