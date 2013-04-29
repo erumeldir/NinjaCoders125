@@ -200,7 +200,7 @@ RenderEngine::RenderEngine() {
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
-                            "res/Hi.jpg",       //File Name
+                            "res/Hi.png",       //File Name
                             &test1_texture);    //Texture handle
 
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
@@ -347,15 +347,17 @@ void RenderEngine::render() {
 	// Tell the sprite about the matrix
 	sprite->SetTransform(&mat);
 
+	sprite2->Begin(D3DXSPRITE_ALPHABLEND);
+	if(this->healthPts == 0) sprite2->Draw(test1_texture,NULL,NULL,&test1,0xFFFFFFFF);
+	sprite2->End();
+	
+
 	sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
 	sprite->End();
 
-	/* Temporary HUD things. Will be complete later.
-	sprite2->Begin(D3DXSPRITE_ALPHABLEND);
-	sprite2->Draw(test1_texture,NULL,NULL,&test1,0xFFFFFFFF);
-	sprite2->End();
-	*/ 
+	// Temporary HUD things. Will be complete later.
+	
 	sceneDrawing();
 	drawHUD();
 
