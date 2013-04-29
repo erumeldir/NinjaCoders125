@@ -5,7 +5,7 @@ class WallSObj :
 	public ServerObject
 {
 public:
-	WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f scale = Vec3f(1.f, 1.f, 1.f));
+	WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir);
 	virtual ~WallSObj(void);
 
 	virtual bool update();
@@ -21,6 +21,5 @@ private:
 	Model modelNum;
 	int t;
 	Vec3f normal;
-	Vec3f scale;
 };
 

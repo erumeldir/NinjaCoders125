@@ -333,8 +333,11 @@ void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
 
-bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
-	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
+bool RenderEngine::loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat) { 
+	// Ignore the 0UL, it's some flag thing that's optional (0UL is the default value)
+	// I added it here so I can specify the root matrix (for models that need to be rotated)
+	// todo optimization (maybe add scaling here too, would that be faster?)
+	return RenderEngine::xAnimator->LoadXFile(filename,idAddr, 0UL, &rootMat);
 }
 
 // this is the main message handler for the program
