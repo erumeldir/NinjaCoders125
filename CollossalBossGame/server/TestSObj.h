@@ -18,7 +18,6 @@ public:
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
 	virtual ObjectType getType() { return OBJ_GENERAL; }
-	virtual void initialize();
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal) {}
 
 	char serialbuffer[100];
@@ -30,6 +29,6 @@ private:
 	int dir;
 	int t;
 	Box bxVol;
-	int i;
+	uint testBoxIndex;
 };
 

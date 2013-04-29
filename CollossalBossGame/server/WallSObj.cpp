@@ -41,14 +41,14 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 		bxVol = Box(-WALL_THICKNESS, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
 		//rot = Rot_t(0,0,-M_PI / 2);
-		rot = Rot_t(0,M_PI,0);
+		rot = Rot_t(0,(float)M_PI,0);
 		collDir = EAST;
 		break;
 	case UP:
 		DC::get()->print("(ceiling)\n");
 		bxVol = Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
-		rot = Rot_t(0,0,M_PI);
+		rot = Rot_t(0,0,(float)M_PI);
 		collDir = DOWN;
 		break;
 	default:
@@ -76,10 +76,6 @@ WallSObj::~WallSObj(void) {
 
 bool WallSObj::update() {
 	return false;
-}
-
-void WallSObj::initialize() {
-	// Walls don't have to reinit.
 }
 
 int WallSObj::serialize(char * buf) {

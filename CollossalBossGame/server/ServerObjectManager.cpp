@@ -193,12 +193,15 @@ void ServerObjectManager::reset() {
 			++it) {
 		ServerObject * o = it->second;
 		string s = typeid(*o).name();
+		// if it's not a Player object...
 		if(s.compare("class PlayerSObj")) {
 			// asdf.push_back(it->first);
 			freeId(it->first);
 			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
 			// delete o;
-		} else {
+		}
+		// if it is...
+		else {
 			o->initialize();
 			lsPlayers.push_back(o);
 		}

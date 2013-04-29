@@ -18,7 +18,6 @@ public:
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
 	virtual ObjectType getType() { return OBJ_TENTACLE; }
-	virtual void initialize();						//Initial position/rotation/etc of the object
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
 	void setAnimationState(TentacleActionState state) { modelAnimationState = state; }
 
@@ -30,7 +29,7 @@ private:
 	PhysicsModel *pm;
 	Model modelNum;
 	MonsterSObj* overlord;
-	int updatableBoxIndex;
+	uint updatableBoxIndex;
 	Box updatableBox;
 	int health;
 	int attackCounter; // number of frames in between when the monster is harmful (emulates an 'attack')
@@ -38,5 +37,7 @@ private:
 	int attackFrames; // how many continuous frames we are harmful
 
 	TentacleActionState modelAnimationState;
+	int pushForce; // force of tentacle when it pushes player away after attacking it
+
 };
 

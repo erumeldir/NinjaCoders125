@@ -2,8 +2,6 @@
 #include "defs.h"
 #include "Frame.h"
 #include <vector>
-#define AIR_FRICTION 1.1f	//A bit excessive, but it works for now
-#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
 #define UNITOFHALFLENGTH 25		//as in half the length of a box
 
 //All physics data should be known to the frames
@@ -38,7 +36,7 @@ struct PhysicsModel
 	}
 	
 	int addBox(Box b) { colBoxes.push_back(b); return colBoxes.size() - 1; }
-	bool updateBox(int i, Box b) 
+	bool updateBox(uint i, Box b) 
 	{ 
 		if(i < colBoxes.size())
 		{
