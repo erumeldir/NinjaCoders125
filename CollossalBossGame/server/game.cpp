@@ -54,9 +54,9 @@ void gameInit() {
 	buildRoom();
 
 	MonsterSObj* monster = new MonsterSObj(som->genId());
-	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t(), monster);
-	tentacleLeft->getPhysicsModel()->updateBox(0, *(new Box(-20, 100, 300, 500, 500, 500)));
-	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0), monster);
+	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 100, 300), Rot_t(), monster);
+	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(0, 0, 0), Rot_t((float)M_PI,0,0), monster);
+	tentacleRight->getPhysicsModel()->updateBox(0, *(new Box(-10, 0, 0, 20, 50, 100)));
 	som->add(tentacleLeft);
 	som->add(tentacleRight);
 	som->add(monster);
