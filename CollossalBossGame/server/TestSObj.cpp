@@ -28,7 +28,7 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale,
 			break;
 	}
 	pm = new PhysicsModel(pos, rot, 50);
-	i = pm->addBox(bxVol);
+	testBoxIndex = pm->addBox(bxVol);
 	t = 0;
 }
 
@@ -68,7 +68,7 @@ bool TestSObj::update() {
 	//bxVol.l++;
 	//bxVol.x--;
 	//bxVol.y--;
-	//pm->updateBox(i, bxVol);
+	//pm->updateBox(testBoxIndex, bxVol);
 
 
 
@@ -80,8 +80,4 @@ int TestSObj::serialize(char * buf) {
 	state->modelNum = modelNum;
 	state->scale = scale;
 	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
-}
-
-void TestSObj::initialize() {
-	// Dunno.
 }

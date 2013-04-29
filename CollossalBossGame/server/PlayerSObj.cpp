@@ -158,8 +158,8 @@ bool PlayerSObj::update() {
 		int divBy = movDamp;
 		float rawRight = istat.rightDist / divBy;
 		float rawForward = istat.forwardDist / divBy;
-		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + M_PI / 2.f)));
-		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + M_PI / 2.f)));
+		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + (float)M_PI / 2.f)));
+		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + (float)M_PI / 2.f)));
 		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
 	} else {
 		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?

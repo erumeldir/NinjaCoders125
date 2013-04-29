@@ -30,7 +30,6 @@ public:
 	virtual PhysicsModel *getPhysicsModel() { return pm; }
 	virtual int serialize(char * buf);
 	virtual ObjectType getType() { return OBJ_MONSTER; }
-	virtual void initialize();						//Initial position/rotation/etc of the object
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
 
 	void addTentacle(TentacleSObj* t) { tentacles.insert(t); maxTentacles++; }
