@@ -14,7 +14,7 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	Box bxVol = CM::get()->find_config_as_box("BOX_MONSTER");
 	this->modelNum = modelNum;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-	pm = new PhysicsModel(pos, rot, CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm = new PhysicsModel(pos, rot, 50*CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	attackCounter = 0;
@@ -48,17 +48,58 @@ bool TentacleSObj::update() {
 	if (attackCounter > attackBuffer){
 		this->setFlag(IS_HARMFUL, 1);
 		modelAnimationState = T_SWEEP;
-
 	}
 
-	// now we're done attacking, reset
-	if (attackCounter > (attackBuffer + CYCLE*2))
+	/* Cycle logic:
+	 * CYCLE*1/2 = The tentacle is on one side
+	 * CYCLE*3/2 = tentacle is on the other side
+	 * CYCLE*2 = when the tentacle is back at the default position
+	 */
+
+	if (modelAnimationState == T_SWEEP)
 	{
-		attackCounter = 0;
-		this->setFlag(IS_HARMFUL, 0);
-		attackBuffer = rand() % 40;
-		attackFrames = rand() % 15;
-		modelAnimationState = T_IDLE;
+		switch (attackCounter - attackBuffer)
+		{
+			case CYCLE/2:		//we flip direction
+				sweepingZPositive = false;
+				break;
+			case CYCLE/2 * 3:	//reversing direction the other way
+				sweepingZPositive = true;
+				break;
+			case CYCLE*2:		//we're ending
+				attackCounter = 0;
+				this->setFlag(IS_HARMFUL, 0);
+				attackBuffer = rand() % 40;
+				attackFrames = rand() % 15;
+				modelAnimationState = T_IDLE;
+				break;
+			default:			//we're sweeping normally
+				Box updatedTip = this->getPhysicsModel()->colBoxes[2];
+				Box updatedMiddle = this->getPhysicsModel()->colBoxes[1];
+				int newX = updatedMiddle.x, newZ = updatedMiddle.z;
+				if (attackCounter - attackBuffer > CYCLE/2 &&
+					attackCounter - attackBuffer < CYCLE/2 * 3) {
+					newZ = updatedMiddle.z - 2;
+					updatedTip.x = updatedTip.x - 3;
+				} else {
+					newZ = updatedMiddle.z + 2;
+					updatedTip.x = updatedTip.x + 3;
+				}
+				
+				if (!sweepingZPositive) {
+					newX = updatedMiddle.x - 7;
+					updatedTip.x = updatedTip.x - 10;
+				}
+				else {
+					newX = updatedMiddle.x + 7;
+					updatedTip.x = updatedTip.x + 10;
+				}	
+				updatedMiddle = Box (newX, updatedMiddle.y, newZ, updatedMiddle.w,updatedMiddle.h, updatedMiddle.l);
+
+				this->getPhysicsModel()->updateBox(1, updatedMiddle);
+
+		}
+
 	}
 
 	if (health <= 0) {

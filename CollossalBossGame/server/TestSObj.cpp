@@ -27,7 +27,7 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale,
 			bxVol = Box();
 			break;
 	}
-	pm = new PhysicsModel(pos, rot, 50);
+	pm = new PhysicsModel(pos, rot, 1);
 	testBoxIndex = pm->addBox(bxVol);
 	t = 0;
 }

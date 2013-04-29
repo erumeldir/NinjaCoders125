@@ -47,21 +47,52 @@ void buildRoom() {
 	som->add(south);
 }
 
-
 void gameInit() {
 	ServerObjectManager *som = SOM::get();
 
 	buildRoom();
 
 	MonsterSObj* monster = new MonsterSObj(som->genId());
-	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 100, 300), Rot_t(), monster);
+//	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(0, 100, 300), Rot_t(), monster);
 
-	float xBase = 0, yBase = 100, zBase = -300;
+	float xBase = 0, yBase = 10, zBase = -300;
 	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(xBase, yBase, zBase), Rot_t((float)M_PI,0,0), monster);
 	tentacleRight->getPhysicsModel()->updateBox(0, *(new Box(-10, -10, 0, 20, 20, 50)));
 	tentacleRight->getPhysicsModel()->addBox(*(new Box(-10, -10, 50, 20, 20, 150)));
 	tentacleRight->getPhysicsModel()->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
-	som->add(tentacleLeft);
+	//som->add(tentacleLeft);
 	som->add(tentacleRight);
 	som->add(monster);
+	
+	TestSObj* box10 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 10, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box10);
+	/*TestSObj* box11 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 30, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box11);
+	TestSObj* box12 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 50, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box12);
+	TestSObj* box13 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 70, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box13);
+	TestSObj* box14 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 90, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box14);
+	TestSObj* box15 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 110, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box15);
+	TestSObj* box16 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 130, yBase, zBase + 50),Rot_t(0,0,0));
+	som->add(box16);
+
+	TestSObj* box20 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 10, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box20);
+	TestSObj* box21 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 30, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box21);
+	TestSObj* box22 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 50, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box22);
+	TestSObj* box23 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 70, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box23);
+	TestSObj* box24 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 90, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box24);
+	TestSObj* box25 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 110, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box25);
+	TestSObj* box26 = new TestSObj(som->genId(), MDL_TEST_BOX, Point_t(xBase + 130, yBase, zBase + 70),Rot_t(0,0,0));
+	som->add(box26);*/
+
 }
+

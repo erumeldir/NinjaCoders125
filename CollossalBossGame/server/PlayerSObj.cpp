@@ -184,7 +184,9 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_PLAYER;
 	state->health = health;
-	DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
+	/*DC::get()->print("Player position: %f, %f, %f\n", this->getPhysicsModel()->ref->getPos().x,
+		this->getPhysicsModel()->ref->getPos().y, this->getPhysicsModel()->ref->getPos().z);
+	*///DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
