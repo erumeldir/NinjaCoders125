@@ -15,9 +15,11 @@ public:
 
 	// static void manageEvent(WorldManager * wm, EventTypes evt, ServerObject * obj);
 
-	void event_death(ServerObject * obj);
+	void event_player_death(ServerObject * obj);
+	void event_monster_death(ServerObject * obj);
 	void event_reset(ServerObject * obj);
 	void event_connection(ServerObject * obj);
+	void event_monster_spawn(ServerObject * obj);
 	void event_disconnect(ServerObject * obj);
 
 private:
@@ -25,7 +27,10 @@ private:
 
 	// World Values
 	int totalPlayerCount;	// Useful information
-	int deathCount;	// Reset Logic 1
-	int resetCount; // Reset Logic 2
+	int totalMonsterCount;	// Useful information
+	int playerDeathCount;	// Reset Logic 1
+	int monsterDeathCount;	// Reset Logic 2
+	int resetCount; // Reset Logic 3
+	int gameOverFlag; // Reset Logic 4
 	
 };

@@ -52,6 +52,7 @@ public:
 	LPD3DXLINE backgroundLine;
 	LPD3DXSPRITE sprite;
 	LPD3DXSPRITE sprite1;
+	LPD3DXSPRITE sprite2;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
@@ -95,6 +96,7 @@ private:
 	Camera* cam;
 
 	IDirect3DTexture9 *g_texture;
+	IDirect3DTexture9 *test1_texture;
 
 	//Configuration fields
 	float cameraDist;

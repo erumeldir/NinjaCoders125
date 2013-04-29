@@ -28,6 +28,8 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	attackBuffer = CM::get()->find_config_as_int("TENTACLE_ATTACK_BUF");
 	attackFrames = CM::get()->find_config_as_int("TENTACLE_ATTACK_FRAMES");
 	pushForce = CM::get()->find_config_as_int("TENTACLE_PUSH_FORCE");
+
+	EventManager::get()->fireEvent(EVENT_MONSTER_SPAWN, NULL);
 }
 
 
@@ -60,6 +62,7 @@ bool TentacleSObj::update() {
 	if (health <= 0) {
 		health = 0;
 		overlord->removeTentacle(this);
+		EventManager::get()->fireEvent(EVENT_MONSTER_DEATH, NULL);
 		return true; // I died!
 		//health = 0;
 		// fancy animation 
