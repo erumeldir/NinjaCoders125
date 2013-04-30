@@ -23,7 +23,11 @@ public:
 	bool attacking, newAttack;
 	uint jumpCounter, attackCounter;
 	int health;
+//<<<<<<< HEAD
 	int damage;
+//=======
+	bool ready;
+//>>>>>>> develop
 
 private:
 	PhysicsModel *pm;
