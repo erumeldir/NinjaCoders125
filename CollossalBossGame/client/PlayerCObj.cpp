@@ -16,6 +16,7 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	this->health = state->health;
 	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, (float)M_PI), state->modelNum);
 	cameraPitch = 0;
+	ready = false;
 }
 
 PlayerCObj::~PlayerCObj(void)
@@ -67,6 +68,7 @@ bool PlayerCObj::update() {
 void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
+	this->ready = state->ready;
 	this->getRenderModel()->setModelState(state->animationstate);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }
