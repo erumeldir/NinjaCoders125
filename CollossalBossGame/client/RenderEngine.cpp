@@ -121,12 +121,33 @@ void RenderEngine::renderInitalization()
 	light.Range      = 500.0f;
 	// Create a direction for our light - it must be normalized  
 	D3DXVECTOR3 vecDir;
-	vecDir = D3DXVECTOR3(0.0f,-0.3f,0.5);
+	vecDir = D3DXVECTOR3(-1.0f,-0.1f,0.5);
 	D3DXVec3Normalize( (D3DXVECTOR3*)&light.Direction, &vecDir );
 
 	// Tell the device about the light and turn it on
 	direct3dDevice->SetLight( 0, &light );
+
+	
+	// Fill in a light structure defining our light
+	D3DLIGHT9 light2;
+	ZeroMemory( &light2, sizeof(D3DLIGHT9) );
+	light2.Type       = D3DLIGHT_DIRECTIONAL;
+	light2.Diffuse.r  = 1.0f;
+	light2.Diffuse.g  = 1.0f;
+	light2.Diffuse.b  = 1.0f;
+	light2.Diffuse.a  = 1.0f;
+	light2.Range      = 500.0f;
+	// Create a direction for our light - it must be normalized  
+	D3DXVECTOR3 vecDir1;
+//	vecDir1 = D3DXVECTOR3(0.0f,-0.3f,-0.5);
+	vecDir1 = D3DXVECTOR3(1.0f,-0.1f,-0.5);
+	D3DXVec3Normalize( (D3DXVECTOR3*)&light2.Direction, &vecDir1 );
+
+	// Tell the device about the light and turn it on
+	direct3dDevice->SetLight( 1, &light2 );
+
 	direct3dDevice->LightEnable( 0, TRUE ); 
+	direct3dDevice->LightEnable( 1, TRUE ); 
 
 	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );	
 }
