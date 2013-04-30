@@ -199,8 +199,13 @@ RenderEngine::RenderEngine() {
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
+	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
+                            "res/Hi.jpg",       //File Name
+                            &test1_texture);    //Texture handle
+
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
 	D3DXCreateSprite(this->direct3dDevice,&sprite1);
+	D3DXCreateSprite(this->direct3dDevice,&sprite2);
 	initTime=clock();
 }
 
@@ -228,6 +233,7 @@ RenderEngine::~RenderEngine() {
 	sprite->Release();
 	g_texture->Release();
 	sprite1->Release();
+	sprite2->Release();
 	delete cam;
 }
 
@@ -314,6 +320,12 @@ void RenderEngine::render() {
 	pos.y=0.0f;
 	pos.z=1.0f;
 
+	D3DXVECTOR3 test1;
+
+	test1.x=CM::get()->find_config_as_float("TEST1_X");
+	test1.y=CM::get()->find_config_as_float("TEST1_Y");
+	test1.z=CM::get()->find_config_as_float("TEST1_Z");
+
 	// Texture being used is 64 by 64:
 	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1920.0f/2);
 
@@ -339,6 +351,11 @@ void RenderEngine::render() {
 	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
 	sprite->End();
 
+	/* Temporary HUD things. Will be complete later.
+	sprite2->Begin(D3DXSPRITE_ALPHABLEND);
+	sprite2->Draw(test1_texture,NULL,NULL,&test1,0xFFFFFFFF);
+	sprite2->End();
+	*/ 
 	sceneDrawing();
 	drawHUD();
 
@@ -354,8 +371,11 @@ void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
 
-bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
-	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
+bool RenderEngine::loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat) { 
+	// Ignore the 0UL, it's some flag thing that's optional (0UL is the default value)
+	// I added it here so I can specify the root matrix (for models that need to be rotated)
+	// todo optimization (maybe add scaling here too, would that be faster?)
+	return RenderEngine::xAnimator->LoadXFile(filename,idAddr, 0UL, &rootMat);
 }
 
 // this is the main message handler for the program

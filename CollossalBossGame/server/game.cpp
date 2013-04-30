@@ -32,12 +32,12 @@ void buildRoom() {
 			 *north, *south,
 			 *east, *west;
 
-	floor   = new WallSObj(som->genId(), MDL_FLOOR, Point_t(), DOWN, Vec3f(2.5f, 1.f, 2.5f));
-	ceiling = new WallSObj(som->genId(), MDL_CEILING, Point_t(0.f, (float)height, 0.f), UP, Vec3f(2.5f, 1.f, 2.5f));
-	north   = new WallSObj(som->genId(), MDL_NORTH_WALL, Point_t(0.f, (float)height/2.f, (float)-depth/2.f), NORTH, Vec3f(2.5f, 2.5f, 1.f));
-	south   = new WallSObj(som->genId(), MDL_SOUTH_WALL, Point_t(0.f, (float)height/2.f, (float)depth/2.f), SOUTH, Vec3f(2.5f, 2.5f, 1.f));
-	east    = new WallSObj(som->genId(), MDL_EAST_WALL, Point_t((float)width/2.f, (float)height/2.f, 0.f), EAST, Vec3f(1.f, 2.5f, 2.5f));
-	west    = new WallSObj(som->genId(), MDL_WEST_WALL, Point_t((float)-width/2.f, (float)height/2.f, 0.f), WEST, Vec3f(1.f, 2.5f, 2.5f));
+	floor   = new WallSObj(som->genId(), MDL_FLOOR, Point_t(), DOWN);
+	ceiling = new WallSObj(som->genId(), MDL_CEILING, Point_t(0.f, (float)height, 0.f), UP);
+	north   = new WallSObj(som->genId(), MDL_NORTH_WALL, Point_t(0.f, (float)height/2.f, (float)-depth/2.f), NORTH);
+	south   = new WallSObj(som->genId(), MDL_SOUTH_WALL, Point_t(0.f, (float)height/2.f, (float)depth/2.f), SOUTH);
+	east    = new WallSObj(som->genId(), MDL_EAST_WALL, Point_t((float)width/2.f, (float)height/2.f, 0.f), EAST);
+	west    = new WallSObj(som->genId(), MDL_WEST_WALL, Point_t((float)-width/2.f, (float)height/2.f, 0.f), WEST);
 	
 	som->add(floor);
 	som->add(ceiling);
@@ -56,6 +56,7 @@ void gameInit() {
 	MonsterSObj* monster = new MonsterSObj(som->genId());
 	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t(), monster);
 	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0), monster);
+
 	som->add(tentacleLeft);
 	som->add(tentacleRight);
 	som->add(monster);

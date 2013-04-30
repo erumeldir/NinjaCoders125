@@ -40,6 +40,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	bool firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
+	modelAnimationState = IDLE;
 }
 
 void PlayerSObj::initialize() {
@@ -102,6 +103,7 @@ bool PlayerSObj::update() {
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 #endif
 
+
 	float yDist = 0.f;
 	if (istat.quit) {
 		return true; // delete me!
@@ -130,7 +132,7 @@ bool PlayerSObj::update() {
 		// This part gives us a buffer, so the user can bounce off the wall even 
 		// when they pressed 'jump' before they got there
 		if (jumping) jumpCounter++;
-		else jumpCounter = 0;
+		else jumpCounter = 0; 
 
 		appliedJumpForce = false; // we apply it on collision
 
@@ -161,12 +163,19 @@ bool PlayerSObj::update() {
 		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + (float)M_PI / 2.f)));
 		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + (float)M_PI / 2.f)));
 		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+		
+		// change animation according to state
+		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
+			this->setAnimationState(IDLE);
+		} else {
+			this->setAnimationState(WALK);
+		}
 	} else {
 		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
 			firedeath = true;
-			EventManager::get()->fireEvent(EVENT_DEATH, this); 
+			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
 	return false;
@@ -176,6 +185,8 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_PLAYER;
 	state->health = health;
+	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
+	state->animationstate = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
 

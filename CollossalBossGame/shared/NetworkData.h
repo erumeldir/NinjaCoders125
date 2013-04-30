@@ -113,6 +113,7 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	int animationstate;
 };
 
 /*
@@ -120,7 +121,6 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
-	Vec3f scale;
 };
 
 /*
@@ -137,4 +137,15 @@ struct MonsterState {
 struct TentacleState {
 	Model modelNum;
 	//int health;
+};
+
+/*
+ * Types of player animation states
+ */
+enum PlayerAnimationState {
+	IDLE = 0,
+	WALK = 1,
+	JUMP = 2,
+	ATK  = 3,
+	DEAD = 4
 };

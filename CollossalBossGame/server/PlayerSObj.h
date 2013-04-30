@@ -17,7 +17,7 @@ public:
 	void initialize();
 	virtual void onCollision(ServerObject *obj, const Vec3f &collNorm);
 	int getHealth() { return health; } 
-
+	void setAnimationState(int state) { modelAnimationState = state; }
 	char serialbuffer[100];
 
 	bool attacking, newAttack;
@@ -35,5 +35,6 @@ private:
 	int movDamp;
 	bool firedeath;
 	int gravityTimer;
+	int modelAnimationState;
 };
 

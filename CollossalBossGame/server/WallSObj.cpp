@@ -6,7 +6,7 @@
 #define WALL_WIDTH 2000 //150; increased size to reduce edge-case collision errors
 #define WALL_THICKNESS 200
 
-WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f scale) : ServerObject(id) {
+WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : ServerObject(id) {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new WallSObj %d ", id);
 	Box bxVol;
 	Rot_t rot;
@@ -63,7 +63,6 @@ WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir, Vec3f sc
 	pm = new PhysicsModel(pos, rot, 500, collDir);
 	pm->addBox(bxVol);
 	this->modelNum = modelNum;
-	this->scale = scale;
 	//pm->setColBox(CB_FLAT);
 	t = 0;
 	this->setFlag(IS_STATIC, true);
@@ -81,6 +80,5 @@ bool WallSObj::update() {
 int WallSObj::serialize(char * buf) {
 	ObjectState *state = (ObjectState*)buf;
 	state->modelNum = modelNum;
-	state->scale = scale;
 	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
 }
