@@ -96,6 +96,12 @@ typedef struct Vec3f {
 		z /= s;
 	}
 
+	float magnitude()
+	{
+		// square root of the dot product with itself
+		return sqrt(*this ^ *this);
+	}
+
 } Point_t, Rot_t;
 
 //Axis-aligned bounding box

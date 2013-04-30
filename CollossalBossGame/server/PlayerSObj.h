@@ -23,18 +23,21 @@ public:
 	bool attacking, newAttack;
 	uint jumpCounter, attackCounter;
 	int health;
-
+	int damage;
 
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
 	Point_t lastCollision;
 	bool jumping, newJump, appliedJumpForce;
+	bool charging, newCharge;
 	// Configuration options
 	float jumpDist;
+	float chargeForce;
 	int movDamp;
 	bool firedeath;
 	int gravityTimer;
 	int modelAnimationState;
+	int swordDamage, chargeDamage;
 };
 

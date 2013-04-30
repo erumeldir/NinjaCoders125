@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
+#include "PhysicsEngine.h"
 #include <time.h>
 
 
@@ -88,18 +89,18 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 	// if the monster is attacking, it pushes everything off it on the last attack frame
 	if (attackCounter == (attackBuffer + attackFrames))
 	{
-		Vec3f up = Vec3f(0, 1, 0);
+		Vec3f up = (PE::get()->getGravVec() * -1);
 		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);
 	}
 
 	if(!s.compare("class PlayerSObj")) 
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
-		if(player->attacking && player->getHealth() > 0) 
-		{
-			health-=3;
-			player->attacking = false;
-		}
+		//if(player->attacking && player->getHealth() > 0) 
+		//{
+			health-= player->damage;
+		//	player->attacking = false;
+		//}
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
 	}

@@ -199,8 +199,9 @@ RenderEngine::RenderEngine() {
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
+	// todo franklin config file
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
-                            "res/Hi.png",       //File Name
+                            "res/gameover.png",       //File Name
                             &test1_texture);    //Texture handle
 
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
