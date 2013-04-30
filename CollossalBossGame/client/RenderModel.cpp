@@ -137,6 +137,7 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum)
 			rad, numMesh);
 	*/
 	}
+	prevModelState = -1;
 }
 
 RenderModel::~RenderModel(void)
@@ -168,8 +169,9 @@ void RenderModel::render() {
 
 		//Render
 		if (RE::get()->debugFlag) DC::get()->print("ANIMATION STATE %d\n", modelState);
-		RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
+		if(modelState != prevModelState) RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
 		RE::get()->animate(modelId, /*scaleMat **/ rotX * rotY * rotZ * trans);
+		prevModelState = modelState;
 	}
 }
 

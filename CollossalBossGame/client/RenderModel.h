@@ -31,4 +31,5 @@ private:
 	Frame *ref;	//The skeleton
 	int modelId;
 	int modelState;
+	int prevModelState;
 };
