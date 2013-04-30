@@ -113,6 +113,7 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	int ready;
 	int animationstate;
 };
 

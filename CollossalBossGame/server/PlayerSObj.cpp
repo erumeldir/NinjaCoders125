@@ -41,6 +41,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	attacking = false;
 	gravityTimer = 0;
 	modelAnimationState = IDLE;
+	ready = false;
 }
 
 void PlayerSObj::initialize() {
@@ -78,6 +79,7 @@ void PlayerSObj::initialize() {
 	bool firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
+	ready = false;
 }
 
 PlayerSObj::~PlayerSObj(void) {
@@ -102,7 +104,9 @@ bool PlayerSObj::update() {
 	}
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 #endif
-
+	if (istat.start && !ready) {
+		ready = true; // delete me!
+	}
 
 	float yDist = 0.f;
 	if (istat.quit) {
@@ -185,6 +189,7 @@ int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_PLAYER;
 	state->health = health;
+	state->ready = ready;
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);

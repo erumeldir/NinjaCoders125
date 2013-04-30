@@ -15,6 +15,8 @@ public:
 	virtual RenderModel* getRenderModel() { return rm; }
 
 	virtual void deserialize(char* newState);
+	
+	int ready;
 
 private:
 	int health;
