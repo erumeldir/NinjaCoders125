@@ -22,6 +22,7 @@
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
+#include "HeadsUpDisplay.h"
 #include <time.h>
 
 using namespace std;
@@ -46,13 +47,6 @@ public:
 
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
-	ID3DXFont* direct3dText; // the pointer to the device class
-	LPD3DXLINE healthLine;
-	LPD3DXLINE monsterLine;
-	LPD3DXLINE backgroundLine;
-	LPD3DXSPRITE sprite;
-	LPD3DXSPRITE sprite1;
-	LPD3DXSPRITE sprite2;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
@@ -75,7 +69,6 @@ private:
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
 	void drawHUD();
-	void HUDInitialization();
 
 	RenderEngine();
 	virtual ~RenderEngine();
@@ -88,19 +81,15 @@ private:
 	string monsterHUDText;
 	int healthPts;
 	int monsterHealthPts;
-	clock_t initTime, final;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
 
 	Camera* cam;
-
-	IDirect3DTexture9 *g_texture;
-	IDirect3DTexture9 *test1_texture;
+	HeadsUpDisplay* hud;
 
 	//Configuration fields
 	float cameraDist;
-	int hudTopX, hudTopY;
 };
 typedef RenderEngine RE;
 
