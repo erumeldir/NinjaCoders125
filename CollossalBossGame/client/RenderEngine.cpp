@@ -200,7 +200,7 @@ RenderEngine::RenderEngine() {
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
-                            "res/Hi.jpg",       //File Name
+                            "res/Hi.png",       //File Name
                             &test1_texture);    //Texture handle
 
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
@@ -322,12 +322,10 @@ void RenderEngine::render() {
 
 	D3DXVECTOR3 test1;
 
-	//test1.x=CM::get()->find_config_as_float("TEST1_X");
-	//test1.y=CM::get()->find_config_as_float("TEST1_Y");
-	//test1.z=CM::get()->find_config_as_float("TEST1_Z");
-	test1.x = 0;
-	test1.y = 0;
-	test1.z = 0;
+	test1.x= 0; //CM::get()->find_config_as_float("TEST1_X");
+	test1.y= 0; //CM::get()->find_config_as_float("TEST1_Y");
+	test1.z= 0; //CM::get()->find_config_as_float("TEST1_Z");
+
 	// Texture being used is 64 by 64:
 	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1920.0f/2);
 
@@ -349,15 +347,17 @@ void RenderEngine::render() {
 	// Tell the sprite about the matrix
 	sprite->SetTransform(&mat);
 
+	sprite2->Begin(D3DXSPRITE_ALPHABLEND);
+	if(this->healthPts == 0) sprite2->Draw(test1_texture,NULL,NULL,&test1,0xFFFFFFFF);
+	sprite2->End();
+	
+
 	sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
 	sprite->End();
 
-	/* Temporary HUD things. Will be complete later.
-	sprite2->Begin(D3DXSPRITE_ALPHABLEND);
-	sprite2->Draw(test1_texture,NULL,NULL,&test1,0xFFFFFFFF);
-	sprite2->End();
-	*/ 
+	// Temporary HUD things. Will be complete later.
+	
 	sceneDrawing();
 	drawHUD();
 
