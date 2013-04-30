@@ -3,13 +3,11 @@
 #include <math.h>
 #include "ConfigurationManager.h"
 
-TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale, int dir) : ServerObject(id) {
+TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, int dir) : ServerObject(id) {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new TestSObj %d\n", id);
-	Box bxVol;
-
+	setFlag(IS_FALLING,1);
 	this->dir = dir;
 	this->modelNum = modelNum;
-	this->scale = scale;
 	switch (modelNum) {
 		case MDL_TEST_BOX:
 			bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-5, 0, -5, 10, 10, 10);
@@ -28,8 +26,8 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Vec3f scale,
 			bxVol = Box();
 			break;
 	}
-	
-	pm = new PhysicsModel(pos, rot, 500, bxVol);
+	pm = new PhysicsModel(pos, rot, 50);
+	testBoxIndex = pm->addBox(bxVol);
 	t = 0;
 }
 
@@ -64,12 +62,20 @@ bool TestSObj::update() {
 	}
 	++t;
 
+	// update box randomly
+	//bxVol.w++;
+	//bxVol.l++;
+	//bxVol.x--;
+	//bxVol.y--;
+	//pm->updateBox(testBoxIndex, bxVol);
+
+
+
 	return false;
 }
 
 int TestSObj::serialize(char * buf) {
 	ObjectState *state = (ObjectState*)buf;
 	state->modelNum = modelNum;
-	state->scale = scale;
 	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
 }

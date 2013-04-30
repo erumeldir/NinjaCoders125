@@ -121,12 +121,33 @@ void RenderEngine::renderInitalization()
 	light.Range      = 500.0f;
 	// Create a direction for our light - it must be normalized  
 	D3DXVECTOR3 vecDir;
-	vecDir = D3DXVECTOR3(0.0f,-0.3f,0.5);
+	vecDir = D3DXVECTOR3(-1.0f,-0.1f,0.5);
 	D3DXVec3Normalize( (D3DXVECTOR3*)&light.Direction, &vecDir );
 
 	// Tell the device about the light and turn it on
 	direct3dDevice->SetLight( 0, &light );
+
+	
+	// Fill in a light structure defining our light
+	D3DLIGHT9 light2;
+	ZeroMemory( &light2, sizeof(D3DLIGHT9) );
+	light2.Type       = D3DLIGHT_DIRECTIONAL;
+	light2.Diffuse.r  = 1.0f;
+	light2.Diffuse.g  = 1.0f;
+	light2.Diffuse.b  = 1.0f;
+	light2.Diffuse.a  = 1.0f;
+	light2.Range      = 500.0f;
+	// Create a direction for our light - it must be normalized  
+	D3DXVECTOR3 vecDir1;
+//	vecDir1 = D3DXVECTOR3(0.0f,-0.3f,-0.5);
+	vecDir1 = D3DXVECTOR3(1.0f,-0.1f,-0.5);
+	D3DXVec3Normalize( (D3DXVECTOR3*)&light2.Direction, &vecDir1 );
+
+	// Tell the device about the light and turn it on
+	direct3dDevice->SetLight( 1, &light2 );
+
 	direct3dDevice->LightEnable( 0, TRUE ); 
+	direct3dDevice->LightEnable( 1, TRUE ); 
 
 	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );	
 }
@@ -178,8 +199,13 @@ RenderEngine::RenderEngine() {
 	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
                              "res/nebula.jpg",       //File Name
                              &g_texture);    //Texture handle
+	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
+                            "res/Hi.png",       //File Name
+                            &test1_texture);    //Texture handle
+
 	D3DXCreateSprite(this->direct3dDevice,&sprite);
 	D3DXCreateSprite(this->direct3dDevice,&sprite1);
+	D3DXCreateSprite(this->direct3dDevice,&sprite2);
 	initTime=clock();
 }
 
@@ -207,6 +233,7 @@ RenderEngine::~RenderEngine() {
 	sprite->Release();
 	g_texture->Release();
 	sprite1->Release();
+	sprite2->Release();
 	delete cam;
 }
 
@@ -293,6 +320,12 @@ void RenderEngine::render() {
 	pos.y=0.0f;
 	pos.z=1.0f;
 
+	D3DXVECTOR3 test1;
+
+	test1.x= 0; //CM::get()->find_config_as_float("TEST1_X");
+	test1.y= 0; //CM::get()->find_config_as_float("TEST1_Y");
+	test1.z= 0; //CM::get()->find_config_as_float("TEST1_Z");
+
 	// Texture being used is 64 by 64:
 	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1920.0f/2);
 
@@ -314,10 +347,17 @@ void RenderEngine::render() {
 	// Tell the sprite about the matrix
 	sprite->SetTransform(&mat);
 
+	sprite2->Begin(D3DXSPRITE_ALPHABLEND);
+	if(this->healthPts == 0) sprite2->Draw(test1_texture,NULL,NULL,&test1,0xFFFFFFFF);
+	sprite2->End();
+	
+
 	sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
 	sprite->End();
 
+	// Temporary HUD things. Will be complete later.
+	
 	sceneDrawing();
 	drawHUD();
 
@@ -333,8 +373,11 @@ void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
 
-bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
-	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
+bool RenderEngine::loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat) { 
+	// Ignore the 0UL, it's some flag thing that's optional (0UL is the default value)
+	// I added it here so I can specify the root matrix (for models that need to be rotated)
+	// todo optimization (maybe add scaling here too, would that be faster?)
+	return RenderEngine::xAnimator->LoadXFile(filename,idAddr, 0UL, &rootMat);
 }
 
 // this is the main message handler for the program

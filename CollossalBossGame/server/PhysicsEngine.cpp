@@ -3,8 +3,6 @@
 #define TIMESTEP 5
 
 //Movement Defines
-#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
-#define AIR_FRICTION 1.01f	//A bit excessive, but it works for now
 #define MAX_VEL 5.0f
 
 //Collision Defines
@@ -106,12 +104,24 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	return true;	//We'll add a detection for has-moved later
 }
 
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
+{
+	// go through all the boxes of obj1 
+	vector<Box> obj1Boxes = obj1->getPhysicsModel()->colBoxes;
+	vector<Box> obj2Boxes = obj2->getPhysicsModel()->colBoxes;
+	for(std::vector<Box>::iterator box1 = obj1Boxes.begin(); box1 != obj1Boxes.end(); ++box1)
+		// go through all the boxes of obj
+		for(std::vector<Box>::iterator box2 = obj2Boxes.begin(); box2 != obj2Boxes.end(); ++box2)
+		{
+			applyPhysics(obj1, obj2, *box1, *box2);
+		}
+}
 
-void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1, Box b2) {
 	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
 				 *mdl2 = obj2->getPhysicsModel();
-	Box bx1 = mdl1->vol + mdl1->ref->getPos(),
-		bx2 = mdl2->vol + mdl2->ref->getPos();
+	Box bx1 = b1 + mdl1->ref->getPos(),
+		bx2 = b2 + mdl2->ref->getPos();
 	Vec3f collNorm1 = Vec3f(),
 		  collNorm2 = Vec3f();
 
@@ -189,7 +199,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(fXShift / 2, 0, 0);
             ptObj2Shift = Vec3f(-fXShift / 2, 0, 0);
         }
-		sign = fXShift < 0 ? -1 : 1;
+		sign = fXShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(sign,0,0);
 		collNorm2 = Vec3f(-sign,0,0);
 		mdl1->vel.x = 0;
@@ -207,7 +217,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(0, fYShift / 2, 0);
             ptObj2Shift = Vec3f(0, -fYShift / 2, 0);
         }
-		sign = fYShift < 0 ? -1 : 1;
+		sign = fYShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(0,sign,0);
 		collNorm2 = Vec3f(0,-sign,0);
 		
@@ -234,7 +244,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(0, 0, fZShift / 2);
             ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
         }
-		sign = fZShift < 0 ? -1 : 1;
+		sign = fZShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(0,0,sign);
 		collNorm2 = Vec3f(0,0,-sign);
 		mdl1->vel.z = 0;

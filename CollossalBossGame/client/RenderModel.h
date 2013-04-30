@@ -22,14 +22,14 @@
 class RenderModel
 {
 public:
-	RenderModel(Point_t pos, Rot_t rot, Model modelNum, Vec3f scale);
+	RenderModel(Point_t pos, Rot_t rot, Model modelNum);
 	virtual ~RenderModel(void);
 	virtual void render();
 	virtual void setModelState(int state_id);
 	Frame *getFrameOfRef() { return ref; }
 private:
 	Frame *ref;	//The skeleton
-	Vec3f scale;
 	int modelId;
 	int modelState;
+	int prevModelState;
 };

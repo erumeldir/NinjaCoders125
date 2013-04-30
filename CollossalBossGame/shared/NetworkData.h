@@ -81,6 +81,7 @@ enum ObjectType {
 	OBJ_GENERAL,
 	OBJ_PLAYER,
 	OBJ_MONSTER,
+	OBJ_TENTACLE,
 	NUM_OBJS
 };
 
@@ -120,19 +121,26 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
-	Vec3f scale;
 };
 
 /*
  * State information for the monster not encoded by the position
  */
 struct MonsterState {
-	Model modelNum;
+	//Model modelNum;
 	int health;
 };
 
 /*
- * State information for the monster not encoded by the position
+ * State information for the tentacle not encoded by the position
+ */
+struct TentacleState {
+	Model modelNum;
+	//int health;
+};
+
+/*
+ * Types of player animation states
  */
 enum PlayerAnimationState {
 	IDLE = 0,

@@ -11,7 +11,11 @@ config_dev.ini
 *.x
 *.bmp
 *.jpg
+*.png
 ./res/*
+*.mp3
+*.ogg
+*.wav
 
 # Build results
 

@@ -47,7 +47,7 @@ void ServerObjectManager::update() {
 			lsObjsToDelete.push_back(it->second->getId());
 			continue;
 		}
-
+		
 		//Update physics
 		if(PE::get()->applyPhysics(it->second)) {
 			//Add this object to the list of objects that have moved
@@ -180,7 +180,46 @@ ServerObject *ServerObjectManager::find(uint id) {
 	return NULL;
 }
 
-void ServerObjectManager::remove(uint id) {
-	//mObjs.erase(id);
+ServerObject *ServerObjectManager::remove(uint id) {
 	lsObjsRemoveQueue.push_back(id);
+	return find(id);
+}
+
+void ServerObjectManager::reset() {
+	// list<uint> asdf;
+	list<ServerObject*> lsPlayers;
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
+			it != mObjs.end();
+			++it) {
+		ServerObject * o = it->second;
+		string s = typeid(*o).name();
+		// if it's not a Player object...
+		if(s.compare("class PlayerSObj")) {
+			// asdf.push_back(it->first);
+			freeId(it->first);
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
+			// delete o;
+		}
+		// if it is...
+		else {
+			o->initialize();
+			lsPlayers.push_back(o);
+		}
+	}
+	mObjs.clear();
+	/*
+	for(list<uint>::iterator it = asdf.begin();
+			it != asdf.end();
+			++it) {
+			mObjs.erase(*it);
+	}
+	*/
+	
+	for(list<ServerObject*>::iterator it = lsPlayers.begin();
+			it != lsPlayers.end();
+			++it) {
+		add(*it);
+	}
+	lsPlayers.clear();
+	
 }

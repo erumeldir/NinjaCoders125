@@ -52,6 +52,7 @@ public:
 	LPD3DXLINE backgroundLine;
 	LPD3DXSPRITE sprite;
 	LPD3DXSPRITE sprite1;
+	LPD3DXSPRITE sprite2;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
@@ -62,7 +63,7 @@ public:
 
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
-	bool loadModel(const char * filename, int * idAddr);
+	bool loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat);
 
 	bool debugFlag;
 	//Debug
@@ -95,6 +96,7 @@ private:
 	Camera* cam;
 
 	IDirect3DTexture9 *g_texture;
+	IDirect3DTexture9 *test1_texture;
 
 	//Configuration fields
 	float cameraDist;
