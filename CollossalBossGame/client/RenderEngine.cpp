@@ -322,9 +322,9 @@ void RenderEngine::render() {
 
 	D3DXVECTOR3 test1;
 
-	test1.x=CM::get()->find_config_as_float("TEST1_X");
-	test1.y=CM::get()->find_config_as_float("TEST1_Y");
-	test1.z=CM::get()->find_config_as_float("TEST1_Z");
+	test1.x= 0; //CM::get()->find_config_as_float("TEST1_X");
+	test1.y= 0; //CM::get()->find_config_as_float("TEST1_Y");
+	test1.z= 0; //CM::get()->find_config_as_float("TEST1_Z");
 
 	// Texture being used is 64 by 64:
 	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1920.0f/2);
