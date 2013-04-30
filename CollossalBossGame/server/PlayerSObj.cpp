@@ -22,6 +22,7 @@ void PlayerSObj::initialize() {
 	chargeForce = CM::get()->find_config_as_float("CHARGE_FORCE");
 	swordDamage = CM::get()->find_config_as_int("SWORD_DAMAGE");
 	chargeDamage = CM::get()->find_config_as_int("CHARGE_DAMAGE");
+	chargeUpdate = CM::get()->find_config_as_float("CHARGE_UPDATE");
 
 	if(SOM::get()->debugFlag) DC::get()->print("Initialized new PlayerSObj %d\n", this->getId());
 
@@ -57,6 +58,7 @@ void PlayerSObj::initialize() {
 	attacking = false;
 	gravityTimer = 0;
 	charging = false;
+	charge = 0.0;
 	damage = 0;
 	modelAnimationState = IDLE;
 }
@@ -117,14 +119,31 @@ bool PlayerSObj::update() {
 
 		appliedJumpForce = false; // we apply it on collision
 
-		if (istat.specialPower && newCharge && !getFlag(IS_FALLING)) {
+		if (istat.specialPower) // holding down increases the charge
+		{
+			charge+=chargeUpdate;
+		}
+		else
+		{
+			// If we accumulated some charge, fire!
+			if (charge > 0.f)
+			{
+				Vec3f up = (PE::get()->getGravVec() * -1);
+				pm->applyForce(up * (chargeForce * charge));
+				charging = true;
+			}
+
+			charge = 0.f;
+		}
+
+		/*if (istat.specialPower && newCharge && !getFlag(IS_FALLING)) {
 			// CHARGE!!!
 			// todo for now up, should be forward (or up + forward?)
 			Vec3f up = (PE::get()->getGravVec() * -1);
 			pm->applyForce(up * chargeForce);
 			charging = true;
 		}
-		newCharge = !istat.specialPower;
+		newCharge = !istat.specialPower;*/
 
 		damage = charging ? chargeDamage : attacking ? swordDamage : 0;
 #if 1

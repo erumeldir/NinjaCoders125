@@ -31,9 +31,10 @@ private:
 	Point_t lastCollision;
 	bool jumping, newJump, appliedJumpForce;
 	bool charging, newCharge;
+	float charge;
 	// Configuration options
 	float jumpDist;
-	float chargeForce;
+	float chargeForce, chargeUpdate;
 	int movDamp;
 	bool firedeath;
 	int gravityTimer;
