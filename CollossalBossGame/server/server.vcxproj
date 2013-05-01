@@ -68,7 +68,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MonsterSObj.cpp" />
@@ -83,7 +82,6 @@
     <ClCompile Include="WorldManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EventManager.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MonsterSObj.h" />

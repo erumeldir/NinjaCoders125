@@ -3,6 +3,7 @@
 #include "ServerObjectManager.h"
 #include "defs.h"
 #include "PlayerSObj.h"
+#include "EventManager.h"
 #include <time.h>
 
 MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
@@ -81,4 +82,8 @@ int MonsterSObj::serialize(char * buf) {
 
 void MonsterSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
 	// should only collide on tentacle this is a container class
+}
+
+void MonsterSObj::register_handlers() {
+	// EventManager::get()->registerHandler(Event, Handler);
 }

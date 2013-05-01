@@ -1,5 +1,6 @@
 #pragma once
 #include "ServerObject.h"
+#include "CBGEventHandler.h"
 #include "TentacleSObj.h"
 #include <random>
 //#include <vector>
@@ -20,11 +21,13 @@ typedef enum TentacleState {
 // fwd decl
 class TentacleSObj;
 
-class MonsterSObj : public ServerObject
+class MonsterSObj : public ServerObject, public CBGEventHandler
 {
 public:
 	MonsterSObj(uint id);
 	virtual ~MonsterSObj(void);
+
+	virtual void register_handlers();
 
 	virtual bool update();
 	virtual PhysicsModel *getPhysicsModel() { return pm; }

@@ -12,9 +12,7 @@ public:
 	~WorldManager();
 	void init();
 	static WorldManager * get();
-
-	// static void manageEvent(WorldManager * wm, EventTypes evt, ServerObject * obj);
-
+	
 	void event_player_death(ServerObject * obj);
 	void event_monster_death(ServerObject * obj);
 	void event_reset(ServerObject * obj);
