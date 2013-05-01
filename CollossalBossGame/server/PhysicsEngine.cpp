@@ -277,27 +277,42 @@ void PhysicsEngine::setGravDir(DIRECTION dir) {
 	switch(dir) {
 	case NORTH:
 		newVec = Vec3f(0,0,1);
+		curGravRot = Quat_t(Vec3f(1,0,0), 3 * M_PI / 2);
 		break;
 	case SOUTH:
 		newVec = Vec3f(0,0,-1);
+		curGravRot = Quat_t(Vec3f(1,0,0), -3 * M_PI / 2);
 		break;
 	case EAST:
 		newVec = Vec3f(1,0,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), -3 * M_PI / 2);
 		break;
 	case WEST:
 		newVec = Vec3f(-1,0,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), 3 * M_PI / 2);
 		break;
 	case UP:
 		newVec = Vec3f(0,1,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), M_PI);
 		break;
 	case DOWN:
 		newVec = Vec3f(0,-1,0);
+		curGravRot = Quat_t();
 		break;
 	}
+	/*
+	DC::get()->print(LOGFILE, "Old/New vecs: (%f,%f,%f)/(%f,%f,%f) ", gravVec.x, gravVec.y, gravVec.z, newVec.x, newVec.y, newVec.z);
 	cross(&crossVec, newVec, gravVec);
 	crossVec.normalize();
-	float ang = angle(newVec, gravVec);
+	float ang = M_PI * 2 - angle(gravVec, newVec);
+	static Quat_t q = Quat_t();
 	curGravRot = Quat_t(crossVec, ang);
-	//DC::get()->print("Axis: (%f,%f,%f)\n", crossVec.x, crossVec.y, crossVec.z);
+	q *= curGravRot;
+	DC::get()->print(LOGFILE, "Axis: (%f,%f,%f) Angle: %f ", crossVec.x, crossVec.y, crossVec.z, ang * 180 / M_PI);
+	Vec3f up, fwd, rt;
+	getCorrectedAxes(q, &fwd, &up, &rt);
+	DC::get()->print(LOGFILE, "Up/Forward/Right: (%f,%f,%f)/(%f,%f,%f)/(%f,%f,%f)\n",
+		up.x, up.y, up.z, fwd.x, fwd.y, fwd.z,rt.x,rt.y, rt.z);
+	*/
 	gravVec = newVec;
 }

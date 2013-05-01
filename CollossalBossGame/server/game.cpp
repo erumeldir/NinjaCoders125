@@ -137,8 +137,9 @@ for(int x = -1; x < 2; ++x) {
 
 	buildRoom(Point_t(0, WIDTH / 2, 0), 1, 1, 1);
 
-	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(-50, 5, 100),Quat_t(),TEST_WEST);
-	//som->add(pyr);
+	TestSObj *pyr = new TestSObj(som->genId(), MDL_2, Point_t(0, 0, 20),Quat_t(),TEST_STILL);
+	pyr->setFlag(IS_STATIC, true);
+	som->add(pyr);
 
 	/*
 	for(int i = 6; i < 25; i++)

@@ -32,6 +32,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	appliedJumpForce = false;
 	
 	lastGravDir = PE::get()->getGravDir();
+	isRotating = false;
 }
 
 
@@ -78,15 +79,30 @@ bool PlayerSObj::update() {
 		PE *pe = PE::get();
 		if(lastGravDir != pe->getGravDir()) {
 			lastGravDir = pe->getGravDir();
-			pm->ref->rotate(pe->getCurGravRot());
+			//pm->ref->rotate(pe->getCurGravRot());
+			slerp(&initUp, initUp, finalUp, t);	//We may not have finished rotating
+			finalUp = pe->getCurGravRot();
+			t = 0;
 		}
-		Vec3f up = rotateUp(pm->ref->getRot());
+
+		//Vec3f up = rotateUp(pm->ref->getRot());
 
 		//Rotate by amount specified by player (does not affect up direction)
-		pm->ref->rotate(Quat_t(up,istat.rotHoriz));
+		Quat_t upRot;
+		slerp(&upRot, initUp, finalUp, t);
+		if(t < 1.0f) {
+			t += 0.1f;
+		}
+
+		yawRot *= Quat_t(Vec3f(0,1,0), istat.rotHoriz);
+
+
+		Quat_t qRot = upRot * yawRot;
+		pm->ref->setRot(qRot);
+		//pm->ref->rotate(Quat_t(up,istat.rotHoriz));
 
 		//Move the player: apply a force in the appropriate direction
-		Quat_t qRot = pm->ref->getRot();
+		//Quat_t qRot = pm->ref->getRot();
 		float rawRight = istat.rightDist / movDamp;
 		float rawForward = istat.forwardDist / movDamp;
 		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);

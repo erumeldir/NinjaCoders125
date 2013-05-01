@@ -22,18 +22,22 @@ bool WorldSObj::update() {
 		//Initial gravity-switching test
 		static char cdir = 'v';
 		if(gravityTimer == gravityInterval) {
-			PE::get()->setGravDir(EAST);
-			gravDir = EAST;
-			cdir = 'o';
-		} else if(gravityTimer == gravityInterval * 2) {
 			PE::get()->setGravDir(NORTH);
 			gravDir = NORTH;
-			cdir = '>';
-		} else if(gravityTimer > gravityInterval * 3) {
+			cdir = 'N';
+		} else if(gravityTimer == gravityInterval * 2) {
+			PE::get()->setGravDir(UP);
+			gravDir = UP;
+			cdir = 'U';
+		} else if(gravityTimer == gravityInterval * 3) {
+			PE::get()->setGravDir(EAST);
+			gravDir = EAST;
+			cdir = 'E';
+		} else if(gravityTimer >= gravityInterval * 4) {
 			PE::get()->setGravDir(DOWN);
 			gravDir = DOWN;
 			gravityTimer = 0;
-			cdir = 'v';
+			cdir = 'D';
 		}
 		DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 	}

@@ -90,6 +90,20 @@ Vec3f rotateFwd(const Quat_t &q) {
 	return res;
 }
 
+
+void getCorrectedAxes(const Quat_t &q, Vec3f *fwd, Vec3f *up, Vec3f *right) {
+	*fwd = rotateFwd(q);
+	*right = rotateRight(q);
+	fwd->normalize();
+	right->normalize();
+
+	cross(up, *fwd, *right);
+	up->normalize();
+	
+	cross(right, *up, *fwd);
+	right->normalize();
+}
+
 void cross(Vec3f *res, const Vec3f &v1, const Vec3f &v2) {
 	res->x = v1.y * v2.z - v1.z * v2.y;
 	res->y = v1.z * v2.x - v1.x * v2.z;
@@ -99,4 +113,12 @@ void cross(Vec3f *res, const Vec3f &v1, const Vec3f &v2) {
 
 float angle(const Vec3f &v1, const Vec3f &v2) {
 	return acos((v1 ^ v2) / (magnitude(v1) * magnitude(v2)));
+}
+
+void slerp(Quat_t *res, const Quat_t &start, const Quat_t &end, float t) {
+	res->w = end.w * (t) + start.w * (t - 1);
+	res->x = end.x * (t) + start.x * (t - 1);
+	res->y = end.y * (t) + start.y * (t - 1);
+	res->z = end.z * (t) + start.z * (t - 1);
+	res->normalize();
 }

@@ -10,8 +10,8 @@
 #include "DebugConsole.h"
 
 //Constants (that we don't want to change, if we might, they should go in the config file)
-#define M_PI 3.14159
-#define M_TAU 6.2832
+#define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
+#define M_TAU 6.28318530718
 
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
@@ -177,10 +177,12 @@ float magnitude(const Vec3f &v);
 float magnitude(const Vec4f &v);
 float angle(const Vec3f &v1, const Vec3f &v2);
 Vec3f rotate(const Vec3f &v, const Quat_t &q);
+void  getCorrectedAxes(const Quat_t &q, Vec3f *fwd, Vec3f *up, Vec3f *right);
 Vec3f rotateUp(const Quat_t &q);
 Vec3f rotateRight(const Quat_t &q);
 Vec3f rotateFwd(const Quat_t &q);
 void cross(Vec3f *res, const Vec3f &v1, const Vec3f &v2);
+void slerp(Quat_t *res, const Quat_t &start, const Quat_t &end, float t);
 
 //Axis-aligned bounding box
 typedef struct Box {

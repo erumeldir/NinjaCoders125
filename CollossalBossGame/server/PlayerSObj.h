@@ -28,6 +28,12 @@ private:
 	float jumpDist;
 	int movDamp;
 
+	float t;
+	Quat_t yawRot;			//Yaw about the default up vector
+	Quat_t initUp;
+	Quat_t finalUp;
+	bool isRotating;
+
 	DIRECTION lastGravDir;
 };
 
