@@ -14,30 +14,51 @@ WorldSObj::WorldSObj(uint id) : ServerObject(id) {
 WorldSObj::~WorldSObj(void) {
 }
 
+enum GRAV_ORDER {
+	GRAV_ORDER_START,
+//Switch the order of these values to change the order of directions through which gravity will iterate
+	GRAV_ORDER_N,
+	GRAV_ORDER_E,
+	GRAV_ORDER_W,
+	GRAV_ORDER_S,
+	GRAV_ORDER_U,
+	GRAV_ORDER_D,
+	GRAV_ORDER_END
+};
 
 bool WorldSObj::update() {
-	if(gravityInterval > 0) {
+	if(gravityInterval >= 0) {
 		gravityTimer++;
 
 		//Initial gravity-switching test
-		static char cdir = 'v';
-		if(gravityTimer == gravityInterval) {
+		static char cdir = '?';
+		if(gravityTimer == gravityInterval * GRAV_ORDER_N) {
 			PE::get()->setGravDir(NORTH);
 			gravDir = NORTH;
 			cdir = 'N';
-		} else if(gravityTimer == gravityInterval * 2) {
-			PE::get()->setGravDir(UP);
-			gravDir = UP;
-			cdir = 'U';
-		} else if(gravityTimer == gravityInterval * 3) {
+		} else if(gravityTimer == gravityInterval * GRAV_ORDER_E) {
 			PE::get()->setGravDir(EAST);
 			gravDir = EAST;
 			cdir = 'E';
-		} else if(gravityTimer >= gravityInterval * 4) {
+		} else if(gravityTimer == gravityInterval * GRAV_ORDER_U) {
+			PE::get()->setGravDir(UP);
+			gravDir = UP;
+			cdir = 'U';
+		} else if(gravityTimer == gravityInterval * GRAV_ORDER_S) {
+			PE::get()->setGravDir(SOUTH);
+			gravDir = SOUTH;
+			cdir = 'S';
+		} else if(gravityTimer == gravityInterval * GRAV_ORDER_W) {
+			PE::get()->setGravDir(WEST);
+			gravDir = WEST;
+			cdir = 'W';
+		} else if(gravityTimer == gravityInterval * GRAV_ORDER_D) {
 			PE::get()->setGravDir(DOWN);
 			gravDir = DOWN;
-			gravityTimer = 0;
 			cdir = 'D';
+		}
+		if(gravityTimer >= gravityInterval * (GRAV_ORDER_END - 1)) {
+			gravityTimer = 0;
 		}
 		DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 	}

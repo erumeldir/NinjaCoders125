@@ -29,10 +29,10 @@ private:
 	int movDamp;
 
 	float t;
+	float tRate;
 	Quat_t yawRot;			//Yaw about the default up vector
-	Quat_t initUp;
-	Quat_t finalUp;
-	bool isRotating;
+	Quat_t initUpRot;
+	Quat_t finalUpRot;
 
 	DIRECTION lastGravDir;
 };

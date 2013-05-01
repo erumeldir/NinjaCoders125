@@ -32,7 +32,11 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	appliedJumpForce = false;
 	
 	lastGravDir = PE::get()->getGravDir();
-	isRotating = false;
+	t = 1;
+	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
+	yawRot = Quat_t();
+	initUpRot = Quat_t();
+	finalUpRot = Quat_t();
 }
 
 
@@ -80,8 +84,8 @@ bool PlayerSObj::update() {
 		if(lastGravDir != pe->getGravDir()) {
 			lastGravDir = pe->getGravDir();
 			//pm->ref->rotate(pe->getCurGravRot());
-			slerp(&initUp, initUp, finalUp, t);	//We may not have finished rotating
-			finalUp = pe->getCurGravRot();
+			slerp(&initUpRot, initUpRot, finalUpRot, t);	//We may not have finished rotating
+			finalUpRot = pe->getCurGravRot();
 			t = 0;
 		}
 
@@ -89,9 +93,9 @@ bool PlayerSObj::update() {
 
 		//Rotate by amount specified by player (does not affect up direction)
 		Quat_t upRot;
-		slerp(&upRot, initUp, finalUp, t);
+		slerp(&upRot, initUpRot, finalUpRot, t);
 		if(t < 1.0f) {
-			t += 0.1f;
+			t += tRate;
 		}
 
 		yawRot *= Quat_t(Vec3f(0,1,0), istat.rotHoriz);
