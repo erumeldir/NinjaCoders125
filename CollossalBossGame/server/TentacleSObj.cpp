@@ -16,6 +16,10 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, Mons
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	pm = new PhysicsModel(pos, rot, 50*CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
+	//this does not take rotation into account. Hopefully that doesn't matter?
+	pm->updateBox(0, *(new Box(-10, -10, 0, 20, 20, 50)));
+	pm->addBox(*(new Box(-10, -10, 50, 20, 20, 150)));
+	pm->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	attackCounter = 0;
 	this->setFlag(IS_STATIC, 1);
@@ -45,7 +49,7 @@ bool TentacleSObj::update() {
 	// this emulates an attack
 
 	// start attacking!
-	if (attackCounter > attackBuffer){
+	if (attackCounter > attackBuffer && !(attackCounter % CYCLE)){
 		this->setFlag(IS_HARMFUL, 1);
 		modelAnimationState = T_SWEEP;
 	}

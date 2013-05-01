@@ -4,8 +4,6 @@
 #include <random>
 //#include <vector>
 
-#define CYCLE 30
-
 /* MonsterSObj.h
  * This defines our tentacle & it's strategy
  *

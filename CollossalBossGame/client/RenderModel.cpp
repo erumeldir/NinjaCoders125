@@ -80,17 +80,21 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, int state, Vec3
 			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded model %d\n",modelNum);
 			this->setModelState(state);
 		}
-	//	D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
-	//	float rad;
-	//	int numMesh;
-	//	RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
-	/*	DC::get()->print("Bounding box for model %d = (%f,%f,%f:%f,%f,%f); center = (%f,%f,%f); rad = %f; num meshes = %d\n",
-			modelNum,
-			mdlMin.x - sphereCenter.x, mdlMin.y - sphereCenter.y, mdlMin.z - sphereCenter.z,
-			mdlMax.x - mdlMin.x, mdlMax.y - mdlMin.y, mdlMax.z - mdlMin.z,
-			sphereCenter.x, sphereCenter.y, sphereCenter.z,
-			rad, numMesh);
-	*/
+		
+		if (filename == CM::get()->find_config("MODEL_TENTACLE1")) 
+		{
+		//	D3DXVECTOR3 mdlMin, mdlMax, sphereCenter;
+		//	float rad;
+		//	int numMesh;
+		//	RE::get()->getAnim()->GetBoundingShapes(modelId,&mdlMin,&mdlMax,&sphereCenter,&rad,&numMesh);
+		/*	DC::get()->print("Bounding box for model %d = (%f,%f,%f:%f,%f,%f); center = (%f,%f,%f); rad = %f; num meshes = %d\n",
+				modelNum,
+				mdlMin.x - sphereCenter.x, mdlMin.y - sphereCenter.y, mdlMin.z - sphereCenter.z,
+				mdlMax.x - mdlMin.x, mdlMax.y - mdlMin.y, mdlMax.z - mdlMin.z,
+				sphereCenter.x, sphereCenter.y, sphereCenter.z,
+				rad, numMesh);
+		*/
+		}
 	}
 }
 
@@ -122,12 +126,15 @@ void RenderModel::render() {
 		//DC::get()->print("(%f,%f,%f), (%f,%f,%f)\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.z);
 
 		//Render
-		DC::get()->print("ANIMATION STATE %d\n", modelState);
 		RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
 		RE::get()->animate(modelId, scaleMat * rotX * rotY * rotZ * trans);
 	}
 }
 
 void RenderModel::setModelState(int state_id) {
+	int s = this->modelState;
 	this->modelState = state_id;
+	if (s != state_id)
+		RE::get()->getAnim()->SetAnimationFrame(this->modelId, 0);
+
 }
