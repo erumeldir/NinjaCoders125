@@ -10,37 +10,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	// Set all your pointers to NULL here, so initialize()
 	// knows if it should create them or not
 	pm = NULL;
-
-//<<<<<<< HEAD
-//	// Write all your initialization code in initialize()
 	this->initialize();
-//=======
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	//pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
-	//pm->addBox(bxVol);
-	//lastCollision = pos;
-	//this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-	// Initialize input status
-	//istat.attack = false;
-	//istat.jump = false;
-	//istat.quit = false;
-	//istat.start = false;
-	//istat.specialPower = false;
-	//istat.rotAngle = 0.0;
-	//istat.rotHoriz = 0.0;
-	//istat.rotVert = 0.0;
-	//istat.rightDist = 0.0;
-	//istat.forwardDist = 0.0;
-
-	//newJump = true; // any jump at this point is a new jump
-	//newAttack = true; // same here
-	//appliedJumpForce = false;
-	//bool firedeath = false;
-	//attacking = false;
-	//gravityTimer = 0;
-	//modelAnimationState = IDLE;
-	//ready = false;
-//>>>>>>> develop
 }
 
 void PlayerSObj::initialize() {
@@ -57,7 +27,6 @@ void PlayerSObj::initialize() {
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	if (pm != NULL) delete pm;
 	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
@@ -85,14 +54,11 @@ void PlayerSObj::initialize() {
 	firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
-//<<<<<<< HEAD
 	charging = false;
 	charge = 0.0;
 	damage = 0;
 	modelAnimationState = IDLE;
-//=======
 	ready = false;
-//>>>>>>> develop
 }
 
 PlayerSObj::~PlayerSObj(void) {
@@ -156,6 +122,7 @@ bool PlayerSObj::update() {
 		if (istat.specialPower) // holding down increases the charge
 		{
 			charge+=chargeUpdate;
+			if(charge > 13) charge = 13.f;
 		}
 		else
 		{
@@ -228,6 +195,7 @@ int PlayerSObj::serialize(char * buf) {
 	state->modelNum = MDL_PLAYER;
 	state->health = health;
 	state->ready = ready;
+	state->charge = charge;
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);

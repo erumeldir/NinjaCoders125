@@ -14,6 +14,7 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
 	PlayerState *state = (PlayerState*)data;
 	this->health = state->health;
+	this->charge = state->charge;
 	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, (float)M_PI), state->modelNum);
 	cameraPitch = 0;
 	ready = false;
@@ -36,7 +37,7 @@ void PlayerCObj::showStatus()
 	//std::string s3 ("]");
 	//status << s1 << s2 << s3;
 	if (health <= 0) status << "\nGAME OVER";
-	RE::get()->setHUDText(status.str(), health);
+	RE::get()->setHUDText(status.str(), health, charge);
 }
 
 bool PlayerCObj::update() {
@@ -69,6 +70,7 @@ void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
 	this->ready = state->ready;
+	this->charge = state->charge;
 	this->getRenderModel()->setModelState(state->animationstate);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

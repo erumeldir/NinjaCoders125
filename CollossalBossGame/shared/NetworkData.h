@@ -114,6 +114,7 @@ struct PlayerState {
     Model modelNum;
 	int health;
 	int ready;
+	int charge;
 	int animationstate;
 };
 

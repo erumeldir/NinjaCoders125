@@ -18,7 +18,7 @@ public:
 	virtual ~HeadsUpDisplay(void);
 
 	void displayText(string hudText, string monsterHUDText);
-	void displayHealthBars(int playerHealth, int monsterHealth);
+	void displayHealthBars(int playerHealth, int monsterHealth, float charge);
 	void displayBackground();
 	void displayGameOver();
 	void displayStart(bool & gamestarted);
@@ -37,6 +37,7 @@ private:
 
 	LPD3DXLINE healthLine;
 	LPD3DXLINE monsterLine;
+	LPD3DXLINE chargeLine;
 	LPD3DXLINE backgroundLine;
 
 	LPD3DXSPRITE p1connect;
