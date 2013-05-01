@@ -9,7 +9,7 @@
 #include <sstream>
 
 PlayerCObj::PlayerCObj(uint id, char *data) :
-	ClientObject(id)
+	ClientObject(id, OBJ_PLAYER)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
 	PlayerState *state = (PlayerState*)data;
@@ -69,6 +69,9 @@ void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
 	this->ready = state->ready;
+	if(this->ready == false) {
+		RE::get()->gamestarted = false;
+	}
 	this->getRenderModel()->setModelState(state->animationstate);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

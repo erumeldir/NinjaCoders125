@@ -1,7 +1,7 @@
 #include "TentacleCObj.h"
 #include "ClientObjectManager.h"
 
-TentacleCObj::TentacleCObj(uint id, char *data) : ClientObject(id)
+TentacleCObj::TentacleCObj(uint id, char *data) : ClientObject(id, OBJ_TENTACLE)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new TentacleCObj %d\n", id);
 	TentacleState *state = (TentacleState*)data;

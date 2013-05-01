@@ -154,126 +154,11 @@ void RenderEngine::renderInitalization()
 }
 
 /**
- * Initializes a HUD, which right now is just text, so we're 
- * using DirectX Fonts, tutorial/explanation from here:
- * http://www.drunkenhyena.com/cgi-bin/view_cpp_article.pl?chapter=3;article=17
- * Author(s): Suman, Haro
- */
-
-
-/**
- * Initializes the sprites 
- * Author(s): Franklin
- */
-void RenderEngine::gamestartdisplayinit() {
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/p1connect.png", &p1connecttxt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/p2connect.png", &p2connecttxt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/p3connect.png", &p3connecttxt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/p4connect.png", &p4connecttxt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/youarep1.png", &youarep1txt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/youarep2.png", &youarep2txt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/youarep3.png", &youarep3txt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/youarep4.png", &youarep4txt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/pressstart.png", &pressstarttxt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/playerready.png", &playerreadytxt);
-	//D3DXCreateTextureFromFile(this->direct3dDevice, "res/blackbackground.png", &blackbackgroundtxt);
-
-	//D3DXCreateSprite(this->direct3dDevice,&p1connect);
-	//D3DXCreateSprite(this->direct3dDevice,&p2connect);
-	//D3DXCreateSprite(this->direct3dDevice,&p3connect);
-	//D3DXCreateSprite(this->direct3dDevice,&p4connect);
-	//D3DXCreateSprite(this->direct3dDevice,&youarep1);
-	//D3DXCreateSprite(this->direct3dDevice,&youarep2);
-	//D3DXCreateSprite(this->direct3dDevice,&youarep3);
-	//D3DXCreateSprite(this->direct3dDevice,&youarep4);
-	//D3DXCreateSprite(this->direct3dDevice,&pressstart);
-	//D3DXCreateSprite(this->direct3dDevice,&playerready);
-	//D3DXCreateSprite(this->direct3dDevice,&blackbackground);
-}
-
-/**
- * draws a sprite 
- * Author(s): Franklin
- */
-//void displaytexture(LPD3DXSPRITE * sprite, D3DXVECTOR3 * pos, IDirect3DTexture9 ** texture) {
-//	(*sprite)->Begin(D3DXSPRITE_ALPHABLEND); 
-//	(*sprite)->Draw(*texture,NULL,NULL,pos,0xFFFFFFFF); 
-//	(*sprite)->End();
-//}
-
-/**
  * Initializes the sprites 
  * Author(s): Franklin
  */
 void RenderEngine::gamestartdisplaylogic() {
-	hud->displayStart(gamestarted);
-	//if (!gamestarted) {
-	//	if (!gamestartedtexturesinitialized) {
-	//		gamestartdisplayinit();
-	//		gamestartedtexturesinitialized = true;
-	//	}
-	//	map<uint, ClientObject *> * objlist = COM::get()->getObjects();
-	//	int pid = COM::get()->player_id;
-	//	int playercount = 0;
-	//	int playernumber = 0;
-	//	int ready[5]; ready[1] = 0; ready[2] = 0; ready[3] = 0; ready[4] = 0;
-	//	map<uint, ClientObject *>::iterator it = objlist->begin();
-	//	for(; it != objlist->end(); ++it) {
-	//		ClientObject * o = it->second;
-	//		string s = typeid(*o).name();
-	//		// if it's not a Player object...
-	//		if(!s.compare("class PlayerCObj")) {
-	//			PlayerCObj * pc = (PlayerCObj *)o;
-	//			playercount++;
-	//			if (pc->getId() == pid) {
-	//				playernumber = playercount;
-	//				ready[playercount] = pc->ready;
-	//			} else {
-	//				ready[playercount] = pc->ready;
-	//			}
-	//		}
-	//	}
-	//	if(playercount >= 1) {
-	//		D3DXVECTOR3 p1c(0,0,0.25);
-	//		D3DXVECTOR3 p1r(0,0,0);
-	//		if (ready[1]) { displaytexture(&playerready, &p1r, &playerreadytxt); }
-	//		(playernumber == 1) ? displaytexture(&youarep1, &p1c, &youarep1txt) : displaytexture(&p1connect, &p1c, &p1connecttxt);
-	//	}
-	//	if(playercount >= 2) {
-	//		D3DXVECTOR3 p2c(300,0,0.25);
-	//		D3DXVECTOR3 p2r(300,0,0);
-	//		if (ready[2]) { displaytexture(&playerready, &p2r, &playerreadytxt); }
-	//		(playernumber == 2) ? displaytexture(&youarep2, &p2c, &youarep2txt) : displaytexture(&p2connect, &p2c, &p2connecttxt);
-	//	}
-	//	if(playercount >= 3) {
-	//		D3DXVECTOR3 p3c(0,300,0.25);
-	//		D3DXVECTOR3 p3r(0,300,0);
-	//		if (ready[3]) { displaytexture(&playerready, &p3r, &playerreadytxt); }
-	//		(playernumber == 3) ? displaytexture(&youarep3, &p3c, &youarep3txt) : displaytexture(&p3connect, &p3c, &p3connecttxt);
-	//	}
-	//	if(playercount >= 4) {
-	//		D3DXVECTOR3 p4c(300,300,0.25);
-	//		D3DXVECTOR3 p4r(300,300,0);
-	//		if (ready[4]) { displaytexture(&playerready, &p4r, &playerreadytxt); }
-	//		(playernumber == 4) ? displaytexture(&youarep4, &p4c, &youarep4txt) : displaytexture(&p4connect, &p4c, &p4connecttxt);
-	//	}
-	//	if(!ready[playernumber]) {
-	//		D3DXVECTOR3 rdy(300,200,0);
-	//		displaytexture(&pressstart, &rdy, &pressstarttxt);
-	//	}
-	//	D3DXVECTOR3 blk(0,0,0.5);
-	//	displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
-
-	//	bool allready = true;
-	//	for(int j = 1; j < playercount+1; j++) {
-	//		if(ready[j] != 1) {
-	//			allready = false;
-	//		}
-	//	}
-	//	if(allready) {
-	//		gamestarted = true;
-	//	}
-	//}
+	hud->displayStart();
 }
 
 /*
@@ -291,7 +176,7 @@ RenderEngine::RenderEngine() {
 	D3DXMatrixIdentity(&world);
 
 	cam = new Camera(cameraDist);
-	hud = new HeadsUpDisplay(direct3dDevice);
+	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
 	this->gamestarted = false;
@@ -319,8 +204,10 @@ RenderEngine::~RenderEngine() {
 }
 
 void RenderEngine::drawHUD() {
-	hud->displayText(this->hudText,this->monsterHUDText);
-	hud->displayHealthBars(this->healthPts, this->monsterHealthPts);
+	if(gamestarted) {
+		hud->displayText(this->hudText,this->monsterHUDText);
+		hud->displayHealthBars(this->healthPts, this->monsterHealthPts);
+	}
 }
 
 /*where we actually draw a scene

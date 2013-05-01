@@ -26,6 +26,18 @@ ClientObjectManager::~ClientObjectManager(void) {
 }
 
 /*
+ * Populates the vector with all client objects of ObjectType type.
+ * Author: Franklin
+ */
+void ClientObjectManager::findObjects(ObjectType type, vector<ClientObject *> * l) {
+	for(map<uint, ClientObject *>::iterator it = mObjs.begin(); it != mObjs.end(); ++it) {
+		if (it->second->getObjectType() == type) {
+			l->push_back(it->second);
+		}
+	}
+}
+
+/*
  * Performs logic updates
  */
 #include <list>

@@ -14,21 +14,21 @@
 class HeadsUpDisplay
 {
 public:
-	HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice);
+	HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs);
 	virtual ~HeadsUpDisplay(void);
 
 	void displayText(string hudText, string monsterHUDText);
 	void displayHealthBars(int playerHealth, int monsterHealth);
 	void displayBackground();
 	void displayGameOver();
-	void displayStart(bool & gamestarted);
+	void displayVictory();
+	void displayStart();
 
 private:
+	bool * gamestart;
 	ID3DXFont* direct3dText; // the pointer to the device class
 
-	LPD3DXSPRITE sprite;
-	LPD3DXSPRITE sprite1;
-	LPD3DXSPRITE sprite2;
+
 	
 	IDirect3DTexture9 *g_texture;
 	IDirect3DTexture9 *test1_texture;
@@ -38,6 +38,10 @@ private:
 	LPD3DXLINE healthLine;
 	LPD3DXLINE monsterLine;
 	LPD3DXLINE backgroundLine;
+
+	LPD3DXSPRITE sprite;
+	LPD3DXSPRITE sprite1;
+	LPD3DXSPRITE sprite2;
 
 	LPD3DXSPRITE p1connect;
 	LPD3DXSPRITE p2connect;
@@ -50,6 +54,7 @@ private:
 	LPD3DXSPRITE pressstart;
 	LPD3DXSPRITE playerready;
 	LPD3DXSPRITE blackbackground;
+	LPD3DXSPRITE youwin;
 	IDirect3DTexture9 *p1connecttxt;
 	IDirect3DTexture9 *p2connecttxt;
 	IDirect3DTexture9 *p3connecttxt;
@@ -61,6 +66,7 @@ private:
 	IDirect3DTexture9 *pressstarttxt;
 	IDirect3DTexture9 *playerreadytxt;
 	IDirect3DTexture9 *blackbackgroundtxt;
+	IDirect3DTexture9 *youwintxt;
 
 	clock_t initTime;
 };

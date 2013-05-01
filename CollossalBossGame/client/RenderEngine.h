@@ -63,7 +63,7 @@ public:
 	//Debug
 	IXAnimator *getAnim() { return xAnimator; }
 
-
+	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
@@ -92,32 +92,6 @@ private:
 
 	//Configuration fields
 	float cameraDist;
-
-	// Game Start Sprite and Logic Fields
-	//LPD3DXSPRITE p1connect;
-	//LPD3DXSPRITE p2connect;
-	//LPD3DXSPRITE p3connect;
-	//LPD3DXSPRITE p4connect;
-	//LPD3DXSPRITE youarep1;
-	//LPD3DXSPRITE youarep2;
-	//LPD3DXSPRITE youarep3;
-	//LPD3DXSPRITE youarep4;
-	//LPD3DXSPRITE pressstart;
-	//LPD3DXSPRITE playerready;
-	//LPD3DXSPRITE blackbackground;
-	//IDirect3DTexture9 *p1connecttxt;
-	//IDirect3DTexture9 *p2connecttxt;
-	//IDirect3DTexture9 *p3connecttxt;
-	//IDirect3DTexture9 *p4connecttxt;
-	//IDirect3DTexture9 *youarep1txt;
-	//IDirect3DTexture9 *youarep2txt;
-	//IDirect3DTexture9 *youarep3txt;
-	//IDirect3DTexture9 *youarep4txt;
-	//IDirect3DTexture9 *pressstarttxt;
-	//IDirect3DTexture9 *playerreadytxt;
-	//IDirect3DTexture9 *blackbackgroundtxt;
-	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
-	bool gamestartedtexturesinitialized;
 };
 typedef RenderEngine RE;
 

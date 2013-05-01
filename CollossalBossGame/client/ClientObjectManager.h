@@ -17,7 +17,7 @@ public:
 	static void clean() { delete com; }
 
 	void update();
-	map<uint, ClientObject *> * getObjects() { return &mObjs; } // Franklin: Temporary change while I work on rendering the start screen
+	void findObjects(ObjectType type, vector<ClientObject *> * l);
 
 	//Object handling
 	ClientObject *find(uint id);

@@ -5,7 +5,8 @@
 #include "NetworkServices.h"
 #include "NetworkData.h"
 #include <ws2tcpip.h>
-#include <stdio.h> 
+#include <stdio.h>
+#include <vector>
 
 // size of our buffer
 #define DEFAULT_BUFLEN 512
