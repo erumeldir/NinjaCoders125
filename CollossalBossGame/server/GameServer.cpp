@@ -81,6 +81,7 @@ int main()
 			23-35 : swipe back (12) <---
 			35-50 : going back (15) -->
 		 */
+		/*
 		Vec3f pos;
 		int z;
 		if (dir < 13 || (dir >= 23 && dir < 35) ) {
@@ -183,7 +184,7 @@ int main()
 			tip->getPhysicsModel()->ref->setPos(pos);
 		}
 		
-		dir++;
+		dir++;*/
     }
 
 	SOM::clean();
