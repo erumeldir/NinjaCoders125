@@ -40,5 +40,6 @@ private:
 
 	// Parsers
 	Vec3f parseAsPoint(string value);
+	Vec4f parseAsVec4f(string value);
 };
 typedef ConfigurationManager CM;

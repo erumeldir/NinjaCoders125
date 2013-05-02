@@ -188,7 +188,7 @@ void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, floa
 
 
 	if(playerHealth == 0) displayGameOver();
-	else if(monsterHealth == 0) displayVictory();
+	else if(monsterHealth == 0) displayVictory(); // todo Franklin fix so that we only Victory on last phase
 }
 
 void HeadsUpDisplay::displayBackground()

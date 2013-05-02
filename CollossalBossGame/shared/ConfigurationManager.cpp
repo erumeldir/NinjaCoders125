@@ -222,6 +222,16 @@ Vec3f ConfigurationManager::parseAsPoint(string value) {
 	return Vec3f(fx, fy, fz);
 }
 
+Vec4f ConfigurationManager::parseAsVec4f(string value) {
+	vector<string> chunk;
+	split(value, ',', chunk);
+	assert(chunk.size() == 4 && "Config Error: Vec4f's are represented as <floatx> , <floaty> , <floatz>, <floatw>. Spaces will ignored.");
+	string x = chunk[0], y = chunk[1], z = chunk[2], w = chunk[3];
+	stripSpaces(x); stripSpaces(y); stripSpaces(z);
+	float fx = (float)atof(x.c_str()), fy = (float)atof(y.c_str()), fz = (float)atof(z.c_str()), fw = (float)atof(w.c_str());
+	return Vec4f(fx, fy, fz, fw);
+}
+
 map<Point_t, Quat_t> ConfigurationManager::find_config_as_places(string key) {
 	map<Point_t, Quat_t> result;
 	//result.push_back(pair<Vec3f, Vec3f>(Vec3f(-20, 100, 300), Vec3f()));
@@ -248,8 +258,9 @@ map<Point_t, Quat_t> ConfigurationManager::find_config_as_places(string key) {
 
 		Point_t pos = parseAsPoint(currPair[0]);
 
-		Vec3f v = parseAsPoint(currPair[1]);
-		Quat_t rot = Vec4f(v.x, v.y, v.z, 0);
+		Vec4f v = parseAsVec4f(currPair[1]);
+		Vec3f axis = Vec3f(v.x, v.y, v.z);
+		Quat_t rot = Quat_t(axis, v.w);
 		result[pos] = rot;
 
 		index++;

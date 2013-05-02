@@ -111,24 +111,6 @@ bool PlayerSObj::update() {
 
 		appliedJumpForce = false; // we apply it on collision
 
-		if (istat.specialPower/* && !getFlag(IS_FALLING)*/) // holding down increases the charge
-		{
-			charge+=chargeUpdate;
-			if(charge > 13) charge = 13.f;
-		}
-		else
-		{
-			// If we accumulated some charge, fire!
-			if (charge > 0.f)
-			{
-				Vec3f up = (PE::get()->getGravVec() * -1);
-				pm->applyForce(up * (chargeForce * charge));
-				charging = true;
-			}
-
-			charge = 0.f;
-		}
-
 		/*if (istat.specialPower && newCharge && !getFlag(IS_FALLING)) {
 			// CHARGE!!!
 			// todo for now up, should be forward (or up + forward?)
@@ -186,6 +168,27 @@ bool PlayerSObj::update() {
 		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
 		
 		pm->applyForce(total);
+
+		// Apply special power
+		if (istat.specialPower/* && !getFlag(IS_FALLING)*/) // holding down increases the charge
+		{
+			charge+=chargeUpdate;
+			if(charge > 13) charge = 13.f;
+		}
+		else
+		{
+			// If we accumulated some charge, fire!
+			if (charge > 0.f)
+			{
+				// Vec3f up = (PE::get()->getGravVec() * -1);
+				//pm->applyForce(up * (chargeForce * charge));
+				pm->applyForce(rotate(Vec3f(0, chargeForce * charge, chargeForce * charge), qRot));
+				charging = true;
+			}
+
+			charge = 0.f;
+		}
+
 		
 		// change animation according to state
 		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
