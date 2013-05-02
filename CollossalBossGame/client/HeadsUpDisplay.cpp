@@ -1,8 +1,9 @@
 #include "HeadsUpDisplay.h"
 #include "ConfigurationManager.h"
 
-HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice)
+HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs)
 {
+	gamestart = gs;
 	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
 	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
 
@@ -46,6 +47,7 @@ HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice)
 	D3DXCreateTextureFromFile(direct3dDevice, "res/pressstart.png", &pressstarttxt);
 	D3DXCreateTextureFromFile(direct3dDevice, "res/playerready.png", &playerreadytxt);
 	D3DXCreateTextureFromFile(direct3dDevice, "res/blackbackground.png", &blackbackgroundtxt);
+	D3DXCreateTextureFromFile(direct3dDevice, "res/youwin.png", &youwintxt);
 
 	D3DXCreateSprite(direct3dDevice,&p1connect);
 	D3DXCreateSprite(direct3dDevice,&p2connect);
@@ -58,6 +60,7 @@ HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice)
 	D3DXCreateSprite(direct3dDevice,&pressstart);
 	D3DXCreateSprite(direct3dDevice,&playerready);
 	D3DXCreateSprite(direct3dDevice,&blackbackground);
+	D3DXCreateSprite(direct3dDevice,&youwin);
 
 	initTime = clock();
 }
@@ -85,6 +88,7 @@ HeadsUpDisplay::~HeadsUpDisplay(void)
 	pressstart->Release();
 	playerready->Release();
 	blackbackground->Release();
+	youwin->Release();
 	p1connecttxt->Release();
 	p2connecttxt->Release();
 	p3connecttxt->Release();
@@ -96,7 +100,7 @@ HeadsUpDisplay::~HeadsUpDisplay(void)
 	pressstarttxt->Release();
 	playerreadytxt->Release();
 	blackbackgroundtxt->Release();
-
+	youwintxt->Release();
 }
 
 void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
@@ -184,6 +188,7 @@ void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, floa
 
 
 	if(playerHealth == 0) displayGameOver();
+	else if(monsterHealth == 0) displayVictory();
 }
 
 void HeadsUpDisplay::displayBackground()
@@ -221,34 +226,42 @@ void HeadsUpDisplay::displayGameOver()
 	sprite2->End();
 }	
 
+void HeadsUpDisplay::displayVictory()
+{
+	D3DXVECTOR3 test1;
+
+	test1.x= 0; //CM::get()->find_config_as_float("TEST1_X");
+	test1.y= 100; //CM::get()->find_config_as_float("TEST1_Y");
+	test1.z= 0; //CM::get()->find_config_as_float("TEST1_Z");
+	
+	youwin->Begin(D3DXSPRITE_ALPHABLEND);
+	youwin->Draw(youwintxt,NULL,NULL,&test1,0xFFFFFFFF);
+	youwin->End();
+}	
+
 void displaytexture(LPD3DXSPRITE * sprite, D3DXVECTOR3 * pos, IDirect3DTexture9 ** texture) {
 	(*sprite)->Begin(D3DXSPRITE_ALPHABLEND); 
 	(*sprite)->Draw(*texture,NULL,NULL,pos,0xFFFFFFFF); 
 	(*sprite)->End();
 }
 
-void HeadsUpDisplay::displayStart(bool & gamestarted)
+void HeadsUpDisplay::displayStart()
 {
-	if (!gamestarted) {
-		map<uint, ClientObject *> * objlist = COM::get()->getObjects();
+	if (!*gamestart) {
 		int pid = COM::get()->player_id;
 		int playercount = 0;
 		int playernumber = 0;
 		int ready[5]; ready[1] = 0; ready[2] = 0; ready[3] = 0; ready[4] = 0;
-		map<uint, ClientObject *>::iterator it = objlist->begin();
-		for(; it != objlist->end(); ++it) {
-			ClientObject * o = it->second;
-			string s = typeid(*o).name();
-			// if it's not a Player object...
-			if(!s.compare("class PlayerCObj")) {
-				PlayerCObj * pc = (PlayerCObj *)o;
-				playercount++;
-				if (pc->getId() == pid) {
-					playernumber = playercount;
-					ready[playercount] = pc->ready;
-				} else {
-					ready[playercount] = pc->ready;
-				}
+		vector<ClientObject *> l;
+		COM::get()->findObjects(OBJ_PLAYER, &l);
+		for(vector<ClientObject *>::iterator it = l.begin(); it != l.end(); ++it) {
+			PlayerCObj * pc = (PlayerCObj *)(*it);
+			playercount++;
+			if (pc->getId() == pid) {
+				playernumber = playercount;
+				ready[playercount] = pc->ready;
+			} else {
+				ready[playercount] = pc->ready;
 			}
 		}
 		if(playercount >= 1) {
@@ -289,7 +302,7 @@ void HeadsUpDisplay::displayStart(bool & gamestarted)
 			}
 		}
 		if(allready) {
-			gamestarted = true;
+			*gamestart = true;
 		}
 	}
 

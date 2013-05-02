@@ -1,11 +1,11 @@
 #include "TentacleCObj.h"
 #include "ClientObjectManager.h"
 
-TentacleCObj::TentacleCObj(uint id, char *data) : ClientObject(id)
+TentacleCObj::TentacleCObj(uint id, char *data) : ClientObject(id, OBJ_TENTACLE)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new TentacleCObj %d\n", id);
 	TentacleState *state = (TentacleState*)data;
-	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum);
+	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
 }
 
 

@@ -50,7 +50,6 @@ public:
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
-	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
 	void setHUDText(string newText, int health, float charge) { hudText = newText; healthPts = health; this->charge = charge;}
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
@@ -63,7 +62,7 @@ public:
 	//Debug
 	IXAnimator *getAnim() { return xAnimator; }
 
-
+	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
@@ -93,9 +92,6 @@ private:
 
 	//Configuration fields
 	float cameraDist;
-
-	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
-	bool gamestartedtexturesinitialized;
 };
 typedef RenderEngine RE;
 

@@ -44,7 +44,7 @@ private:
 	int phase; // what phase of the monster you're in
 
 	set<TentacleSObj*> tentacles;
-	map<Point_t, Rot_t> availablePlacements;
+	map<Point_t, Quat_t> availablePlacements;
 	vector<Point_t> placements;
 	uint numParts;
 	//TentacleState state;

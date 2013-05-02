@@ -9,12 +9,12 @@ MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new MonsterObj %d\n", id);
 	this->health = 0;
-	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm = new PhysicsModel(Point_t(), Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	this->setFlag(IS_STATIC, 1);
 	
 	this->availablePlacements = CM::get()->find_config_as_places("TENTACLE_POSITIONS");
 
-	for(map<Point_t,Rot_t>::iterator it = availablePlacements.begin(); it != availablePlacements.end(); ++it) {
+	for(map<Point_t,Quat_t>::iterator it = availablePlacements.begin(); it != availablePlacements.end(); ++it) {
 	  placements.push_back(it->first);
 	}
 
@@ -68,12 +68,12 @@ bool MonsterSObj::update() {
 		for (uint i=0; i<numParts; i++)
 		{
 			// pick the random position
-			map<Point_t, Rot_t>::iterator it;
+			map<Point_t, Quat_t>::iterator it;
 			do {
 				Point_t randPoint = placements[rand() % placements.size()];
 				it = availablePlacements.find(randPoint);
 			} while (it == availablePlacements.end());
-			pair<Point_t, Rot_t> currPlace = *it;
+			pair<Point_t, Quat_t> currPlace = *it;
 			availablePlacements.erase(it);
 
 			TentacleSObj * newTentacle;

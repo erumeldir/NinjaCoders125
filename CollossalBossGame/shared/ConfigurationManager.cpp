@@ -222,8 +222,8 @@ Vec3f ConfigurationManager::parseAsPoint(string value) {
 	return Vec3f(fx, fy, fz);
 }
 
-map<Point_t, Rot_t> ConfigurationManager::find_config_as_places(string key) {
-	map<Point_t, Rot_t> result;
+map<Point_t, Quat_t> ConfigurationManager::find_config_as_places(string key) {
+	map<Point_t, Quat_t> result;
 	//result.push_back(pair<Vec3f, Vec3f>(Vec3f(-20, 100, 300), Vec3f()));
 	//result.push_back(make_pair(Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0)));
 	//return result;
@@ -247,8 +247,9 @@ map<Point_t, Rot_t> ConfigurationManager::find_config_as_places(string key) {
 		assert(currPair.size() == 2 && "Config Error: Places are represented as position : rotation. Spaces will be ignored.");
 
 		Point_t pos = parseAsPoint(currPair[0]);
-		Rot_t rot = parseAsPoint(currPair[1]);
 
+		Vec3f v = parseAsPoint(currPair[1]);
+		Quat_t rot = Vec4f(v.x, v.y, v.z, 0);
 		result[pos] = rot;
 
 		index++;

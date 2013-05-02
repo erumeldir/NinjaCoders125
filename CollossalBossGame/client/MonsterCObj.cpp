@@ -3,14 +3,13 @@
 #include "RenderEngine.h"
 
 
-MonsterCObj::MonsterCObj(uint id, char *data) : ClientObject(id)
+MonsterCObj::MonsterCObj(uint id, char *data) : ClientObject(id, OBJ_MONSTER)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new MonsterCObj %d\n", id);
 	MonsterState *state = (MonsterState*)data;
 	this->health = state->health;
-	rm = new RenderModel(Point_t(),Rot_t(), (Model)-1);
+	rm = new RenderModel(Point_t(),Quat_t(), (Model)-1);
 }
-
 
 MonsterCObj::~MonsterCObj(void)
 {
