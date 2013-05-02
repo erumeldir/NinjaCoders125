@@ -36,7 +36,6 @@ void PlayerCObj::showStatus()
 	//std::string s2 (floor(health/20 + 0.5f), '~');
 	//std::string s3 ("]");
 	//status << s1 << s2 << s3;
-	if (health <= 0) status << "\nGAME OVER";
 	RE::get()->setHUDText(status.str(), health, charge);
 }
 

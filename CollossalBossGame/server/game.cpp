@@ -53,11 +53,19 @@ void gameInit() {
 
 	buildRoom();
 
-	MonsterSObj* monster = new MonsterSObj(som->genId());
-	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t(), monster);
-	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0), monster);
+	// Specify tentacle positions here
+	vector<pair<Point_t, Rot_t>> placements;
+	placements.push_back(make_pair(Point_t(-20, 100, 300), Rot_t()));
+	placements.push_back(make_pair(Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0)));
+								
+	// todo config numparts
+	MonsterSObj* monster = new MonsterSObj(som->genId(), 2);
+											
+							
+	//TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Rot_t(), monster);
+	//TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0), monster);
 
-	som->add(tentacleLeft);
-	som->add(tentacleRight);
+	//som->add(tentacleLeft);
+	//som->add(tentacleRight);
 	som->add(monster);
 }

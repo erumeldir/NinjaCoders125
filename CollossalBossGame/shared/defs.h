@@ -36,6 +36,17 @@ typedef struct Vec3f {
 	
 	float x, y, z;
 
+	bool operator< (const Vec3f &rhs) const {
+		// First, check magnitude
+		float res =	this->magnitude() - rhs.magnitude();
+		if (res != 0) return res < 0;
+
+		// If same, check each component (rather arbitrarily)
+		if (this->z != rhs.z) return this->z < rhs.z;
+		if (this->x != rhs.x) return this->x < rhs.x;
+		return this->y < rhs.y;
+	}
+
 	Vec3f operator-	(const Vec3f &rhs) const {
 		return Vec3f(this->x - rhs.x, 
 			this->y - rhs.y, 
@@ -96,7 +107,7 @@ typedef struct Vec3f {
 		z /= s;
 	}
 
-	float magnitude()
+	float magnitude() const
 	{
 		// square root of the dot product with itself
 		return sqrt(*this ^ *this);

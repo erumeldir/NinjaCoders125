@@ -84,7 +84,7 @@ bool PlayerSObj::update() {
 	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
 #endif
 	if (istat.start && !ready) {
-		ready = true; // delete me!
+		ready = true;
 	}
 
 	float yDist = 0.f;
@@ -119,7 +119,7 @@ bool PlayerSObj::update() {
 
 		appliedJumpForce = false; // we apply it on collision
 
-		if (istat.specialPower) // holding down increases the charge
+		if (istat.specialPower && !getFlag(IS_FALLING)) // holding down increases the charge
 		{
 			charge+=chargeUpdate;
 			if(charge > 13) charge = 13.f;

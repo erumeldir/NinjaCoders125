@@ -209,14 +209,52 @@ bool ConfigurationManager::find_config_as_bool(string key) {
 }
 
 Vec3f ConfigurationManager::find_config_as_point(string key) {
+	return parseAsPoint(find_config_as_string(key));
+}
+
+Vec3f ConfigurationManager::parseAsPoint(string value) {
 	vector<string> chunk;
-	string point = find_config_as_string(key);
-	split(point, ',', chunk);
+	split(value, ',', chunk);
 	assert(chunk.size() == 3 && "Config Error: Points are represented as <floatx> , <floaty> , <floatz>. Spaces will ignored.");
 	string x = chunk[0], y = chunk[1], z = chunk[2];
 	stripSpaces(x); stripSpaces(y); stripSpaces(z);
 	float fx = (float)atof(x.c_str()), fy = (float)atof(y.c_str()), fz = (float)atof(z.c_str());
 	return Vec3f(fx, fy, fz);
+}
+
+map<Point_t, Rot_t> ConfigurationManager::find_config_as_places(string key) {
+	map<Point_t, Rot_t> result;
+	//result.push_back(pair<Vec3f, Vec3f>(Vec3f(-20, 100, 300), Vec3f()));
+	//result.push_back(make_pair(Point_t(-20, 100, -300), Rot_t((float)M_PI,0,0)));
+	//return result;
+	vector<string> pairs;
+	string point = find_config_as_string(key);
+	split(point, ';', pairs);
+
+	// Check format
+	assert(pairs.size() > 1 && "Config Error: Places vector is represented as place ; place ; place ; <(o^-^o)>. Spaces will be ignored.");
+	assert(pairs.back() == "<(o^-^o)>" && "Config Error: Places vector end token should be a kirby <(o^-^o)>");
+
+	int index = 0;
+
+	// Kirby is our end token, deal with it
+	// http://i.imgur.com/dvZzy.gif
+	while (pairs[index] != "<(o^-^o)>")
+	{
+		vector<string> currPair;
+		split(pairs[index], ':', currPair);
+
+		assert(currPair.size() == 2 && "Config Error: Places are represented as position : rotation. Spaces will be ignored.");
+
+		Point_t pos = parseAsPoint(currPair[0]);
+		Rot_t rot = parseAsPoint(currPair[1]);
+
+		result[pos] = rot;
+
+		index++;
+	}
+
+	return result;
 }
 
 Box ConfigurationManager::find_config_as_box(string key) {
