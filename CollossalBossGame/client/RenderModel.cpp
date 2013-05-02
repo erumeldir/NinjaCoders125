@@ -74,11 +74,18 @@ RenderModel::RenderModel(Point_t pos, Rot_t rot, Model modelNum, int state, Vec3
 	}
 
 	if(filename != NULL && !isInvisible) {
+		
 		if (HRESULT hr = !RE::get()->loadModel(filename, &modelId)) {
 			DC::get()->print("Didn't load the model!\n");
 		} else {
 			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded model %d\n",modelNum);
 			this->setModelState(state);
+		}
+		
+		if (HRESULT hr = !RE::get()->loadModel(CM::get()->find_config("MODEL_TEST_BOX"), &modelId)) {
+			DC::get()->print("Didn't load the cube model for collision box!\n");
+		} else {
+			if (RE::get()->debugFlag) DC::get()->print("Successfully loaded collision box for model %d\n",modelNum);
 		}
 		
 		if (filename == CM::get()->find_config("MODEL_TENTACLE1")) 

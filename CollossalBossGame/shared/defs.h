@@ -98,6 +98,14 @@ typedef struct Vec3f {
 
 } Point_t, Rot_t;
 
+/*
+ * For communicating it's state across the server
+ */
+struct CollisionBoxState {
+	Vec3f position;
+	Vec3f dimensions;
+};
+
 //Axis-aligned bounding box
 typedef struct Box {
 	float x, y, z;

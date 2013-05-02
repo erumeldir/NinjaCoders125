@@ -15,6 +15,7 @@ public:
 	//virtual AudioModel* getAudioModel() = 0;
 	virtual void deserialize(char* newState) = 0;
 
+	virtual RenderModel * getBox() = 0;
 	uint getId() { return id; }
 
 private:

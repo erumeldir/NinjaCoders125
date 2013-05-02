@@ -13,6 +13,8 @@ public:
 
 	virtual void deserialize(char* newState);
 
+	virtual RenderModel * getBox();
+
 private:
 	int health;
 	RenderModel *rm;

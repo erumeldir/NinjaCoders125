@@ -15,6 +15,8 @@ TestObject::TestObject(uint id, char *serializedData) :
 	ObjectState *state = (ObjectState*)serializedData;
 
 	rm = new RenderModel(Point_t(),Rot_t(), state->modelNum, 0, state->scale);
+	box = new RenderModel(Point_t(),Rot_t(), (Model)+12, 0, Vec3f(1.f,1.f,1.f));
+
 	deserialize(serializedData);
 }
 
@@ -32,4 +34,8 @@ bool TestObject::update() {
 void TestObject::deserialize(char* newState) {
 	ObjectState *state = (ObjectState*)newState;
 	rm->getFrameOfRef()->deserialize(newState + sizeof(ObjectState));
+}
+
+RenderModel * TestObject::getBox(){
+	return NULL;
 }

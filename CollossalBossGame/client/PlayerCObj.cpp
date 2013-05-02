@@ -16,9 +16,15 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	this->health = state->health;
 
 	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, (float)M_PI), state->modelNum, state->animationstate, Vec3f(2.f,2.f,2.f));
+	box = new RenderModel(Point_t(),Rot_t(), (Model)+12, 0, Vec3f(1.f,1.f,1.f));
 	cameraPitch = 0;
 }
 
+RenderModel* PlayerCObj::getBox() {
+	//1. get the box model
+	//2. return the model
+	return box;
+}
 PlayerCObj::~PlayerCObj(void)
 {
 	delete rm;

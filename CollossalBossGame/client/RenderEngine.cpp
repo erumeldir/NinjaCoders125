@@ -267,7 +267,10 @@ void RenderEngine::sceneDrawing() {
 	for(list<ClientObject *>::iterator it = lsObjs.begin();
 			it != lsObjs.end();
 			++it) {
-		(*it)->getRenderModel()->render();
+		if ((*it)->getRenderModel() != NULL)
+			(*it)->getRenderModel()->render();
+		if ((*it)->getBox() != NULL)
+			(*it)->getBox()->render();
 	}
 	lsObjs.clear();
 }

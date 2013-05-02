@@ -8,9 +8,14 @@ MonsterCObj::MonsterCObj(uint id, char *data) : ClientObject(id)
 	if (COM::get()->debugFlag) DC::get()->print("Created new MonsterCObj %d\n", id);
 	MonsterState *state = (MonsterState*)data;
 	this->health = state->health;
-	rm = new RenderModel(Point_t(),Rot_t(), (Model)-1, 0, Vec3f(1.f,1.f,1.f));
+	rm = NULL;
 }
 
+RenderModel* MonsterCObj::getBox() {
+	//1. get the box model
+	//2. return the model
+	return NULL;
+}
 
 MonsterCObj::~MonsterCObj(void)
 {
@@ -25,5 +30,4 @@ bool MonsterCObj::update() {
 void MonsterCObj::deserialize(char* newState) {
 	MonsterState *state = (MonsterState*)newState;
 	this->health = state->health;
-	rm->getFrameOfRef()->deserialize(newState + sizeof(MonsterState));
 }
