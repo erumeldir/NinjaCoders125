@@ -51,7 +51,7 @@ public:
 	
 	Camera * getCamera() { return cam; }
 
-	void setHUDText(string newText, int health) { hudText = newText; healthPts = health; }
+	void setHUDText(string newText, int health, float charge) { hudText = newText; healthPts = health; this->charge = charge;}
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
 
 	//Models
@@ -82,6 +82,7 @@ private:
 	string monsterHUDText;
 	int healthPts;
 	int monsterHealthPts;
+	float charge;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;

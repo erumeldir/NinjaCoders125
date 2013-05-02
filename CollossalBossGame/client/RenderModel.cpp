@@ -78,10 +78,25 @@ RenderModel::RenderModel(Point_t pos, Quat_t rot, Model modelNum)
 		scale = CM::get()->find_config_as_point("MODEL_SOUTH_WALL_SCALE");
 		initRot = CM::get()->find_config_as_point("MODEL_SOUTH_WALL_ROTATION");
 		break;
-	case MDL_PLAYER:
-		filename = CM::get()->find_config("MODEL_PLAYER");
-		scale = CM::get()->find_config_as_point("MODEL_PLAYER_SCALE");
-		initRot = CM::get()->find_config_as_point("MODEL_PLAYER_ROTATION");
+	case MDL_PLAYER_1:
+		filename = CM::get()->find_config("MODEL_PLAYER1");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER1_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER1_ROTATION");
+		break;
+	case MDL_PLAYER_2:
+		filename = CM::get()->find_config("MODEL_PLAYER2");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER2_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER2_ROTATION");
+		break;
+	case MDL_PLAYER_3:
+		filename = CM::get()->find_config("MODEL_PLAYER3");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER3_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER3_ROTATION");
+		break;
+	case MDL_PLAYER_4:
+		filename = CM::get()->find_config("MODEL_PLAYER4");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER4_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER4_ROTATION");
 		break;
 	case MDL_TEST_BOX:
 		filename = CM::get()->find_config("MODEL_TEST_BOX");

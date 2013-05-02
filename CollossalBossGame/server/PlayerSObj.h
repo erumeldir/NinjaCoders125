@@ -6,7 +6,7 @@
 class PlayerSObj : public ServerObject
 {
 public:
-	PlayerSObj(uint id);
+	PlayerSObj(uint id, uint clientId);
 	virtual ~PlayerSObj(void);
 
 	virtual bool update();
@@ -23,15 +23,20 @@ public:
 	bool attacking, newAttack;
 	uint jumpCounter, attackCounter;
 	int health;
+	int damage;
 	bool ready;
 
 private:
+	uint clientId;
 	PhysicsModel *pm;
 	inputstatus istat;
 	Point_t lastCollision;
 	bool jumping, newJump, appliedJumpForce;
+	bool charging, newCharge;
+	float charge;
 	// Configuration options
 	float jumpDist;
+	float chargeForce, chargeUpdate;
 	int movDamp;
 
 	float t;
@@ -44,5 +49,6 @@ private:
 	bool firedeath;
 	int gravityTimer;
 	int modelAnimationState;
+	int swordDamage, chargeDamage;
 };
 

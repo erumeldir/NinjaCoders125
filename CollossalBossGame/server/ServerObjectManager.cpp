@@ -188,6 +188,8 @@ ServerObject *ServerObjectManager::remove(uint id) {
 void ServerObjectManager::reset() {
 	// list<uint> asdf;
 	list<ServerObject*> lsPlayers;
+	list<uint> lsObjsToDelete; // Haro
+
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();
 			++it) {
@@ -196,8 +198,9 @@ void ServerObjectManager::reset() {
 		// if it's not a Player object...
 		if(s.compare("class PlayerSObj")) {
 			// asdf.push_back(it->first);
-			freeId(it->first);
-			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
+			//freeId(it->first);
+			//lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));
+			lsObjsToDelete.push_back(it->second->getId()); // Haro
 			// delete o;
 		}
 		// if it is...
@@ -206,7 +209,24 @@ void ServerObjectManager::reset() {
 			lsPlayers.push_back(o);
 		}
 	}
-	mObjs.clear();
+
+
+	// Haro added this
+	for(list<uint>::iterator idIter = lsObjsToDelete.begin(); idIter != lsObjsToDelete.end(); ++idIter) {
+		map<uint, ServerObject *>::iterator itObj = mObjs.find(*idIter);
+		if(itObj != mObjs.end()) {
+			lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,itObj->second));
+			//ServerObject *obj = itObj->second;
+			mObjs.erase(itObj);
+			//delete obj;	We don't perform this until the object is sent
+		}
+	}
+	lsObjsToDelete.clear();
+
+	// Haro commented this out
+	//mObjs.clear();
+
+
 	/*
 	for(list<uint>::iterator it = asdf.begin();
 			it != asdf.end();
@@ -215,11 +235,13 @@ void ServerObjectManager::reset() {
 	}
 	*/
 	
-	for(list<ServerObject*>::iterator it = lsPlayers.begin();
+
+	// Haro commented this out
+	/*for(list<ServerObject*>::iterator it = lsPlayers.begin();
 			it != lsPlayers.end();
 			++it) {
 		add(*it);
 	}
-	lsPlayers.clear();
+	lsPlayers.clear();*/
 	
 }

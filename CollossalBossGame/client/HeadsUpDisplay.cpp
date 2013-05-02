@@ -34,6 +34,7 @@ HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs)
 	D3DXCreateLine(direct3dDevice, &healthLine);
 	D3DXCreateLine(direct3dDevice, &monsterLine);
 	D3DXCreateLine(direct3dDevice, &backgroundLine);
+	D3DXCreateLine(direct3dDevice, &chargeLine);
 
 	D3DXCreateTextureFromFile(direct3dDevice, "res/p1connect.png", &p1connecttxt);
 	D3DXCreateTextureFromFile(direct3dDevice, "res/p2connect.png", &p2connecttxt);
@@ -75,6 +76,7 @@ HeadsUpDisplay::~HeadsUpDisplay(void)
 	healthLine->Release();
 	backgroundLine->Release();
 	monsterLine->Release();
+	chargeLine->Release();
 	p1connect->Release();
 	p2connect->Release();
 	p3connect->Release();
@@ -105,6 +107,7 @@ void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
 {
 	RECT font_rect;
 	RECT monstr_rect;
+	RECT charge_rect;
 
 	//#define SCREEN_WIDTH 1024
     //#define SCREEN_HEIGHT 768 
@@ -116,6 +119,12 @@ void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
 			768);
 
 	SetRect(&monstr_rect,
+			hudTopX,
+			hudTopY + 50,
+			1024,
+			768);
+
+	SetRect(&charge_rect,
 			hudTopX,
 			hudTopY + 100,
 			1024,
@@ -135,11 +144,19 @@ void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
                            &monstr_rect,  //pRect
                            DT_LEFT|DT_NOCLIP,//Format,
                            0xFFFFFFFF);//0xFF000000); //Color
+
+	direct3dText->DrawText(sprite1,        //pSprite
+						  "Charge",	 //pString
+                           -1,          //Count
+                           &charge_rect,  //pRect
+                           DT_LEFT|DT_NOCLIP,//Format,
+                           0xFFFFFFFF);//0xFF000000); //Color
+
 	sprite1->End();
 
 }
 
-void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth)
+void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, float charge)
 {
 
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
@@ -150,16 +167,28 @@ void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth)
 	healthLine->SetWidth(15.0f);
 	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - playerHealth) / 100.0), (int)(255.0 * playerHealth / 100.0), 0));
 
-    blines[0] = D3DXVECTOR2(10.0f, 140.0f); blines[1] = D3DXVECTOR2(110.0f, 140.0f);
+    blines[0] = D3DXVECTOR2(10.0f, 90.0f); blines[1] = D3DXVECTOR2(110.0f, 90.0f);
 	backgroundLine->SetWidth(15.0f);
 	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
 
-	D3DXVECTOR2 mlines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(monsterHealth + 10.f , 140.0f)};
+	D3DXVECTOR2 mlines[] = {D3DXVECTOR2(10.0f, 90.0f), D3DXVECTOR2(monsterHealth + 10.f , 90.0f)};
 	monsterLine->SetWidth(15.0f);
 	monsterLine->Draw(mlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - monsterHealth) / 100.0), (int)(255.0 * monsterHealth / 100.0), 0));
 
+	blines[0] = D3DXVECTOR2(10.0f, 140.0f); blines[1] = D3DXVECTOR2(110.0f, 140.0f);
+	backgroundLine->SetWidth(10.0f);
+	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
+
+	charge = charge * 8;
+	if (charge > 100) charge = 100;
+
+	D3DXVECTOR2 clines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(charge + 10.f , 140.0f)};
+	chargeLine->SetWidth(10.0f);
+	chargeLine->Draw(clines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - charge) / 100.0), (int)(255.0 * charge / 100.0), (int)(charge * 2)));
+
+
 	if(playerHealth == 0) displayGameOver();
-	else if(monsterHealth == 0) displayVictory();
+	else if(monsterHealth == 0) displayVictory(); // todo Franklin fix so that we only Victory on last phase
 }
 
 void HeadsUpDisplay::displayBackground()

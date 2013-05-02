@@ -52,18 +52,13 @@ void buildRoom() {
 void gameInit() {
 	ServerObjectManager *som = SOM::get();
 
-	
 	buildRoom();
-
+								
 	//This object manages the world state
 	WorldSObj *wobj = new WorldSObj(som->genId());
 	som->add(wobj);
 
-	MonsterSObj* monster = new MonsterSObj(som->genId());
-	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Quat_t(), monster);
-	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Quat_t(Vec3f(1,0,0),(float)M_PI), monster);
-
-	som->add(tentacleLeft);
-	som->add(tentacleRight);
+	// todo config numparts
+	MonsterSObj* monster = new MonsterSObj(som->genId(), 2);
 	som->add(monster);
 }
