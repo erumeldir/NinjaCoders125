@@ -5,13 +5,72 @@
 
 #include "EventManager.h"
 
-void EventManager::registerHandler(EventType evt, eventHandler handler) {
-	handlers.find(evt)->second.push_back(handler);
+EventManager EventManager::em;
+bool EventManager::initialized = false;
+
+EventManager::EventManager() {
+
+}
+
+EventManager::~EventManager() {
+	map<EventType, vector<CBGEventHandler*>*>::iterator it = handlers->begin();
+	for(; it != handlers->end(); ++it) {
+		delete it->second;
+	}
+	handlers->clear();
+}
+
+void EventManager::init() {
+	if(!initialized) {
+		em.handlers = new map<EventType, vector<CBGEventHandler*>*>();
+		// Low Priority: Could optimize by assigning EventTypes numbers and using a for loop.
+		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_PLAYER_DEATH, new vector<CBGEventHandler *>()));
+		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_DEATH, new vector<CBGEventHandler *>()));
+		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_RESET, new vector<CBGEventHandler *>()));
+		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_CONNECTION, new vector<CBGEventHandler *>()));
+		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_SPAWN, new vector<CBGEventHandler *>()));
+		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_DISCONNECT, new vector<CBGEventHandler *>()));
+	}
+	initialized = true;
+}
+
+EventManager * EventManager::get() {
+	if(!initialized) {
+		init();
+	}
+	return &em;
+}
+
+void EventManager::registerHandler(EventType evt, CBGEventHandler * handleobj) {
+	vector<CBGEventHandler *>* v = handlers->find(evt)->second;
+	v->push_back(handleobj);
 }
 
 void EventManager::fireEvent(EventType evt, EventData * data, void* obj) {
-	vector<eventHandler> * handles = &handlers.find(evt)->second;
+	vector<CBGEventHandler *> * handles = handlers->find(evt)->second;
 	for(uint i = 0; i < handles->size(); i++) {
-		(*handles)[i](data, obj);
+		CBGEventHandler * handle = (*handles)[i];
+		switch(evt) {
+		case EVENT_PLAYER_DEATH:
+			handle->event_player_death(data, obj);
+			break;
+		case EVENT_MONSTER_DEATH:
+			handle->event_monster_death(data, obj);
+			break;
+		case EVENT_RESET:
+			handle->event_reset(data, obj);
+			break;
+		case EVENT_CONNECTION:
+			handle->event_connection(data, obj);
+			break;
+		case EVENT_MONSTER_SPAWN:
+			handle->event_monster_spawn(data, obj);
+			break;
+		case EVENT_DISCONNECT:
+			handle->event_disconnect(data, obj);
+			break;
+		default:
+			assert(false && "Firing new event");	
+		}
 	}
 }

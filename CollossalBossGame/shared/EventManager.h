@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <vector>
 #include <map>
+#include "CBGEventHandler.h"
 
 enum EventType {
 	EVENT_PLAYER_DEATH,
@@ -13,24 +14,21 @@ enum EventType {
 	EVENT_DISCONNECT
 };
 
-struct EventData {
-	int value;
-};
-
-typedef void (*eventHandler)(EventData * data, void*);
+typedef void (*eventHandler)(EventData * data, void * obj	);
 
 class EventManager
 {
 public:
-	EventManager() { handlers.clear(); }
-	~EventManager() { }
-	void init() { }
-	static EventManager * get() { return &em; }
+	static EventManager * get();
 
-	void registerHandler(EventType evt, eventHandler handler);
+	void registerHandler(EventType evt, CBGEventHandler * handleobj);
 	void fireEvent(EventType evt, EventData * data, void* obj);
 
 private:
-	static EventManager em;
-	map<EventType, vector<eventHandler>> handlers;
+	static EventManager * em;
+	static bool initialized;
+	map<EventType, vector<CBGEventHandler *>*> * handlers;
+	EventManager();
+	~EventManager();
+	static void init();
 };

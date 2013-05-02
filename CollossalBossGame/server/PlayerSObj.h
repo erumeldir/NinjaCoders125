@@ -1,6 +1,6 @@
 #pragma once
 #include "ServerObject.h"
-#include "WorldManager.h"
+#include "ServerWorldManager.h"
 #include "Action.h"
 
 class PlayerSObj : public ServerObject

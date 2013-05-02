@@ -1,7 +1,8 @@
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
-#include "WorldManager.h"
+#include "EventManager.h"
+#include "ServerWorldManager.h"
 #include "WallSObj.h"
 #include "defs.h"
 #include "PhysicsEngine.h"
@@ -179,7 +180,7 @@ bool PlayerSObj::update() {
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
 			firedeath = true;
-			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
+			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, NULL, this); 
 		}
 	}
 	return false;
@@ -200,7 +201,7 @@ void PlayerSObj::deserialize(char* newInput)
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
 	if (istat.start) {
-		EventManager::get()->fireEvent(EVENT_RESET, this); 
+		EventManager::get()->fireEvent(EVENT_RESET, NULL, this); 
 	}
 }
 

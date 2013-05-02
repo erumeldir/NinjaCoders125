@@ -1,11 +1,11 @@
 #pragma once
-#include "EventManager.h"
+#include "defs.h"
 
 class CBGEventHandler
 {
 public:
-	CBGEventHandler(void);
-	virtual ~CBGEventHandler(void);
+	CBGEventHandler(void) { }
+	virtual ~CBGEventHandler(void) { }
 
 	virtual void register_handlers() = 0;
 

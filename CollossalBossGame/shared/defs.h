@@ -161,4 +161,8 @@ typedef enum ACTION {
 	ACT_NUM_ACTIONS
 };
 
+struct EventData {
+	int value;
+};
+
 #endif
