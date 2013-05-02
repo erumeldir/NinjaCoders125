@@ -106,9 +106,15 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
 {
+	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
+				 *mdl2 = obj2->getPhysicsModel();
+	if(mdl1 == NULL || mdl2 == NULL) {
+		return;
+	}
+
 	// go through all the boxes of obj1 
-	vector<Box> obj1Boxes = obj1->getPhysicsModel()->colBoxes;
-	vector<Box> obj2Boxes = obj2->getPhysicsModel()->colBoxes;
+	vector<Box> obj1Boxes = mdl1->colBoxes;
+	vector<Box> obj2Boxes = mdl2->colBoxes;
 	for(std::vector<Box>::iterator box1 = obj1Boxes.begin(); box1 != obj1Boxes.end(); ++box1)
 		// go through all the boxes of obj
 		for(std::vector<Box>::iterator box2 = obj2Boxes.begin(); box2 != obj2Boxes.end(); ++box2)
@@ -120,9 +126,6 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1, Box b2) {
 	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
 				 *mdl2 = obj2->getPhysicsModel();
-	if(mdl1 == NULL || mdl2 == NULL) {
-		return;
-	}
 
 	Box bx1 = b1 + mdl1->ref->getPos(),
 		bx2 = b2 + mdl2->ref->getPos();

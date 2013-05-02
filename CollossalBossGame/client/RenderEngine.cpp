@@ -183,17 +183,6 @@ RenderEngine::RenderEngine() {
 }
 
 
-void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
-{
-#if 0
-	cam->setTargetPosAndRot(pos, rot);
-	// Update the camera view matrix
-	cam->viewTarget();
-	// Tell D3D to set the view matrix
-	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-#endif
-}
-
 /*
 * Clean up DrectX and any other rendering libraries that we may have.
 * Bryan

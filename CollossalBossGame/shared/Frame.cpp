@@ -2,8 +2,8 @@
 
 Frame::Frame()
 {
-	this->pos = Vec3f();
-	this->rot = Vec3f();
+	this->pos = Point_t();
+	this->rot = Quat_t();
 }
 
 Frame::Frame(const Point_t &pos, const Quat_t &rot)

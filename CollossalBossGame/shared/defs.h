@@ -123,16 +123,8 @@ typedef struct Vec4f {
 		x = y = z = 0.0f;
 		w = 1.0f;
 	}
-#if 0
-	Vec4f(const Vec3f &v) {
-		w = 1.0f;
-		x = v.x;
-		y = v.y;
-		z = v.z;
-	}
-#endif
 
-	Vec4f(float x, float y, float z, float w = 1.0f) {
+	Vec4f(float x, float y, float z, float w) {
 		this->x = x;
 		this->y = y;
 		this->z = z;

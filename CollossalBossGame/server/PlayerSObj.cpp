@@ -17,7 +17,6 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 
@@ -65,8 +64,8 @@ void PlayerSObj::initialize() {
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	delete pm;
+
 	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 	lastCollision = pos;

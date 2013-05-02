@@ -50,7 +50,6 @@ public:
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
-	void updateCamera(const Point_t &pos, const Rot_t &rot);
 
 	void setHUDText(string newText, int health) { hudText = newText; healthPts = health; }
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
