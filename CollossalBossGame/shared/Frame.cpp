@@ -17,10 +17,12 @@ Frame::~Frame(void)
 {
 }
 
+#if 0
 void Frame::addChild(Frame* newChild)
 {
 	lsAttachedFrames.push_back(newChild);
 }
+#endif
 
 
 void Frame::translate(const Vec3f &dv) {
@@ -35,14 +37,14 @@ void Frame::rotate(const Quat_t &dr) {
 }
 
 int Frame::serialize(char * buf) {
-	st.pos = pos;
-	st.rot = rot;
-	memcpy(buf, reinterpret_cast<char *>(&st), sizeof(st));
+	StateMessage *st = (StateMessage*)buf;
+	st->pos = pos;
+	st->rot = rot;
 	return sizeof(st);
 }
 
 void Frame::deserialize(char* newState) {
-	stateMessage* state = reinterpret_cast<stateMessage *>(newState);
+	StateMessage* state = (StateMessage*)newState;
 	this->pos = state->pos;
 	this->rot = state->rot;
 }
