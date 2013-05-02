@@ -6,10 +6,15 @@
 #include "defs.h"
 #include "PhysicsEngine.h"
 
-PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
+PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
+	// Save parameters here
+	this->clientId = clientId;
+
 	// Set all your pointers to NULL here, so initialize()
 	// knows if it should create them or not
 	pm = NULL;
+
+	// Other re-initializations (things that don't depend on parameters, like config)
 	this->initialize();
 }
 
@@ -211,7 +216,8 @@ bool PlayerSObj::update() {
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_PLAYER;
+	// This helps us distinguish between what model goes to what player
+	state->modelNum = (Model)(MDL_PLAYER_1 + this->clientId);
 	state->health = health;
 	state->ready = ready;
 	state->charge = charge;

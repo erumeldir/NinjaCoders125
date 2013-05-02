@@ -6,7 +6,7 @@
 class PlayerSObj : public ServerObject
 {
 public:
-	PlayerSObj(uint id);
+	PlayerSObj(uint id, uint clientId);
 	virtual ~PlayerSObj(void);
 
 	virtual bool update();
@@ -27,6 +27,7 @@ public:
 	bool ready;
 
 private:
+	uint clientId;
 	PhysicsModel *pm;
 	inputstatus istat;
 	Point_t lastCollision;
