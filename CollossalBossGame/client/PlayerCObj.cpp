@@ -11,13 +11,14 @@
 #define DEFAULT_PITCH 0.174532925f	//10 degrees or stg like that
 
 PlayerCObj::PlayerCObj(uint id, char *data) :
-	ClientObject(id)
+	ClientObject(id, OBJ_PLAYER)
 {
-	DC::get()->print("Created new PlayerCObj %d\n", id);
+	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
 	PlayerState *state = (PlayerState*)data;
 	this->health = state->health;
-	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, M_PI), state->modelNum);
+	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
 	cameraPitch = DEFAULT_PITCH;
+	ready = false;
 }
 
 PlayerCObj::~PlayerCObj(void)
@@ -50,9 +51,9 @@ bool PlayerCObj::update() {
 			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
 				cameraPitch += atan(((float)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
 				if (cameraPitch > M_PI / 2.f) {
-					cameraPitch = M_PI / 2.f;
+					cameraPitch = (float)M_PI / 2.f;
 				} else if(cameraPitch < -M_PI / 4) {
-					cameraPitch = -M_PI / 4.f;
+					cameraPitch = (float)-M_PI / 4.f;
 				}
 			}
 		}
@@ -68,5 +69,10 @@ bool PlayerCObj::update() {
 void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
+	this->ready = state->ready;
+	if(this->ready == false) {
+		RE::get()->gamestarted = false;
+	}
+	this->getRenderModel()->setModelState(state->animationstate);
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

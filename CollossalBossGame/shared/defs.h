@@ -8,10 +8,13 @@
 //Standard includes
 #include <stdio.h>
 #include "DebugConsole.h"
+#include <set>
 
 //Constants (that we don't want to change, if we might, they should go in the config file)
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 #define M_TAU 6.28318530718
+#define AIR_FRICTION 1.1f		//A bit excessive, but it works for now
+#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
 
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
@@ -110,7 +113,7 @@ typedef struct Vec3f {
 		y /= mag;
 		z /= mag;
 	}
-} Point_t, Rot_t;
+} Point_t;	//, Rot_t;
 
 typedef struct Vec4f {
 	//   (0, 1, 2, 3)
@@ -120,13 +123,14 @@ typedef struct Vec4f {
 		x = y = z = 0.0f;
 		w = 1.0f;
 	}
-
+#if 0
 	Vec4f(const Vec3f &v) {
 		w = 1.0f;
 		x = v.x;
 		y = v.y;
 		z = v.z;
 	}
+#endif
 
 	Vec4f(float x, float y, float z, float w = 1.0f) {
 		this->x = x;

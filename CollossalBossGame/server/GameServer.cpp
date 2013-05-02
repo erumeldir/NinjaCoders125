@@ -56,12 +56,12 @@ int main()
 		totalLoopTime = difftime(endLoopTimer, beginLoopTimer)  * 1000; // in ms
 		// Be sure to set debug to the right thing!
 		if (totalLoopTime < TICK) {
-			Sleep(TICK - totalLoopTime);
+			Sleep((DWORD)(TICK - totalLoopTime));
 		}
 		else
 		{
 			int tick = TICK;
-			DC::get()->print("WARNING!!! total loop time %f is greater than tick time: %d\nNOTE: this might mean a client is connecting\n", totalLoopTime, tick);
+			DC::get()->print("WARNING!!! total loop time %f is greater than tick time: %d\n...NOTE: this might mean a client is connecting\n", totalLoopTime, tick);
 		}
 		
     }

@@ -24,6 +24,8 @@ private:
 	char network_data[MAX_PACKET_SIZE];	// data buffer
 	char packet_buffer[MAX_PACKET_SIZE];	// data buffer
 	bool prepare_packet;
+
+	bool debugFlag;
 public:
 	static unsigned int client_id;		// Unique Client Ids for each connecting client TODO private, numClients
 
@@ -54,7 +56,5 @@ public:
 	std::map<long, unsigned int> sessionsip; // table to keep track of each client's ipaddress in the form of a long
 	std::map<unsigned int, unsigned int> sessionsobjid; // table <client id, object id>
 	Packet send_buffer;
-	int debugFlag;
-	
 };
 typedef ServerNetworkManager SNM;

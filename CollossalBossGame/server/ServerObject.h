@@ -25,6 +25,10 @@ public:
 		assert(false && "ERROR! Trying to deserialize input for a server object that doesn't take input from the client\n");
 	}
 
+	// Should be overriden for objects that need to save some special state
+	// and you can't just delete and re-create on restart (ex. PlayerObjects)
+	virtual void initialize() { }
+
 	inline uint getId() { return id; }
 	inline uint getFlag(uint flag) { return GET_FLAG(flags, flag); }
 	inline void setFlag(uint flag, uint val) { flags = SET_FLAG(flags, flag, val); }

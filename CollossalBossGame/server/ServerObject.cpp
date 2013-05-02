@@ -1,5 +1,5 @@
 #include "ServerObject.h"
-
+#include "ServerObjectManager.h"
 
 ServerObject::ServerObject(uint id) {
 	this->id = id;
@@ -11,4 +11,5 @@ ServerObject::ServerObject(uint id) {
 
 
 ServerObject::~ServerObject(void) {
+	SOM::get()->freeId(id);
 }

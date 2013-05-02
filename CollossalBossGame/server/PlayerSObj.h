@@ -1,5 +1,6 @@
 #pragma once
 #include "ServerObject.h"
+#include "WorldManager.h"
 #include "Action.h"
 
 class PlayerSObj : public ServerObject
@@ -13,16 +14,21 @@ public:
 	virtual int serialize(char * buf);
 	void deserialize(char* newInput);
 	virtual ObjectType getType() { return OBJ_PLAYER; }
+	void initialize();
 	virtual void onCollision(ServerObject *obj, const Vec3f &collNorm);
-
+	int getHealth() { return health; } 
+	void setAnimationState(int state) { modelAnimationState = state; }
 	char serialbuffer[100];
+
+	bool attacking, newAttack;
+	uint jumpCounter, attackCounter;
+	int health;
+	bool ready;
 
 private:
 	PhysicsModel *pm;
 	inputstatus istat;
 	Point_t lastCollision;
-	int health;
-	int jumpCounter;
 	bool jumping, newJump, appliedJumpForce;
 	// Configuration options
 	float jumpDist;
@@ -33,7 +39,10 @@ private:
 	Quat_t yawRot;			//Yaw about the default up vector
 	Quat_t initUpRot;
 	Quat_t finalUpRot;
-
 	DIRECTION lastGravDir;
+
+	bool firedeath;
+	int gravityTimer;
+	int modelAnimationState;
 };
 

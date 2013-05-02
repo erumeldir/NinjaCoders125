@@ -1,5 +1,6 @@
 #include "TestObject.h"
 #include "ClientEngine.h"
+#include "ClientObjectManager.h"
 #include <math.h>
 #include <Windows.h>
 #include "RenderEngine.h"
@@ -9,7 +10,7 @@
 TestObject::TestObject(uint id, char *serializedData) :
 	ClientObject(id)
 {
-	DC::get()->print("Created new TestObject %d\n", id);
+	if (COM::get()->debugFlag) DC::get()->print("Created new TestObject %d\n", id);
 
 	ObjectState *state = (ObjectState*)serializedData;
 

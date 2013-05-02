@@ -11,6 +11,7 @@ public:
 
 	bool applyPhysics(ServerObject *obj);
 	void applyPhysics(ServerObject *obj1, ServerObject *obj2);
+	void applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1, Box b2);
 
 	void setLimits(float xNeg, float yNeg, float zNeg, float xPos, float yPos, float zPos) {
 		this->xPos = xPos;

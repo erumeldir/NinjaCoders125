@@ -1,14 +1,18 @@
 #include "ClientObjectManager.h"
 #include "RenderEngine.h"
+#include "ConfigurationManager.h"
 
 //Objects the COM can create
 #include "TestObject.h"
 #include "PlayerCObj.h"
+#include "MonsterCObj.h"
+#include "TentacleCObj.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
 ClientObjectManager::ClientObjectManager(void) {
 	curId = 0;
+	debugFlag = CM::get()->find_config_as_bool("COM_DEBUG_FLAG");
 }
 
 
@@ -19,6 +23,18 @@ ClientObjectManager::~ClientObjectManager(void) {
 		delete it->second;
 	}
 	mObjs.clear();
+}
+
+/*
+ * Populates the vector with all client objects of ObjectType type.
+ * Author: Franklin
+ */
+void ClientObjectManager::findObjects(ObjectType type, vector<ClientObject *> * l) {
+	for(map<uint, ClientObject *>::iterator it = mObjs.begin(); it != mObjs.end(); ++it) {
+		if (it->second->getObjectType() == type) {
+			l->push_back(it->second);
+		}
+	}
 }
 
 /*
@@ -99,6 +115,12 @@ void ClientObjectManager::create(uint id, char *data) {
 		break;
 	case OBJ_PLAYER:
 		obj = new PlayerCObj(id, data + sizeof(CreateHeader));
+		break;
+	case OBJ_MONSTER:
+		obj = new MonsterCObj(id, data + sizeof(CreateHeader));
+		break;
+	case OBJ_TENTACLE:
+		obj = new TentacleCObj(id, data + sizeof(CreateHeader));
 		break;
 	//case OBJ_ARENA:
 	//	obj = new WallCObj(id, data + sizeof(CreateHeader));

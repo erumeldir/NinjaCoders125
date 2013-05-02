@@ -55,7 +55,6 @@ void ClientEngine::run() {
 	while(!ClientNetworkManager::get()->isConnected()) { 
 		ClientNetworkManager::get()->update(); 
 	}
-	DC::get()->print("My player id is: %d\n", COM::get()->player_id);
 
 	while(isRunning) {
 		

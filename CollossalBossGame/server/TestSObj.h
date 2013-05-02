@@ -27,5 +27,7 @@ private:
 	Model modelNum;
 	int dir;
 	int t;
+	Box bxVol;
+	uint testBoxIndex;
 };
 
