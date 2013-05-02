@@ -20,6 +20,13 @@
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
 #define SET_FLAG(flags, flag, val)   ((val) ? (flags | (1 << flag)) : (flags & ~(1 << flag)))
 
+// Forward Declare
+struct Vec3f;
+
+// Functions
+// This goes up here because it's used inside Vec3f
+float magnitude(const Vec3f &v);
+
 //Typedefs
 typedef unsigned int uint;
 
@@ -38,17 +45,13 @@ typedef struct Vec3f {
 
 	bool operator< (const Vec3f &rhs) const {
 		// First, check magnitude
-		float res =	magnitude(*this) - rhs.magnitude(rhs);
+		float res =	magnitude(*this) - magnitude(rhs);
 		if (res != 0) return res < 0;
 
 		// If same, check each component (rather arbitrarily)
 		if (this->z != rhs.z) return this->z < rhs.z;
 		if (this->x != rhs.x) return this->x < rhs.x;
 		return this->y < rhs.y;
-	}
-
-	float magnitude(const Vec3f &v) const {
-	return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 	}
 
 	Vec3f operator-	(const Vec3f &rhs) const {
@@ -184,7 +187,6 @@ typedef struct Vec4f {
 } Quat_t;
 
 Quat_t inverse(const Quat_t &q);
-float magnitude(const Vec3f &v);
 float magnitude(const Vec4f &v);
 float angle(const Vec3f &v1, const Vec3f &v2);
 Vec3f rotate(const Vec3f &v, const Quat_t &q);
