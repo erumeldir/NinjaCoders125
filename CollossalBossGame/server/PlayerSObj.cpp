@@ -66,7 +66,7 @@ void PlayerSObj::initialize() {
 	modelAnimationState = IDLE;
 	ready = false;
 
-	lastGravDir = PE::get()->getGravDir();
+	lastGravDir = DOWN;
 	t = 1;
 	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
 	yawRot = Quat_t();
