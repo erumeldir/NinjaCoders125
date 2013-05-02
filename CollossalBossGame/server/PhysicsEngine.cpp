@@ -106,9 +106,15 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
 {
+	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
+				 *mdl2 = obj2->getPhysicsModel();
+	if(mdl1 == NULL || mdl2 == NULL) {
+		return;
+	}
+
 	// go through all the boxes of obj1 
-	vector<Box> obj1Boxes = obj1->getPhysicsModel()->colBoxes;
-	vector<Box> obj2Boxes = obj2->getPhysicsModel()->colBoxes;
+	vector<Box> obj1Boxes = mdl1->colBoxes;
+	vector<Box> obj2Boxes = mdl2->colBoxes;
 	for(std::vector<Box>::iterator box1 = obj1Boxes.begin(); box1 != obj1Boxes.end(); ++box1)
 		// go through all the boxes of obj
 		for(std::vector<Box>::iterator box2 = obj2Boxes.begin(); box2 != obj2Boxes.end(); ++box2)
@@ -120,8 +126,10 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
 void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1, Box b2) {
 	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
 				 *mdl2 = obj2->getPhysicsModel();
+
 	Box bx1 = b1 + mdl1->ref->getPos(),
 		bx2 = b2 + mdl2->ref->getPos();
+
 	Vec3f collNorm1 = Vec3f(),
 		  collNorm2 = Vec3f();
 
@@ -220,7 +228,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1,
 		sign = fYShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(0,sign,0);
 		collNorm2 = Vec3f(0,-sign,0);
-		
+#if 0
 		//Stop the lower object from falling
         if(bx2.y > bx1.y) {
             obj2->setFlag(IS_FALLING, false);
@@ -228,7 +236,8 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1,
         } else {
 			obj1->setFlag(IS_FALLING, false);
 			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
-        }
+		}
+#endif
 		mdl1->vel.y = 0;
 		mdl2->vel.y = 0;
 		//DC::get()->print(CONSOLE | LOGFILE, "(shifted y %f (sign = %f))\n", fYShift, sign);
@@ -273,4 +282,51 @@ bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
 			 bx1.x > bx2.x + bx2.w ||
 			 bx1.y > bx2.y + bx2.h ||
 			 bx1.z > bx2.z + bx2.l);
+}
+
+void PhysicsEngine::setGravDir(DIRECTION dir) {
+	gravDir = dir;
+
+	Vec3f newVec, crossVec;
+	switch(dir) {
+	case NORTH:
+		newVec = Vec3f(0,0,1);
+		curGravRot = Quat_t(Vec3f(1,0,0), 3 * M_PI / 2);
+		break;
+	case SOUTH:
+		newVec = Vec3f(0,0,-1);
+		curGravRot = Quat_t(Vec3f(1,0,0), -3 * M_PI / 2);
+		break;
+	case EAST:
+		newVec = Vec3f(1,0,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), -3 * M_PI / 2);
+		break;
+	case WEST:
+		newVec = Vec3f(-1,0,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), 3 * M_PI / 2);
+		break;
+	case UP:
+		newVec = Vec3f(0,1,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), M_PI);
+		break;
+	case DOWN:
+		newVec = Vec3f(0,-1,0);
+		curGravRot = Quat_t();
+		break;
+	}
+	/*
+	DC::get()->print(LOGFILE, "Old/New vecs: (%f,%f,%f)/(%f,%f,%f) ", gravVec.x, gravVec.y, gravVec.z, newVec.x, newVec.y, newVec.z);
+	cross(&crossVec, newVec, gravVec);
+	crossVec.normalize();
+	float ang = M_PI * 2 - angle(gravVec, newVec);
+	static Quat_t q = Quat_t();
+	curGravRot = Quat_t(crossVec, ang);
+	q *= curGravRot;
+	DC::get()->print(LOGFILE, "Axis: (%f,%f,%f) Angle: %f ", crossVec.x, crossVec.y, crossVec.z, ang * 180 / M_PI);
+	Vec3f up, fwd, rt;
+	getCorrectedAxes(q, &fwd, &up, &rt);
+	DC::get()->print(LOGFILE, "Up/Forward/Right: (%f,%f,%f)/(%f,%f,%f)/(%f,%f,%f)\n",
+		up.x, up.y, up.z, fwd.x, fwd.y, fwd.z,rt.x,rt.y, rt.z);
+	*/
+	gravVec = newVec;
 }

@@ -8,14 +8,16 @@
 #include <math.h>
 #include <sstream>
 
+#define DEFAULT_PITCH 0.174532925f	//10 degrees or stg like that
+
 PlayerCObj::PlayerCObj(uint id, char *data) :
 	ClientObject(id, OBJ_PLAYER)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
 	PlayerState *state = (PlayerState*)data;
 	this->health = state->health;
-	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, (float)M_PI), state->modelNum);
-	cameraPitch = 0;
+	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
+	cameraPitch = DEFAULT_PITCH;
 	ready = false;
 }
 
@@ -44,9 +46,8 @@ bool PlayerCObj::update() {
 	if(COM::get()->player_id == getId()) {
 		XboxController *xctrl = CE::getController();
 		if(xctrl->isConnected()) {
-			
 			if(xctrl->getState().Gamepad.bLeftTrigger) {
-				cameraPitch = 0.174532925f; //10
+				cameraPitch = DEFAULT_PITCH; //10
 			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
 				cameraPitch += atan(((float)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
 				if (cameraPitch > M_PI / 2.f) {
@@ -56,10 +57,10 @@ bool PlayerCObj::update() {
 				}
 			}
 		}
+
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		Rot_t objDir = rm->getFrameOfRef()->getRot();
-		objDir.x = cameraPitch;
-		RE::get()->updateCamera(objPos, objDir);
+		Quat_t objDir = rm->getFrameOfRef()->getRot();
+		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
 		showStatus();
 	}
 	return false;

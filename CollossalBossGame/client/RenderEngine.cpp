@@ -183,15 +183,6 @@ RenderEngine::RenderEngine() {
 }
 
 
-void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
-{
-	cam->setTargetPosAndRot(pos, rot);
-	// Update the camera view matrix
-	cam->viewTarget();
-	// Tell D3D to set the view matrix
-	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-}
-
 /*
 * Clean up DrectX and any other rendering libraries that we may have.
 * Bryan
@@ -232,6 +223,9 @@ void RenderEngine::renderThis(ClientObject *obj) {
 * Bryan
 */
 void RenderEngine::render() {
+	//Update the view matrix
+	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
+
 	// clear the window to a deep blue
 	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(21, 0, 105), 1.0f, 0);
 

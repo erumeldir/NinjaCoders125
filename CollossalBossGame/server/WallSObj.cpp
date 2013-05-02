@@ -9,53 +9,44 @@
 WallSObj::WallSObj(uint id, Model modelNum, Point_t pos, DIRECTION dir) : ServerObject(id) {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new WallSObj %d ", id);
 	Box bxVol;
-	Rot_t rot;
+	Quat_t rot = Quat_t();
 	uint collDir = dir;
 	switch(dir) {
 	case NORTH:
 		DC::get()->print("(north)\n");
 		bxVol = Box((-WALL_WIDTH / 2), -WALL_WIDTH / 2, -WALL_THICKNESS + 5,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
-		//rot = Rot_t(M_PI / 2,0,0);
-		rot = Rot_t();
 		collDir = NORTH;
 		break;
 	case SOUTH:
 		DC::get()->print("(south)\n");
 		bxVol = Box((-WALL_WIDTH / 2), -WALL_WIDTH / 2, 0 - 5 ,
 			WALL_WIDTH, WALL_WIDTH, WALL_THICKNESS);
-		//rot = Rot_t(-M_PI / 2,0,0);
-		rot = Rot_t();
 		collDir = SOUTH;
 		break;
 	case EAST:
 		DC::get()->print("(east)\n");
 		bxVol = Box(0 - 5, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
-		//rot = Rot_t(0,0,M_PI / 2);
-		rot = Rot_t();
 		collDir = WEST;
 		break;
 	case WEST:
 		DC::get()->print("(west)\n");
 		bxVol = Box(-WALL_THICKNESS, -WALL_WIDTH / 2, -WALL_WIDTH / 2,
 			WALL_THICKNESS, WALL_WIDTH, WALL_WIDTH);
-		//rot = Rot_t(0,0,-M_PI / 2);
-		rot = Rot_t(0,(float)M_PI,0);
 		collDir = EAST;
 		break;
 	case UP:
 		DC::get()->print("(ceiling)\n");
 		bxVol = Box(-WALL_WIDTH / 2, 0, -WALL_WIDTH / 2,
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
-		rot = Rot_t(0,0,(float)M_PI);
 		collDir = DOWN;
 		break;
 	default:
 		DC::get()->print("(floor)\n");
 		bxVol = Box(-WALL_WIDTH / 2, -WALL_THICKNESS + 5, -WALL_WIDTH / 2,
 			WALL_WIDTH, WALL_THICKNESS, WALL_WIDTH);
-		rot = Rot_t(0,0,0);
+		rot = Quat_t();
 		collDir = UP;
 		break;
 	}

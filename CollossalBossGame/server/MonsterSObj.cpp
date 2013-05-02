@@ -9,7 +9,7 @@ MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new MonsterObj %d\n", id);
 	this->health = 0;
-	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm = new PhysicsModel(Point_t(), Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	this->setFlag(IS_STATIC, 1);
 	maxTentacles = 0;
 

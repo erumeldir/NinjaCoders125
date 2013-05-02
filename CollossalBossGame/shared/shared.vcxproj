@@ -74,6 +74,7 @@
   <ItemGroup>
     <ClCompile Include="ConfigurationManager.cpp" />
     <ClCompile Include="DebugConsole.cpp" />
+    <ClCompile Include="defs.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="NetworkServices.cpp" />
   </ItemGroup>

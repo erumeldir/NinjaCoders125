@@ -7,7 +7,7 @@
 #include <time.h>
 
 
-TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, MonsterSObj* master) : ServerObject(id)
+TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, MonsterSObj* master) : ServerObject(id)
 {
 	
 	if(SOM::get()->debugFlag) DC::get()->print("Created new TentacleObj %d\n", id);

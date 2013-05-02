@@ -17,11 +17,12 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
+
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
+
 	// Initialize input status
 	istat.attack = false;
 	istat.jump = false;
@@ -37,6 +38,14 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	newJump = true; // any jump at this point is a new jump
 	newAttack = true; // same here
 	appliedJumpForce = false;
+
+	lastGravDir = PE::get()->getGravDir();
+	t = 1;
+	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
+	yawRot = Quat_t();
+	initUpRot = Quat_t();
+	finalUpRot = Quat_t();
+
 	bool firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
@@ -55,9 +64,9 @@ void PlayerSObj::initialize() {
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
 	delete pm;
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+
+	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 	lastCollision = pos;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
@@ -80,35 +89,26 @@ void PlayerSObj::initialize() {
 	attacking = false;
 	gravityTimer = 0;
 	ready = false;
+
+	lastGravDir = PE::get()->getGravDir();
+	t = 1;
+	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
+	yawRot = Quat_t();
+	initUpRot = Quat_t();
+	finalUpRot = Quat_t();
 }
 
 PlayerSObj::~PlayerSObj(void) {
 	delete pm;
 }
 
+
 bool PlayerSObj::update() {
-	//gravity
-#if 0
-	gravityTimer++;
-	static char cdir = 'v';
-	if(gravityTimer == 500) {
-		PE::get()->setGravDir(DOWN);
-		cdir = 'o';
-	} else if(gravityTimer == 1000) {
-		PE::get()->setGravDir(NONE);
-		cdir = '>';
-	} else if(gravityTimer > 1500) {
-		PE::get()->setGravDir(EAST);
-		gravityTimer = 0;
-		cdir = 'v';
-	}
-	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
-#endif
+
 	if (istat.start && !ready) {
 		ready = true; // delete me!
 	}
 
-	float yDist = 0.f;
 	if (istat.quit) {
 		return true; // delete me!
 	}
@@ -144,29 +144,38 @@ bool PlayerSObj::update() {
 			// Determine special power logic here
 			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
 		}
-#if 1
-		Rot_t rt = pm->ref->getRot();
-		float yaw = rt.y + istat.rotHoriz,
-			  pitch = rt.x + istat.rotVert;
-		if (yaw > M_TAU || yaw < -M_TAU) yaw = 0;
-		if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
-		pm->ref->setRot(Rot_t(0, yaw, 0));
-#else
-		float yaw;
-		if(istat.forwardDist > 0) {
-			yaw = istat.rotAngle;
-			pm->ref->setRot(Rot_t(0, yaw, 0));
-		} else {
-			yaw = pm->ref->getRot().y;
+
+		//Update up direction
+		PE *pe = PE::get();
+		if(lastGravDir != pe->getGravDir()) {
+			lastGravDir = pe->getGravDir();
+			//pm->ref->rotate(pe->getCurGravRot());
+			slerp(&initUpRot, initUpRot, finalUpRot, t);	//We may not have finished rotating
+			finalUpRot = pe->getCurGravRot();
+			t = 0;
 		}
-#endif
-	
-		int divBy = movDamp;
-		float rawRight = istat.rightDist / divBy;
-		float rawForward = istat.forwardDist / divBy;
-		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + (float)M_PI / 2.f)));
-		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + (float)M_PI / 2.f)));
-		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+
+		//Vec3f up = rotateUp(pm->ref->getRot());
+
+		//Rotate by amount specified by player (does not affect up direction)
+		Quat_t upRot;
+		slerp(&upRot, initUpRot, finalUpRot, t);
+		if(t < 1.0f) {
+			t += tRate;
+		}
+
+		//Update the yaw rotation of the player (about the default up vector)
+		yawRot *= Quat_t(Vec3f(0,1,0), istat.rotHoriz);
+
+		Quat_t qRot = upRot * yawRot;
+		pm->ref->setRot(qRot);
+
+		//Move the player: apply a force in the appropriate direction
+		float rawRight = istat.rightDist / movDamp;
+		float rawForward = istat.forwardDist / movDamp;
+		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
+		
+		pm->applyForce(total);
 		
 		// change animation according to state
 		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
