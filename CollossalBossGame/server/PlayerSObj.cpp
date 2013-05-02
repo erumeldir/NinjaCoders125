@@ -9,6 +9,7 @@
 PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
 	// Save parameters here
 	this->clientId = clientId;
+	DC::get()->print("Player %d with obj id %d created\n", clientId, id);
 
 	// Set all your pointers to NULL here, so initialize()
 	// knows if it should create them or not
