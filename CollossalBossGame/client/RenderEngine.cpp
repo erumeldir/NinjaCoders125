@@ -269,8 +269,8 @@ void RenderEngine::sceneDrawing() {
 			++it) {
 		if ((*it)->getRenderModel() != NULL)
 			(*it)->getRenderModel()->render();
-		if ((*it)->getBox() != NULL)
-			(*it)->getBox()->render();
+		/*if ((*it)->getBox() != NULL)
+			(*it)->getBox()->render();*/
 	}
 	lsObjs.clear();
 }
