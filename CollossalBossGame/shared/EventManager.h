@@ -20,15 +20,19 @@ class EventManager
 {
 public:
 	static EventManager * get();
+	static void init() { if(!initialized) em = new EventManager(); initialized = true; }
+	static void clean() { delete em; }
 
 	void registerHandler(EventType evt, CBGEventHandler * handleobj);
 	void fireEvent(EventType evt, EventData * data, void* obj);
 
 private:
-	static EventManager * em;
-	static bool initialized;
-	map<EventType, vector<CBGEventHandler *>*> * handlers;
 	EventManager();
 	~EventManager();
-	static void init();
+	static EventManager * em;
+	static bool initialized;
+
+	map<EventType, vector<CBGEventHandler *>*> * handlers;
+
 };
+typedef EventManager EM;

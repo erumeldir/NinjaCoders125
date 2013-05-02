@@ -6,6 +6,7 @@
 #include "defs.h"
 #include "RenderEngine.h"
 #include "ClientObjectManager.h"
+#include "EventManager.h"
 
 //Static members
 ClientEngine *ClientEngine::ce;
@@ -23,6 +24,7 @@ ClientEngine::ClientEngine() {
 	DC::init("clientLog.txt");
 	RE::init();
 	COM::init();
+	EM::init();
 	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
 }
 
@@ -31,6 +33,7 @@ ClientEngine::ClientEngine() {
  */
 ClientEngine::~ClientEngine() {
 	//Clean engines
+	EM::clean();
 	RE::clean();
 	COM::clean();
 	DC::clean();

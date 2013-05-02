@@ -5,11 +5,18 @@
 
 #include "EventManager.h"
 
-EventManager EventManager::em;
+EventManager * EventManager::em;
 bool EventManager::initialized = false;
 
 EventManager::EventManager() {
-
+	handlers = new map<EventType, vector<CBGEventHandler*>*>();
+	// Low Priority: Could optimize by assigning EventTypes numbers and using a for loop.
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_PLAYER_DEATH, new vector<CBGEventHandler *>()));
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_DEATH, new vector<CBGEventHandler *>()));
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_RESET, new vector<CBGEventHandler *>()));
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_CONNECTION, new vector<CBGEventHandler *>()));
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_SPAWN, new vector<CBGEventHandler *>()));
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_DISCONNECT, new vector<CBGEventHandler *>()));
 }
 
 EventManager::~EventManager() {
@@ -18,27 +25,15 @@ EventManager::~EventManager() {
 		delete it->second;
 	}
 	handlers->clear();
-}
-
-void EventManager::init() {
-	if(!initialized) {
-		em.handlers = new map<EventType, vector<CBGEventHandler*>*>();
-		// Low Priority: Could optimize by assigning EventTypes numbers and using a for loop.
-		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_PLAYER_DEATH, new vector<CBGEventHandler *>()));
-		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_DEATH, new vector<CBGEventHandler *>()));
-		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_RESET, new vector<CBGEventHandler *>()));
-		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_CONNECTION, new vector<CBGEventHandler *>()));
-		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_SPAWN, new vector<CBGEventHandler *>()));
-		em.handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_DISCONNECT, new vector<CBGEventHandler *>()));
-	}
-	initialized = true;
+	delete handlers;
 }
 
 EventManager * EventManager::get() {
 	if(!initialized) {
 		init();
+		initialized = true;
 	}
-	return &em;
+	return em;
 }
 
 void EventManager::registerHandler(EventType evt, CBGEventHandler * handleobj) {
