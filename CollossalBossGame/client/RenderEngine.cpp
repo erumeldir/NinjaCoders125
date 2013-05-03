@@ -177,7 +177,7 @@ RenderEngine::RenderEngine() {
 
 	cam = new Camera(cameraDist);
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
-	ps = new Snow(500);
+	ps = new CollisionBoxPoints();
 	ps->init(this->direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";

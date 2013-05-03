@@ -70,10 +70,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ChargeEffect.cpp" />
     <ClCompile Include="ClientEngine.cpp" />
     <ClCompile Include="ClientNetworkManager.cpp" />
     <ClCompile Include="ClientObject.cpp" />
     <ClCompile Include="ClientObjectManager.cpp" />
+    <ClCompile Include="CollisionBoxPoints.cpp" />
     <ClCompile Include="HeadsUpDisplay.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MonsterCObj.cpp" />
@@ -88,16 +90,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ChargeEffect.h" />
     <ClInclude Include="ClientEngine.h" />
     <ClInclude Include="ClientNetworkManager.h" />
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
+    <ClInclude Include="CollisionBoxPoints.h" />
     <ClInclude Include="HeadsUpDisplay.h" />
     <ClInclude Include="MonsterCObj.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Snow.h" />
     <ClInclude Include="TentacleCObj.h" />
     <ClInclude Include="TestObject.h" />
@@ -126,6 +131,9 @@
     <None Include="tiny.x" />
     <None Include="tiny_skin.bmp" />
     <None Include="wispwind.x" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,6 +26,8 @@
 #include "ParticleSystem.h"
 #include <time.h>
 #include "Snow.h"
+#include "CollisionBoxPoints.h"
+#include "ChargeEffect.h"
 
 using namespace std;
 
@@ -69,6 +71,7 @@ public:
 
 	//const D3DVERTEXELEMENT9 g_VBDecl_Geometry[5];
 	//const D3DVERTEXELEMENT9 g_VBDecl_InstanceData[5];
+	ParticleSystem* ps;
 
 
 private:
@@ -97,7 +100,6 @@ private:
 
 	Camera* cam;
 	HeadsUpDisplay* hud;
-	ParticleSystem* ps;
 
 	//Configuration fields
 	float cameraDist;

@@ -6,20 +6,21 @@ struct Particle
 {
     D3DXVECTOR3 pt; // Position in 3d space
     D3DCOLOR color;   // Color 
-	//static const DWORD FVF; // i dunno
-	enum FVF
-	{
-		FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE
-	};
+	static const DWORD FVF; // i dunno
+	//enum FVF
+	//{
+	//	FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE
+	//};
 };
 
 
 
-//const DWORD Particle::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+const DWORD Particle::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 
 
 ParticleSystem::ParticleSystem()
 {
+	this->pointSize = 10.0f;
 	srand (time(NULL));
 }
 
@@ -27,7 +28,7 @@ void ParticleSystem::init(LPDIRECT3DDEVICE9 pDevice)
 {
 	pDevice->CreateVertexBuffer(vbSize * sizeof(Particle),
 								D3DUSAGE_DYNAMIC | D3DUSAGE_POINTS | D3DUSAGE_WRITEONLY,
-								Particle::FVF_Flags, 
+								Particle::FVF, 
 								D3DPOOL_DEFAULT,
 								&vb,
 								0);
@@ -63,7 +64,6 @@ void ParticleSystem::addParticle()
 
 void ParticleSystem::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
 {
-	float pointSize = 10.0f;
 	float minPointSize = 10.0f;
 //	float maxPointSize = 5.0f;
     direct3dDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, true);
@@ -85,18 +85,20 @@ void ParticleSystem::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
   //  direct3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
   //  direct3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 
-  //  direct3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true);
-    direct3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE);
+    direct3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true);
+ //   direct3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE);
+ //   direct3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
  //   direct3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
   //  direct3dDevice->SetRenderState( D3DRS_BLENDOP, D3DBLENDOP_ADD);
-  // direct3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_DESTALPHA);
-//    direct3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE);
-    direct3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO);
+ //  direct3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_DESTALPHA);
+ //   direct3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ZERO);
+    direct3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE);
 
 	//direct3dDevice->SetRenderState( D3DRS_SRCBLEND, 0);
     //direct3dDevice->SetRenderState( D3DRS_DESTBLEND, 1);
 
-    direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+    //direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+    direct3dDevice->SetRenderState( D3DRS_LIGHTING, false);
 
 
 }
@@ -108,7 +110,7 @@ void ParticleSystem::postRender(LPDIRECT3DDEVICE9 direct3dDevice)
     direct3dDevice->SetRenderState( D3DRS_POINTSCALEENABLE, false);
     direct3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, false);
 
-    direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
+    //direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 }
 
@@ -146,7 +148,7 @@ void ParticleSystem::render(LPDIRECT3DDEVICE9 direct3dDevice)
 	{
 		preRender(direct3dDevice);
 		direct3dDevice->SetTexture(0,texture);	
-		direct3dDevice->SetFVF(Particle::FVF_Flags);
+		direct3dDevice->SetFVF(Particle::FVF);
 		direct3dDevice->SetStreamSource(0, vb, 0, sizeof(Particle));
 
 		if(vbOffset >= vbSize) vbOffset = 0;
@@ -164,8 +166,8 @@ void ParticleSystem::render(LPDIRECT3DDEVICE9 direct3dDevice)
 			if(i->isAlive)
 			{
 				v->pt = i->pos;
-				//v->color = i->color;
-				v->color = D3DXCOLOR(1.0f,1.0f,0.0f,0.0f);
+				v->color = i->color;
+				//v->color = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
 				v++;
 				numParticlesInBatch++;
 				if(numParticlesInBatch == vbBatchSize)

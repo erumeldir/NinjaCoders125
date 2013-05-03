@@ -40,6 +40,8 @@ public:
 	float getRandFloat(float low, float high);
 	void getRandVec(D3DXVECTOR3* out, D3DXVECTOR3* min, D3DXVECTOR3* max);
 
+	float pointSize;
+
 	IDirect3DVertexBuffer9* vb;
 	IDirect3DTexture9* texture;
 	list<ParticleAttributes> particles; 

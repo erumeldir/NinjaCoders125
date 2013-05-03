@@ -63,6 +63,12 @@
     <ClCompile Include="Snow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionBoxPoints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChargeEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEngine.h">
@@ -111,6 +117,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Snow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBoxPoints.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChargeEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -163,5 +178,10 @@
     <None Include="res\cute propeller.X">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

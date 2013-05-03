@@ -62,6 +62,8 @@ bool PlayerCObj::update() {
 		Quat_t objDir = rm->getFrameOfRef()->getRot();
 		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
 		showStatus();
+		// Get back?
+		//if(this->charge > 0) ((ChargeEffect*)(RE::get()->ps))->setPosition(objPos);
 	}
 	return false;
 }

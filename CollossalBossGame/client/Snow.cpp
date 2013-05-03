@@ -32,7 +32,7 @@ void Snow::resetParticle(ParticleAttributes* a)
 	a->vel.x = (getRandFloat(0,1)) * -3;
 	a->vel.y = (getRandFloat(0,1)) * -10;
 	a->vel.z = 0;
-	a->color = D3DCOLOR_ARGB(0, 0, 0, 0);
+	a->color = D3DXCOLOR(1.0f,1.0f,0.0f,1.0f);
 }
 
 void Snow::update(float timeDelta)
