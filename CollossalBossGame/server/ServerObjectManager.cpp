@@ -8,6 +8,7 @@ ServerObjectManager *ServerObjectManager::som;
 ServerObjectManager::ServerObjectManager(void) {
 	curId = 0;
 	debugFlag = CM::get()->find_config_as_bool("SOM_DEBUG_FLAG");
+	collisionMode = CM::get()->find_config_as_bool("COLLISION_MODE");
 }
 
 

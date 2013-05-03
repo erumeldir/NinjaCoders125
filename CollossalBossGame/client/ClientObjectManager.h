@@ -27,6 +27,7 @@ public:
 
 	int player_id;
 	bool debugFlag;	
+	bool collisionMode;
 /*  Needs to receive a server update
 	uint genId();
 	void freeId(uint id);

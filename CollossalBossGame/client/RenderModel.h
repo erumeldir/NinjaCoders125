@@ -17,6 +17,7 @@
 
 #include <d3dx9.h>
 #include "NetworkData.h"
+#include <vector>
 
 
 class RenderModel
@@ -27,6 +28,7 @@ public:
 	virtual void render();
 	virtual void setModelState(int state_id);
 	Frame *getFrameOfRef() { return ref; }
+	vector<Box> colBoxes;
 
 private:
 	Frame *ref;	//The skeleton

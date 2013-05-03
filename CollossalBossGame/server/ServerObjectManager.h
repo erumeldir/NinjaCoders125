@@ -29,6 +29,7 @@ public:
 	ServerObject *remove(uint id);
 
 	bool debugFlag;
+	bool collisionMode;
 
 private:
 	ServerObjectManager(void);

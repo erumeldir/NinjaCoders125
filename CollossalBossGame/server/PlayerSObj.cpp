@@ -211,6 +211,7 @@ bool PlayerSObj::update() {
 			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
+
 	return false;
 }
 
@@ -223,7 +224,26 @@ int PlayerSObj::serialize(char * buf) {
 	state->charge = charge;
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
-	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+
+	if (SOM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(buf + sizeof(PlayerState));
+
+		vector<Box> objBoxes = pm->colBoxes;
+
+		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
+
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
+		}
+
+		return pm->ref->serialize(buf + sizeof(PlayerState) + sizeof(CollisionState)) + sizeof(PlayerState) + sizeof(CollisionState);
+	}
+	else
+	{
+		return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+	}
 }
 
 void PlayerSObj::deserialize(char* newInput)

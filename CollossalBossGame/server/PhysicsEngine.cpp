@@ -127,6 +127,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1,
 	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
 				 *mdl2 = obj2->getPhysicsModel();
 
+
 	Box bx1 = b1 + mdl1->ref->getPos(),
 		bx2 = b2 + mdl2->ref->getPos();
 

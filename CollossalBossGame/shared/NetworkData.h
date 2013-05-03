@@ -123,6 +123,16 @@ struct PlayerState {
 };
 
 /*
+ * Stores information on the collision boxes that need to be 
+ * rendered on the client for testing
+ */
+const int maxBoxes = 5;
+struct CollisionState {
+	int totalBoxes; // so we know how many to actually draw
+	Box boxes[maxBoxes]; // to keep it simple, you can have up to 5 collision boxes
+};
+
+/*
  * State information for more general objects that might not be encoded
  */
 struct ObjectState {
