@@ -78,10 +78,25 @@ RenderModel::RenderModel(Point_t pos, Quat_t rot, Model modelNum)
 		scale = CM::get()->find_config_as_point("MODEL_SOUTH_WALL_SCALE");
 		initRot = CM::get()->find_config_as_point("MODEL_SOUTH_WALL_ROTATION");
 		break;
-	case MDL_PLAYER:
-		filename = CM::get()->find_config("MODEL_PLAYER");
-		scale = CM::get()->find_config_as_point("MODEL_PLAYER_SCALE");
-		initRot = CM::get()->find_config_as_point("MODEL_PLAYER_ROTATION");
+	case MDL_PLAYER_1:
+		filename = CM::get()->find_config("MODEL_PLAYER1");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER1_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER1_ROTATION");
+		break;
+	case MDL_PLAYER_2:
+		filename = CM::get()->find_config("MODEL_PLAYER2");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER2_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER2_ROTATION");
+		break;
+	case MDL_PLAYER_3:
+		filename = CM::get()->find_config("MODEL_PLAYER3");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER3_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER3_ROTATION");
+		break;
+	case MDL_PLAYER_4:
+		filename = CM::get()->find_config("MODEL_PLAYER4");
+		scale = CM::get()->find_config_as_point("MODEL_PLAYER4_SCALE");
+		initRot = CM::get()->find_config_as_point("MODEL_PLAYER4_ROTATION");
 		break;
 	case MDL_TEST_BOX:
 		filename = CM::get()->find_config("MODEL_TEST_BOX");
@@ -169,6 +184,26 @@ void RenderModel::render() {
 		if(modelState != prevModelState) RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
 		RE::get()->animate(modelId, /*rotX * rotY * rotZ*/ rotMat * trans);
 		prevModelState = modelState;
+
+		//Draw Boxes
+		if(colBoxes.size() > 0)
+		{
+			for (int i=0; i<colBoxes.size(); i++)
+			{
+				Box curr = colBoxes[i];
+
+				// calculate the box corners
+				Point_t botLeftFront, botRightFront, botLeftBack, botRightBacl, topLeftFront, topRightFront, topLeftBack, topRightBacl;
+				botLeftFront = Vec3f(curr.x, curr.y, curr.z);
+				botRightFront = Vec3f(curr.x + curr.w, curr.y, curr.z);
+				botLeftBack = Vec3f(curr.x, curr.y, curr.z + curr.l);
+				botRightBacl = Vec3f(curr.x + curr.w, curr.y, curr.z + curr.l);
+				topLeftFront = Vec3f(curr.x, curr.y + curr.h, curr.z);
+				topRightFront = Vec3f(curr.x + curr.w, curr.y + curr.h, curr.z);
+				topLeftBack = Vec3f(curr.x, curr.y + curr.h, curr.z + curr.l);
+				topRightBacl = Vec3f(curr.x + curr.w, curr.y + curr.h, curr.z + curr.l);
+			}
+		}
 	}
 }
 

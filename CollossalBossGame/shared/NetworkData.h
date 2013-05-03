@@ -64,7 +64,10 @@ enum Model {
 	MDL_WEST_WALL,
 	MDL_NORTH_WALL,
 	MDL_SOUTH_WALL,
-    MDL_PLAYER,
+    MDL_PLAYER_1,
+	MDL_PLAYER_2,
+	MDL_PLAYER_3,
+	MDL_PLAYER_4,
 	MDL_TEST_BOX,
 	MDL_TEST_PYRAMID,
 	MDL_TEST_PLANE,
@@ -117,6 +120,16 @@ struct PlayerState {
 	int ready;
 	int charge;
 	int animationstate;
+};
+
+/*
+ * Stores information on the collision boxes that need to be 
+ * rendered on the client for testing
+ */
+const int maxBoxes = 5;
+struct CollisionState {
+	int totalBoxes; // so we know how many to actually draw
+	Box boxes[maxBoxes]; // to keep it simple, you can have up to 5 collision boxes
 };
 
 /*

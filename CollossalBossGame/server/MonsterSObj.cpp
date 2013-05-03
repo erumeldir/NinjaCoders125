@@ -9,6 +9,7 @@ MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new MonsterObj %d\n", id);
 	this->health = 0;
+	// todo make null make sure it works
 	pm = new PhysicsModel(Point_t(), Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	this->setFlag(IS_STATIC, 1);
 	

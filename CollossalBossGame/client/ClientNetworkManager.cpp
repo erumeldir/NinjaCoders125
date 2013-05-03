@@ -24,6 +24,7 @@ ClientNetworkManager ClientNetworkManager::CNM;
 ClientNetworkManager::ClientNetworkManager(void) {
 	connected = false;
 	debugFlag = CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG");
+
 	char * HOST = CM::get()->find_config("HOST");
 	char * PORT = CM::get()->find_config("PORT");
 

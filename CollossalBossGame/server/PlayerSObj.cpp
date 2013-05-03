@@ -6,10 +6,15 @@
 #include "defs.h"
 #include "PhysicsEngine.h"
 
-PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
+PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
+	// Save parameters here
+	this->clientId = clientId;
+
 	// Set all your pointers to NULL here, so initialize()
 	// knows if it should create them or not
 	pm = NULL;
+
+	// Other re-initializations (things that don't depend on parameters, like config)
 	this->initialize();
 }
 
@@ -61,7 +66,7 @@ void PlayerSObj::initialize() {
 	modelAnimationState = IDLE;
 	ready = false;
 
-	lastGravDir = PE::get()->getGravDir();
+	lastGravDir = DOWN;
 	t = 1;
 	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
 	yawRot = Quat_t();
@@ -206,18 +211,39 @@ bool PlayerSObj::update() {
 			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
+
 	return false;
 }
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_PLAYER;
+	// This helps us distinguish between what model goes to what player
+	state->modelNum = (Model)(MDL_PLAYER_1 + this->clientId);
 	state->health = health;
 	state->ready = ready;
 	state->charge = charge;
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
-	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+
+	if (SOM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(buf + sizeof(PlayerState));
+
+		vector<Box> objBoxes = pm->colBoxes;
+
+		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
+
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
+		}
+
+		return pm->ref->serialize(buf + sizeof(PlayerState) + sizeof(CollisionState)) + sizeof(PlayerState) + sizeof(CollisionState);
+	}
+	else
+	{
+		return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+	}
 }
 
 void PlayerSObj::deserialize(char* newInput)

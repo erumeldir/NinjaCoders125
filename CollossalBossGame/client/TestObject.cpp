@@ -31,5 +31,21 @@ bool TestObject::update() {
 
 void TestObject::deserialize(char* newState) {
 	ObjectState *state = (ObjectState*)newState;
-	rm->getFrameOfRef()->deserialize(newState + sizeof(ObjectState));
+
+	if (COM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(newState + sizeof(ObjectState));
+
+		rm->colBoxes.clear();
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			rm->colBoxes.push_back(collState->boxes[i]);
+		}
+
+		rm->getFrameOfRef()->deserialize(newState + sizeof(ObjectState) + sizeof(CollisionState));
+	}
+	else
+	{
+		rm->getFrameOfRef()->deserialize(newState + sizeof(ObjectState));
+	}
 }
