@@ -177,6 +177,8 @@ RenderEngine::RenderEngine() {
 
 	cam = new Camera(cameraDist);
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
+	ps = new Snow(500);
+	ps->init(this->direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
 
@@ -226,21 +228,23 @@ void RenderEngine::renderThis(ClientObject *obj) {
 void RenderEngine::render() {
 	//Update the view matrix
 	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-
+	ps->update(33);
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(21, 0, 105), 1.0f, 0);
+	//direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0);
+	direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0, 0.0f), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
 	gamestartdisplaylogic();
 	hud->displayBackground();
-
 	sceneDrawing();
-	drawHUD();
+	ps->render(direct3dDevice);
 
+	drawHUD();
+	//ps->render(direct3dDevice);
 	direct3dDevice->EndScene(); // ends the 3D scene
 
-	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+	direct3dDevice->Present(0, 0, 0, 0); // displays the created frame
 }
 
 // todo take time

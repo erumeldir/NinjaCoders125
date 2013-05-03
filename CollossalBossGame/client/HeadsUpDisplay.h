@@ -9,7 +9,6 @@
 #include "PlayerCObj.h"
 #include "ClientObjectManager.h"
 #include "ClientEngine.h"
-#include <map>
 
 class HeadsUpDisplay
 {
@@ -27,11 +26,10 @@ public:
 private:
 	bool * gamestart;
 	ID3DXFont* direct3dText; // the pointer to the device class
-
-
 	
 	IDirect3DTexture9 *g_texture;
 	IDirect3DTexture9 *test1_texture;
+	IDirect3DTexture9 *p;
 
 	int hudTopX, hudTopY;
 

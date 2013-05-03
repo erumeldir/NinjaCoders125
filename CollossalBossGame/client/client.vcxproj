@@ -77,9 +77,11 @@
     <ClCompile Include="HeadsUpDisplay.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MonsterCObj.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
+    <ClCompile Include="Snow.cpp" />
     <ClCompile Include="TentacleCObj.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="XboxController.cpp" />
@@ -92,9 +94,11 @@
     <ClInclude Include="ClientObjectManager.h" />
     <ClInclude Include="HeadsUpDisplay.h" />
     <ClInclude Include="MonsterCObj.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
+    <ClInclude Include="Snow.h" />
     <ClInclude Include="TentacleCObj.h" />
     <ClInclude Include="TestObject.h" />
     <ClInclude Include="XAnimator\XAnimator_lib.h" />
