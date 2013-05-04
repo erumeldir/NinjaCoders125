@@ -177,7 +177,8 @@ RenderEngine::RenderEngine() {
 
 	cam = new Camera(cameraDist);
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
-	ps = new CollisionBoxPoints();
+//	ps = new CollisionBoxPoints();
+	ps = new ChargeEffect(50);
 	ps->init(this->direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
@@ -191,6 +192,7 @@ RenderEngine::RenderEngine() {
 * Bryan
 */
 RenderEngine::~RenderEngine() {
+	RE::re = NULL;
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
 	delete hud;
