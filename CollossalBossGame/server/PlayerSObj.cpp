@@ -176,7 +176,7 @@ bool PlayerSObj::update() {
 		pm->applyForce(total);
 
 		// Apply special power
-		if (istat.specialPower/* && !getFlag(IS_FALLING)*/) // holding down increases the charge
+		if (istat.specialPower && !getFlag(IS_FALLING)) // holding down increases the charge
 		{
 			charge+=chargeUpdate;
 			if(charge > 13) charge = 13.f;
