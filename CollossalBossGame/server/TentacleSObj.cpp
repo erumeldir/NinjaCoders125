@@ -76,7 +76,26 @@ int TentacleSObj::serialize(char * buf) {
 	TentacleState *state = (TentacleState*)buf;
 	state->modelNum = this->modelNum;
 	//state->health = health;
-	return pm->ref->serialize(buf + sizeof(TentacleState)) + sizeof(TentacleState);
+
+	if (SOM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(buf + sizeof(TentacleState));
+
+		vector<Box> objBoxes = pm->colBoxes;
+
+		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
+
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
+		}
+
+		return pm->ref->serialize(buf + sizeof(TentacleState) + sizeof(CollisionState)) + sizeof(TentacleState) + sizeof(CollisionState);
+	}
+	else
+	{
+		return pm->ref->serialize(buf + sizeof(TentacleState)) + sizeof(TentacleState);
+	}
 }
 
 void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {

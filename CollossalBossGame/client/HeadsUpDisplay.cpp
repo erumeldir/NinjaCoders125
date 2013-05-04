@@ -48,6 +48,8 @@ HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs)
 	D3DXCreateTextureFromFile(direct3dDevice, "res/playerready.png", &playerreadytxt);
 	D3DXCreateTextureFromFile(direct3dDevice, "res/blackbackground.png", &blackbackgroundtxt);
 	D3DXCreateTextureFromFile(direct3dDevice, "res/youwin.png", &youwintxt);
+	
+	//D3DXCreateTextureFromFile(direct3dDevice, "res/particle.bmp", &p);
 
 	D3DXCreateSprite(direct3dDevice,&p1connect);
 	D3DXCreateSprite(direct3dDevice,&p2connect);
@@ -101,6 +103,7 @@ HeadsUpDisplay::~HeadsUpDisplay(void)
 	playerreadytxt->Release();
 	blackbackgroundtxt->Release();
 	youwintxt->Release();
+	//p->Release();
 }
 
 void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
@@ -154,6 +157,8 @@ void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
 
 	sprite1->End();
 
+
+
 }
 
 void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, float charge)
@@ -189,6 +194,15 @@ void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, floa
 
 	if(playerHealth == 0) displayGameOver();
 	else if(monsterHealth == 0) displayVictory(); // todo Franklin fix so that we only Victory on last phase
+
+	//D3DXVECTOR3 pos;
+	//pos.x=0.0f;
+	//pos.y=0.0f;
+	//pos.z=0.0f;
+
+	//sprite->Begin(D3DXSPRITE_ALPHABLEND);
+	//sprite->Draw(p,NULL,NULL,&pos,0xFFFFFFFF);
+	//sprite->End();
 }
 
 void HeadsUpDisplay::displayBackground()

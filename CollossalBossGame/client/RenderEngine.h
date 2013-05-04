@@ -23,7 +23,11 @@
 #include "XAnimator_lib.h"
 #include "Camera.h"
 #include "HeadsUpDisplay.h"
+#include "ParticleSystem.h"
 #include <time.h>
+#include "Snow.h"
+#include "CollisionBoxPoints.h"
+#include "ChargeEffect.h"
 
 using namespace std;
 
@@ -63,6 +67,13 @@ public:
 	IXAnimator *getAnim() { return xAnimator; }
 
 	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
+
+
+	//const D3DVERTEXELEMENT9 g_VBDecl_Geometry[5];
+	//const D3DVERTEXELEMENT9 g_VBDecl_InstanceData[5];
+	ParticleSystem* ps;
+
+
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here

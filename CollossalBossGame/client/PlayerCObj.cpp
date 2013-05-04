@@ -62,6 +62,8 @@ bool PlayerCObj::update() {
 		Quat_t objDir = rm->getFrameOfRef()->getRot();
 		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
 		showStatus();
+		// Get back?
+		//if(this->charge > 0) ((ChargeEffect*)(RE::get()->ps))->setPosition(objPos);
 	}
 	return false;
 }
@@ -77,5 +79,21 @@ void PlayerCObj::deserialize(char* newState) {
 	}
 
 	this->getRenderModel()->setModelState(state->animationstate);
-	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
+
+	if (COM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(newState + sizeof(PlayerState));
+
+		rm->colBoxes.clear();
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			rm->colBoxes.push_back(collState->boxes[i]);
+		}
+
+		rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState) + sizeof(CollisionState));
+	}
+	else
+	{
+		rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
+	}
 }
