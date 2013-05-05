@@ -116,6 +116,7 @@ struct PlayerState {
 	int health;
 	int ready;
 	int animationstate;
+	Quat_t camRot;
 };
 
 /*

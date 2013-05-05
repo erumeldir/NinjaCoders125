@@ -45,6 +45,7 @@ void XboxController::sendInput() {
 		istat.quit =			(gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;
 		istat.start =			(gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
 		istat.attack =			(gamepad.bRightTrigger) != 0;
+		istat.camLock =			(gamepad.bLeftTrigger);
 
 
 		// Get joystick positions

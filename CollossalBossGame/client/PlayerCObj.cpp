@@ -59,8 +59,8 @@ bool PlayerCObj::update() {
 		}
 
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		Quat_t objDir = rm->getFrameOfRef()->getRot();
-		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
+		//Quat_t objDir = rm->getFrameOfRef()->getRot();
+		RE::get()->getCamera()->update(objPos, camRot, cameraPitch);
 		showStatus();
 	}
 	return false;
@@ -74,5 +74,6 @@ void PlayerCObj::deserialize(char* newState) {
 		RE::get()->gamestarted = false;
 	}
 	this->getRenderModel()->setModelState(state->animationstate);
+	camRot = state->camRot;
 	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
 }

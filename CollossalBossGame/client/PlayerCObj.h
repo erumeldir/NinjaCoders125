@@ -22,5 +22,6 @@ private:
 	int health;
 	RenderModel *rm;
 	float cameraPitch;
+	Quat_t camRot;
 };
 

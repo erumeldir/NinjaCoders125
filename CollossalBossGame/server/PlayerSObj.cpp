@@ -8,10 +8,11 @@
 
 PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	// Configuration options
+	pm = NULL;
+	initialize();
+#if 0
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
-
-
 	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
 
 	Point_t pos = Point_t(0, 5, 10);
@@ -51,6 +52,7 @@ PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
 	gravityTimer = 0;
 	modelAnimationState = IDLE;
 	ready = false;
+#endif
 }
 
 void PlayerSObj::initialize() {
@@ -64,7 +66,8 @@ void PlayerSObj::initialize() {
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	delete pm;
+	if(pm != NULL)
+		delete pm;
 
 	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
@@ -81,6 +84,8 @@ void PlayerSObj::initialize() {
 	istat.rotVert = 0.0;
 	istat.rightDist = 0.0;
 	istat.forwardDist = 0.0;
+	istat.camLock = false;
+	camLocked = true;
 
 	newJump = true; // any jump at this point is a new jump
 	newAttack = true; // same here
@@ -93,9 +98,13 @@ void PlayerSObj::initialize() {
 	lastGravDir = PE::get()->getGravDir();
 	t = 1;
 	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
-	yawRot = Quat_t();
+	yaw = 0;
 	initUpRot = Quat_t();
 	finalUpRot = Quat_t();
+	camYaw = 0;
+	camKpSlow = CM::get()->find_config_as_float("CAM_KP_SLOW");
+	camKpFast = CM::get()->find_config_as_float("CAM_KP_FAST");
+	camKp = camKpSlow;
 }
 
 PlayerSObj::~PlayerSObj(void) {
@@ -164,16 +173,42 @@ bool PlayerSObj::update() {
 			t += tRate;
 		}
 
-		//Update the yaw rotation of the player (about the default up vector)
-		yawRot *= Quat_t(Vec3f(0,1,0), istat.rotHoriz);
+		//Update the camera yaw
+		if(istat.camLock) {
+			camKp = camKpFast;
+		} else {
+			camKp = camKpSlow;
+		}
 
-		Quat_t qRot = upRot * yawRot;
+		if(istat.camLock) {
+			camLocked = true;
+		} else if(camLocked && fabs(istat.rotHoriz) > 0) {
+			camLocked = false;
+		}
+
+		if(camLocked) {
+			camYaw = controlAngles(yaw, camYaw);
+		} else {
+			camYaw += istat.rotHoriz;
+		}
+		if(camYaw < -M_PI) camYaw += M_TAU;
+		else if(camYaw > M_PI) camYaw -= M_TAU;
+		camRot = upRot * Quat_t(Vec3f(0,1,0), camYaw);
+
+		//Update the yaw rotation of the player (about the default up vector)
+		if(fabs(istat.forwardDist) > 0.0f || fabs(istat.rightDist) > 0.0f) {
+			yaw = camYaw + istat.rotAngle;
+		}
+
+		Quat_t qRot = upRot * Quat_t(Vec3f(0,1,0), yaw);
 		pm->ref->setRot(qRot);
 
 		//Move the player: apply a force in the appropriate direction
 		float rawRight = istat.rightDist / movDamp;
 		float rawForward = istat.forwardDist / movDamp;
-		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
+		float fwdMag = sqrt(rawRight *rawRight + rawForward * rawForward);
+		//Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
+		Vec3f total = rotate(Vec3f(0, 0, fwdMag), qRot);
 		
 		pm->applyForce(total);
 		
@@ -194,6 +229,22 @@ bool PlayerSObj::update() {
 	return false;
 }
 
+float PlayerSObj::controlAngles(float des, float cur) {
+	//Determine
+	float err1 = des - cur, err2, errDiff;
+	if(des < 0) err2 = (des + M_TAU) - cur;
+	else err2 = (des - M_TAU) - cur;
+
+	errDiff = fabs(fabs(err1) - fabs(err2));
+	//DC::get()->print("Error differences: %f-%f = %f\n", err1, err2, );
+
+	if(fabs(err1) < fabs(err2)) {
+		return cur + err1 * errDiff * camKp;
+	} else {
+		return cur + err2 * errDiff * camKp;
+	}
+}
+
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	state->modelNum = MDL_PLAYER;
@@ -201,6 +252,7 @@ int PlayerSObj::serialize(char * buf) {
 	state->ready = ready;
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
+	state->camRot = this->camRot;
 	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
 }
 

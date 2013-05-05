@@ -63,7 +63,7 @@ void gameInit() {
 	TentacleSObj* tentacleLeft = new TentacleSObj(som->genId(), MDL_TENTACLE_1, Point_t(-20, 100, 300), Quat_t(), monster);
 	TentacleSObj* tentacleRight = new TentacleSObj(som->genId(), MDL_TENTACLE_2, Point_t(-20, 100, -300), Quat_t(Vec3f(1,0,0),(float)M_PI), monster);
 
-	som->add(tentacleLeft);
-	som->add(tentacleRight);
-	som->add(monster);
+	//som->add(tentacleLeft);
+	//som->add(tentacleRight);
+	//som->add(monster);
 }
