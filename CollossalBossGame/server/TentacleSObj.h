@@ -11,7 +11,7 @@ class MonsterSObj;
 class TentacleSObj : public ServerObject
 {
 public:
-	TentacleSObj(uint id, Model modelNum, Point_t pos, Rot_t rot, MonsterSObj* master);
+	TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, MonsterSObj* master);
 	virtual ~TentacleSObj(void);
 
 	virtual bool update();

@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "RenderModel.h"
 #include "ClientObjectManager.h"
+#include "PlayerCObj.h"
 #include "ConfigurationManager.h"
 #include <mmsystem.h>
 
@@ -121,38 +122,43 @@ void RenderEngine::renderInitalization()
 	light.Range      = 500.0f;
 	// Create a direction for our light - it must be normalized  
 	D3DXVECTOR3 vecDir;
-	vecDir = D3DXVECTOR3(0.0f,-0.3f,0.5);
+	vecDir = D3DXVECTOR3(-1.0f,-0.1f,0.5);
 	D3DXVec3Normalize( (D3DXVECTOR3*)&light.Direction, &vecDir );
 
 	// Tell the device about the light and turn it on
 	direct3dDevice->SetLight( 0, &light );
+
+	
+	// Fill in a light structure defining our light
+	D3DLIGHT9 light2;
+	ZeroMemory( &light2, sizeof(D3DLIGHT9) );
+	light2.Type       = D3DLIGHT_DIRECTIONAL;
+	light2.Diffuse.r  = 1.0f;
+	light2.Diffuse.g  = 1.0f;
+	light2.Diffuse.b  = 1.0f;
+	light2.Diffuse.a  = 1.0f;
+	light2.Range      = 500.0f;
+	// Create a direction for our light - it must be normalized  
+	D3DXVECTOR3 vecDir1;
+//	vecDir1 = D3DXVECTOR3(0.0f,-0.3f,-0.5);
+	vecDir1 = D3DXVECTOR3(1.0f,-0.1f,-0.5);
+	D3DXVec3Normalize( (D3DXVECTOR3*)&light2.Direction, &vecDir1 );
+
+	// Tell the device about the light and turn it on
+	direct3dDevice->SetLight( 1, &light2 );
+
 	direct3dDevice->LightEnable( 0, TRUE ); 
+	direct3dDevice->LightEnable( 1, TRUE ); 
 
 	direct3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );	
 }
 
 /**
- * Initializes a HUD, which right now is just text, so we're 
- * using DirectX Fonts, tutorial/explanation from here:
- * http://www.drunkenhyena.com/cgi-bin/view_cpp_article.pl?chapter=3;article=17
- * Author(s): Suman, Haro
+ * Initializes the sprites 
+ * Author(s): Franklin
  */
-void RenderEngine::HUDInitialization() {
-	D3DXCreateFont(	this->direct3dDevice,     //D3D Device
-				    22,                       //Font height
-					0,					      //Font width
-					FW_NORMAL,                //Font Weight
-					1,                        //MipLevels
-					false,                    //Italic
-					DEFAULT_CHARSET,          //CharSet
-					OUT_DEFAULT_PRECIS,       //OutputPrecision
-					ANTIALIASED_QUALITY,      //Quality
-					DEFAULT_PITCH|FF_DONTCARE,//PitchAndFamily
-					"Georgia",                //pFacename,
-					&this->direct3dText);     //ppFont
-	D3DXCreateLine(this->direct3dDevice, &healthLine);
-	D3DXCreateLine(this->direct3dDevice, &monsterLine);
-	D3DXCreateLine(this->direct3dDevice, &backgroundLine);
+void RenderEngine::gamestartdisplaylogic() {
+	hud->displayStart();
 }
 
 /*
@@ -161,37 +167,24 @@ void RenderEngine::HUDInitialization() {
 RenderEngine::RenderEngine() {
 	// Set configuration options
 	cameraDist = CM::get()->find_config_as_float("CAM_DIST");
-	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
-	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
 	debugFlag = CM::get()->find_config_as_bool("RENDER_DEBUG_FLAG");
 
 	startWindow();
 	renderInitalization();	//start initialization
-	HUDInitialization();
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
 	D3DXMatrixIdentity(&world);
 
 	cam = new Camera(cameraDist);
+	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
+	ps = new CollisionBoxPoints();
+	ps->init(this->direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
-	D3DXCreateTextureFromFile(this->direct3dDevice,   //Direct3D Device
-                             "res/nebula.jpg",       //File Name
-                             &g_texture);    //Texture handle
-	D3DXCreateSprite(this->direct3dDevice,&sprite);
-	D3DXCreateSprite(this->direct3dDevice,&sprite1);
-	initTime=clock();
+
+	this->gamestarted = false;
 }
 
-
-void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
-{
-	cam->setTargetPosAndRot(pos, rot);
-	// Update the camera view matrix
-	cam->viewTarget();
-	// Tell D3D to set the view matrix
-	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-}
 
 /*
 * Clean up DrectX and any other rendering libraries that we may have.
@@ -200,63 +193,15 @@ void RenderEngine::updateCamera(const Point_t &pos, const Rot_t &rot)
 RenderEngine::~RenderEngine() {
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
-	direct3dText->Release(); // close and release the Text
-	healthLine->Release();
-	backgroundLine->Release();
-	monsterLine->Release();
-	sprite->Release();
-	g_texture->Release();
-	sprite1->Release();
+	delete hud;
 	delete cam;
 }
 
 void RenderEngine::drawHUD() {
-	RECT font_rect;
-	RECT monstr_rect;
-
-   //A pre-formatted string showing the current frames per second
-	SetRect(&font_rect,
-			hudTopX,
-			hudTopY,
-			SCREEN_WIDTH,
-			SCREEN_HEIGHT);
-
-	SetRect(&monstr_rect,
-			hudTopX,
-			hudTopY + 100,
-			SCREEN_WIDTH,
-			SCREEN_HEIGHT);
-
-	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
-    this->direct3dText->DrawText(sprite1,        //pSprite
-								hudText.c_str(),	 //pString
-                                -1,          //Count
-                                &font_rect,  //pRect
-                                DT_LEFT|DT_NOCLIP,//Format,
-                                0xFFFFFFFF);//0xFF000000); //Color
-
-    this->direct3dText->DrawText(sprite1,        //pSprite
-								monsterHUDText.c_str(),	 //pString
-                                -1,          //Count
-                                &monstr_rect,  //pRect
-                                DT_LEFT|DT_NOCLIP,//Format,
-                                0xFFFFFFFF);//0xFF000000); //Color
-	sprite1->End();
-	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
-	backgroundLine->SetWidth(15.0f);
-	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
-
-	D3DXVECTOR2 hlines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(this->healthPts + 10.f , 40.0f)};
-	healthLine->SetWidth(15.0f);
-	healthLine->Draw(hlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->healthPts) / 100.0), (int)(255.0 * this->healthPts / 100.0), 0));
-
-    blines[0] = D3DXVECTOR2(10.0f, 140.0f); blines[1] = D3DXVECTOR2(110.0f, 140.0f);
-	backgroundLine->SetWidth(15.0f);
-	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
-
-	D3DXVECTOR2 mlines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(this->monsterHealthPts + 10.f , 140.0f)};
-	monsterLine->SetWidth(15.0f);
-	monsterLine->Draw(mlines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - this->monsterHealthPts) / 100.0), (int)(255.0 * this->monsterHealthPts / 100.0), 0));
+	if(gamestarted) {
+		hud->displayText(this->hudText,this->monsterHUDText);
+		hud->displayHealthBars(this->healthPts, this->monsterHealthPts, this->charge);
+	}
 }
 
 /*where we actually draw a scene
@@ -285,49 +230,25 @@ void RenderEngine::renderThis(ClientObject *obj) {
 * Bryan
 */
 void RenderEngine::render() {
+	//Update the view matrix
+	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
+	ps->update(33);
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(21, 0, 105), 1.0f, 0);
+	//direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0);
+	direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0, 0.0f), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
-	// do 3D rendering on the back buffer here
-	D3DXVECTOR3 pos;
-
-	pos.x=0.0f;
-	pos.y=0.0f;
-	pos.z=1.0f;
-
-	// Texture being used is 64 by 64:
-	D3DXVECTOR2 spriteCentre=D3DXVECTOR2(1920.0f/2, 1920.0f/2);
-
-	// Screen position of the sprite
-	D3DXVECTOR2 trans=D3DXVECTOR2(-700.0f,-700.0f);
-
-	// Rotate based on the time passed
-	float rotation=(clock()-initTime)/100000.0f;
-	//float rotation= 0;//100.f/500.0f;
-
-	// Build our matrix to rotate, scale and position our sprite
-	D3DXMATRIX mat;
-
-	D3DXVECTOR2 scaling(1.f,1.f);
-
-	// out, scaling centre, scaling rotation, scaling, rotation centre, rotation, translation
-	D3DXMatrixTransformation2D(&mat,NULL,0.0,&scaling,&spriteCentre,rotation,&trans);
-
-	// Tell the sprite about the matrix
-	sprite->SetTransform(&mat);
-
-	sprite->Begin(D3DXSPRITE_ALPHABLEND);
-	sprite->Draw(g_texture,NULL,NULL,&pos,0xFFFFFFFF);
-	sprite->End();
-
+	gamestartdisplaylogic();
+	hud->displayBackground();
 	sceneDrawing();
-	drawHUD();
+	ps->render(direct3dDevice);
 
+	drawHUD();
+	//ps->render(direct3dDevice);
 	direct3dDevice->EndScene(); // ends the 3D scene
 
-	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+	direct3dDevice->Present(0, 0, 0, 0); // displays the created frame
 }
 
 // todo take time
@@ -337,8 +258,11 @@ void RenderEngine::animate(int id, const D3DXMATRIX &pos) {
 	RenderEngine::xAnimator->Render(id,pos,TIME_SINCE_LAST_UPDATE);
 }
 
-bool RenderEngine::loadModel(const char * filename, int * idAddr) { 
-	return RenderEngine::xAnimator->LoadXFile(filename,idAddr);
+bool RenderEngine::loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat) { 
+	// Ignore the 0UL, it's some flag thing that's optional (0UL is the default value)
+	// I added it here so I can specify the root matrix (for models that need to be rotated)
+	// todo optimization (maybe add scaling here too, would that be faster?)
+	return RenderEngine::xAnimator->LoadXFile(filename,idAddr, 0UL, &rootMat);
 }
 
 // this is the main message handler for the program

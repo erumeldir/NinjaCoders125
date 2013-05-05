@@ -15,11 +15,13 @@ public:
 	virtual RenderModel* getRenderModel() { return rm; }
 
 	virtual void deserialize(char* newState);
-	virtual RenderModel * getBox();
+
+	int ready;
 
 private:
 	RenderModel * box;
 	int health;
+	float charge;
 	RenderModel *rm;
 	float cameraPitch;
 };

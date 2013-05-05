@@ -8,23 +8,20 @@
 #include <math.h>
 #include <sstream>
 
+#define DEFAULT_PITCH 0.174532925f	//10 degrees or stg like that
+
 PlayerCObj::PlayerCObj(uint id, char *data) :
-	ClientObject(id)
+	ClientObject(id, OBJ_PLAYER)
 {
 	if (COM::get()->debugFlag) DC::get()->print("Created new PlayerCObj %d\n", id);
 	PlayerState *state = (PlayerState*)data;
 	this->health = state->health;
-
-	rm = new RenderModel(Point_t(300.f, 500.f, 0.f),Rot_t(0.f, 0.f, (float)M_PI), state->modelNum, state->animationstate, Vec3f(2.f,2.f,2.f));
-	box = new RenderModel(Point_t(),Rot_t(), (Model)+12, 0, Vec3f(1.f,1.f,1.f));
-	cameraPitch = 0;
+	this->charge = state->charge;
+	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
+	cameraPitch = DEFAULT_PITCH;
+	ready = false;
 }
 
-RenderModel* PlayerCObj::getBox() {
-	//1. get the box model
-	//2. return the model
-	return box;
-}
 PlayerCObj::~PlayerCObj(void)
 {
 	delete rm;
@@ -41,8 +38,7 @@ void PlayerCObj::showStatus()
 	//std::string s2 (floor(health/20 + 0.5f), '~');
 	//std::string s3 ("]");
 	//status << s1 << s2 << s3;
-	if (health <= 0) status << "\nGAME OVER";
-	RE::get()->setHUDText(status.str(), health);
+	RE::get()->setHUDText(status.str(), health, charge);
 }
 
 bool PlayerCObj::update() {
@@ -50,9 +46,8 @@ bool PlayerCObj::update() {
 	if(COM::get()->player_id == getId()) {
 		XboxController *xctrl = CE::getController();
 		if(xctrl->isConnected()) {
-			
 			if(xctrl->getState().Gamepad.bLeftTrigger) {
-				cameraPitch = 0.174532925f; //10
+				cameraPitch = DEFAULT_PITCH; //10
 			} else if(fabs((float)xctrl->getState().Gamepad.sThumbRY) > DEADZONE) {
 				cameraPitch += atan(((float)xctrl->getState().Gamepad.sThumbRY / (JOY_MAX * 8)));
 				if (cameraPitch > M_PI / 2.f) {
@@ -62,11 +57,13 @@ bool PlayerCObj::update() {
 				}
 			}
 		}
+
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		Rot_t objDir = rm->getFrameOfRef()->getRot();
-		objDir.x = cameraPitch;
-		RE::get()->updateCamera(objPos, objDir);
+		Quat_t objDir = rm->getFrameOfRef()->getRot();
+		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
 		showStatus();
+		// Get back?
+		//if(this->charge > 0) ((ChargeEffect*)(RE::get()->ps))->setPosition(objPos);
 	}
 	return false;
 }
@@ -74,6 +71,29 @@ bool PlayerCObj::update() {
 void PlayerCObj::deserialize(char* newState) {
 	PlayerState *state = (PlayerState*)newState;
 	this->health = state->health;
+	this->ready = state->ready;
+	this->charge = state->charge;
+
+	if(this->ready == false) {
+		RE::get()->gamestarted = false;
+	}
+
 	this->getRenderModel()->setModelState(state->animationstate);
-	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
+
+	if (COM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(newState + sizeof(PlayerState));
+
+		rm->colBoxes.clear();
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			rm->colBoxes.push_back(collState->boxes[i]);
+		}
+
+		rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState) + sizeof(CollisionState));
+	}
+	else
+	{
+		rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
+	}
 }

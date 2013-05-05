@@ -64,7 +64,10 @@ enum Model {
 	MDL_WEST_WALL,
 	MDL_NORTH_WALL,
 	MDL_SOUTH_WALL,
-    MDL_PLAYER,
+    MDL_PLAYER_1,
+	MDL_PLAYER_2,
+	MDL_PLAYER_3,
+	MDL_PLAYER_4,
 	MDL_TEST_BOX,
 	MDL_TEST_PYRAMID,
 	MDL_TEST_PLANE,
@@ -79,6 +82,7 @@ enum Model {
  */
 enum ObjectType {
 	OBJ_GENERAL,
+	OBJ_WORLD,
 	OBJ_PLAYER,
 	OBJ_MONSTER,
 	OBJ_TENTACLE,
@@ -113,7 +117,19 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	int ready;
+	int charge;
 	int animationstate;
+};
+
+/*
+ * Stores information on the collision boxes that need to be 
+ * rendered on the client for testing
+ */
+const int maxBoxes = 5;
+struct CollisionState {
+	int totalBoxes; // so we know how many to actually draw
+	Box boxes[maxBoxes]; // to keep it simple, you can have up to 5 collision boxes
 };
 
 /*
@@ -121,7 +137,13 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
-	Vec3f scale;
+};
+
+/*
+ * State information for the WorldObject
+ */
+struct WorldState {
+	DIRECTION gravDir;
 };
 
 /*
@@ -140,19 +162,20 @@ struct TentacleState {
 	int animationState;
 };
 
-/*
- * State information for the monster not encoded by the position
- */
-enum PlayerAnimationState {
-  P_IDLE = 0,
-  P_WALK = 1,
-  P_JUMP = 2,
-  P_ATK  = 3,
-  P_DEAD = 4
-};
-
 enum TentacleActionState {
 	T_IDLE,
 	T_SWEEP,
 	NUM_T
+	//int health;
+};
+
+/*
+ * Types of player animation states
+ */
+enum PlayerAnimationState {
+	IDLE = 0,
+	WALK = 1,
+	JUMP = 2,
+	ATK  = 3,
+	DEAD = 4
 };

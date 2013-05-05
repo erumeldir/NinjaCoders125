@@ -6,41 +6,17 @@
 #include "defs.h"
 #include "PhysicsEngine.h"
 
-PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
-	// Configuration options
-	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
-	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
+PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
+	// Save parameters here
+	this->clientId = clientId;
+	DC::get()->print("Player %d with obj id %d created\n", clientId, id);
 
+	// Set all your pointers to NULL here, so initialize()
+	// knows if it should create them or not
+	pm = NULL;
 
-	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
-
-	Point_t pos = Point_t(0, 5, 10);
-	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
-
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
-	pm->addBox(bxVol);
-	lastCollision = pos;
-	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-	// Initialize input status
-	istat.attack = false;
-	istat.jump = false;
-	istat.quit = false;
-	istat.start = false;
-	istat.specialPower = false;
-	istat.rotAngle = 0.0;
-	istat.rotHoriz = 0.0;
-	istat.rotVert = 0.0;
-	istat.rightDist = 0.0;
-	istat.forwardDist = 0.0;
-
-	newJump = true; // any jump at this point is a new jump
-	newAttack = true; // same here
-	appliedJumpForce = false;
-	bool firedeath = false;
-	attacking = false;
-	gravityTimer = 0;
-	modelAnimationState = P_IDLE;
+	// Other re-initializations (things that don't depend on parameters, like config)
+	this->initialize();
 }
 
 
@@ -48,19 +24,23 @@ void PlayerSObj::initialize() {
 	// Configuration options
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
+	chargeForce = CM::get()->find_config_as_float("CHARGE_FORCE");
+	swordDamage = CM::get()->find_config_as_int("SWORD_DAMAGE");
+	chargeDamage = CM::get()->find_config_as_int("CHARGE_DAMAGE");
+	chargeUpdate = CM::get()->find_config_as_float("CHARGE_UPDATE");
+	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 
 
-	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", this->getId());
+	if(SOM::get()->debugFlag) DC::get()->print("Initialized new PlayerSObj %d\n", this->getId());
 
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
 
-	//pm = new PhysicsModel(Point_t(-50,0,150), Rot_t(), 5);
-	delete pm;
-	pm = new PhysicsModel(pos, Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	if (pm != NULL) delete pm;
+	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 	lastCollision = pos;
-	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
+
 	// Initialize input status
 	istat.attack = false;
 	istat.jump = false;
@@ -73,39 +53,40 @@ void PlayerSObj::initialize() {
 	istat.rightDist = 0.0;
 	istat.forwardDist = 0.0;
 
+	// Avoids button holding to keep applying ability
 	newJump = true; // any jump at this point is a new jump
 	newAttack = true; // same here
+	newCharge = true; // yes yes, we get the idea
+
 	appliedJumpForce = false;
-	bool firedeath = false;
+	firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
+	charging = false;
+	charge = 0.0;
+	damage = 0;
+	modelAnimationState = IDLE;
+	ready = false;
+
+	lastGravDir = DOWN;
+	t = 1;
+	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
+	yawRot = Quat_t();
+	initUpRot = Quat_t();
+	finalUpRot = Quat_t();
 }
 
 PlayerSObj::~PlayerSObj(void) {
 	delete pm;
 }
 
+
 bool PlayerSObj::update() {
-	//gravity
-#if 0
-	gravityTimer++;
-	static char cdir = 'v';
-	if(gravityTimer == 500) {
-		PE::get()->setGravDir(DOWN);
-		cdir = 'o';
-	} else if(gravityTimer == 1000) {
-		PE::get()->setGravDir(NONE);
-		cdir = '>';
-	} else if(gravityTimer > 1500) {
-		PE::get()->setGravDir(EAST);
-		gravityTimer = 0;
-		cdir = 'v';
+
+	if (istat.start && !ready) {
+		ready = true;
 	}
-	DC::get()->print(CONSOLE, "%c Gravity timer = %d     \r", cdir, gravityTimer);
-#endif
 
-
-	float yDist = 0.f;
 	if (istat.quit) {
 		return true; // delete me!
 	}
@@ -114,7 +95,7 @@ bool PlayerSObj::update() {
 	{
 		firedeath = false;
 
-		if(istat.attack && newAttack) attacking = true;
+		attacking = istat.attack && newAttack;
 		newAttack = !istat.attack;
 
 		//if (attacking) attackCounter++;
@@ -137,10 +118,17 @@ bool PlayerSObj::update() {
 
 		appliedJumpForce = false; // we apply it on collision
 
-		if (istat.specialPower) {
-			// Determine special power logic here
-			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
+		/*if (istat.specialPower && newCharge && !getFlag(IS_FALLING)) {
+			// CHARGE!!!
+			// todo for now up, should be forward (or up + forward?)
+			Vec3f up = (PE::get()->getGravVec() * -1);
+			pm->applyForce(up * chargeForce);
+			charging = true;
 		}
+		newCharge = !istat.specialPower;*/
+
+		damage = charging ? chargeDamage : attacking ? swordDamage : 0;
+/*
 #if 1
 		Rot_t rt = pm->ref->getRot();
 		float yaw = rt.y + istat.rotHoriz,
@@ -155,40 +143,109 @@ bool PlayerSObj::update() {
 			pm->ref->setRot(Rot_t(0, yaw, 0));
 		} else {
 			yaw = pm->ref->getRot().y;
+*/
+		//Update up direction
+		PE *pe = PE::get();
+		if(lastGravDir != pe->getGravDir()) {
+			lastGravDir = pe->getGravDir();
+			//pm->ref->rotate(pe->getCurGravRot());
+			slerp(&initUpRot, initUpRot, finalUpRot, t);	//We may not have finished rotating
+			finalUpRot = pe->getCurGravRot();
+			t = 0;
 		}
-#endif
-	
-		int divBy = movDamp;
-		float rawRight = istat.rightDist / divBy;
-		float rawForward = istat.forwardDist / divBy;
-		float computedRight = ((rawForward * sin(yaw)) + (rawRight * sin(yaw + (float)M_PI / 2.f)));
-		float computedForward = ((rawForward * cos(yaw)) + (rawRight * cos(yaw + (float)M_PI / 2.f)));
-		pm->applyForce(Vec3f(computedRight, yDist, computedForward));	
+
+		//Vec3f up = rotateUp(pm->ref->getRot());
+
+		//Rotate by amount specified by player (does not affect up direction)
+		Quat_t upRot;
+		slerp(&upRot, initUpRot, finalUpRot, t);
+		if(t < 1.0f) {
+			t += tRate;
+		}
+
+		//Update the yaw rotation of the player (about the default up vector)
+		yawRot *= Quat_t(Vec3f(0,1,0), istat.rotHoriz);
+
+		Quat_t qRot = upRot * yawRot;
+		pm->ref->setRot(qRot);
+
+		//Move the player: apply a force in the appropriate direction
+		float rawRight = istat.rightDist / movDamp;
+		float rawForward = istat.forwardDist / movDamp;
+		Vec3f total = rotate(Vec3f(rawRight, 0, rawForward), qRot);
+		
+		pm->applyForce(total);
+
+		// Apply special power
+		if (istat.specialPower && !getFlag(IS_FALLING)) // holding down increases the charge
+		{
+			charge+=chargeUpdate;
+			if(charge > 13) charge = 13.f;
+		}
+		else
+		{
+			// If we accumulated some charge, fire!
+			if (charge > 0.f)
+			{
+				// Vec3f up = (PE::get()->getGravVec() * -1);
+				//pm->applyForce(up * (chargeForce * charge));
+				pm->applyForce(rotate(Vec3f(0, chargeForce * charge, chargeForce * charge), qRot));
+				charging = true;
+			}
+
+			charge = 0.f;
+		}
+
+		
+		// change animation according to state
 		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
-			this->setAnimationState(P_IDLE);
+			this->setAnimationState(IDLE);
 		} else {
-			this->setAnimationState(P_WALK);
+			this->setAnimationState(WALK);
 		}
 	} else {
+		damage = 0; // you can't kill things if you're dead xD
+
 		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
 			firedeath = true;
-			EventManager::get()->fireEvent(EVENT_DEATH, this); 
+			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
+
 	return false;
 }
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_PLAYER;
+	// This helps us distinguish between what model goes to what player
+	state->modelNum = (Model)(MDL_PLAYER_1 + this->clientId);
 	state->health = health;
-	/*DC::get()->print("Player position: %f, %f, %f\n", this->getPhysicsModel()->ref->getPos().x,
-		this->getPhysicsModel()->ref->getPos().y, this->getPhysicsModel()->ref->getPos().z);
-	*///DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
+	state->ready = ready;
+	state->charge = charge;
+	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
-	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+
+	if (SOM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(buf + sizeof(PlayerState));
+
+		vector<Box> objBoxes = pm->colBoxes;
+
+		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
+
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
+		}
+
+		return pm->ref->serialize(buf + sizeof(PlayerState) + sizeof(CollisionState)) + sizeof(PlayerState) + sizeof(CollisionState);
+	}
+	else
+	{
+		return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+	}
 }
 
 void PlayerSObj::deserialize(char* newInput)
@@ -247,4 +304,5 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
 	// Set last collision pos for bouncing off different surfaces
 	lastCollision = pm->ref->getPos();
 	jumping = false;
+	charging = false;
 }

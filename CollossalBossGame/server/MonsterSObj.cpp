@@ -5,19 +5,38 @@
 #include "PlayerSObj.h"
 #include <time.h>
 
-MonsterSObj::MonsterSObj(uint id) : ServerObject(id)
+MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new MonsterObj %d\n", id);
 	this->health = 0;
-	pm = new PhysicsModel(Point_t(), Rot_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
+	// todo make null make sure it works
+	pm = new PhysicsModel(Point_t(), Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	this->setFlag(IS_STATIC, 1);
-	maxTentacles = 0;
+	
+	this->availablePlacements = CM::get()->find_config_as_places("TENTACLE_POSITIONS");
+
+	for(map<Point_t,Quat_t>::iterator it = availablePlacements.begin(); it != availablePlacements.end(); ++it) {
+	  placements.push_back(it->first);
+	}
+
+	this->numParts = numParts;
+	phase = -1;
+	EventManager::get()->fireEvent(EVENT_MONSTER_SPAWN, NULL);
+
+	srand((uint)time(NULL)); // initialize our random number generator
 
 }
 
 MonsterSObj::~MonsterSObj(void)
 {
 	delete pm;
+}
+
+void MonsterSObj::removeTentacle(TentacleSObj* t)
+{ 
+	tentacles.erase(t); 
+	Frame* fr = t->getPhysicsModel()->ref; 
+	availablePlacements[fr->getPos()] = fr->getRot(); 
 }
 
 /* update()
@@ -37,13 +56,44 @@ bool MonsterSObj::update() {
 			it != tentacles.end();
 			++it)
 			health += (*it)->getHealth();
-		health /= maxTentacles;
+		health /= numParts;
 	}
 
-	if (health <= 0 && numTentacles == 0) {
-		return true; // I died!
-		// DO NOTHING
-		// DONT YOU DARE
+	if (numTentacles == 0) {
+		phase++;
+
+		// Initialize your parts (tentacles, or hydras, or mixed, or whatever)
+		for (uint i=0; i<numParts; i++)
+		{
+			// pick the random position
+			map<Point_t, Quat_t>::iterator it;
+			do {
+				Point_t randPoint = placements[rand() % placements.size()];
+				it = availablePlacements.find(randPoint);
+			} while (it == availablePlacements.end());
+			pair<Point_t, Quat_t> currPlace = *it;
+			availablePlacements.erase(it);
+
+			TentacleSObj * newTentacle;
+			switch (phase)
+			{
+			case 0:
+				newTentacle = new TentacleSObj(SOM::get()->genId(), (Model)i, currPlace.first, currPlace.second, this);
+				break;
+			case 1:
+				// todo heads
+				newTentacle = new TentacleSObj(SOM::get()->genId(), (Model)i, currPlace.first, currPlace.second, this);
+				break;
+			default: // you beat all the phases!
+				EventManager::get()->fireEvent(EVENT_MONSTER_DEATH, NULL);
+				return true; // I died!
+				// DO NOTHING MORE
+				// DONT YOU DARE
+			}
+
+			this->addTentacle(newTentacle);
+			SOM::get()->add(newTentacle);
+		}
 	}
 
 	// UNSURE for now!
