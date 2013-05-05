@@ -120,6 +120,7 @@ struct PlayerState {
 	int ready;
 	int charge;
 	int animationstate;
+	Quat_t camRot;
 };
 
 /*
