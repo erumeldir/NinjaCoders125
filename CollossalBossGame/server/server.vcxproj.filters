@@ -42,13 +42,9 @@
     <ClCompile Include="WallSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="TentacleSObj.cpp">
-=======
     <ClCompile Include="WorldSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
->>>>>>> origin/develop_attack
     <ClCompile Include="MonsterSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,13 +89,9 @@
     <ClInclude Include="WallSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="TentacleSObj.h">
-=======
     <ClInclude Include="WorldSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
->>>>>>> origin/develop_attack
     <ClInclude Include="MonsterSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
