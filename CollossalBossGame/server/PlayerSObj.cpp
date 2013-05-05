@@ -9,6 +9,7 @@
 PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
 	// Save parameters here
 	this->clientId = clientId;
+	DC::get()->print("Player %d with obj id %d created\n", clientId, id);
 
 	// Set all your pointers to NULL here, so initialize()
 	// knows if it should create them or not
@@ -175,7 +176,7 @@ bool PlayerSObj::update() {
 		pm->applyForce(total);
 
 		// Apply special power
-		if (istat.specialPower/* && !getFlag(IS_FALLING)*/) // holding down increases the charge
+		if (istat.specialPower && !getFlag(IS_FALLING)) // holding down increases the charge
 		{
 			charge+=chargeUpdate;
 			if(charge > 13) charge = 13.f;

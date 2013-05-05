@@ -13,8 +13,8 @@
 //Constants (that we don't want to change, if we might, they should go in the config file)
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 #define M_TAU 6.28318530718
-#define AIR_FRICTION 1.1f		//A bit excessive, but it works for now
-#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
+#define AIR_FRICTION 1.001f
+#define GROUND_FRICTION 1.1f
 
 //Macros
 #define GET_FLAG(flags, flag)        ((flags >> flag) & 0x1)
