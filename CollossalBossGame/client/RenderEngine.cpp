@@ -179,6 +179,7 @@ RenderEngine::RenderEngine() {
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
+
 	this->gamestarted = false;
 }
 
@@ -197,7 +198,7 @@ RenderEngine::~RenderEngine() {
 void RenderEngine::drawHUD() {
 	if(gamestarted) {
 		hud->displayText(this->hudText,this->monsterHUDText);
-		hud->displayHealthBars(this->healthPts, this->monsterHealthPts);
+		hud->displayHealthBars(this->healthPts, this->monsterHealthPts, this->charge);
 	}
 }
 

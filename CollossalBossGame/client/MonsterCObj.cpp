@@ -13,6 +13,8 @@ MonsterCObj::MonsterCObj(uint id, char *data) : ClientObject(id, OBJ_MONSTER)
 
 MonsterCObj::~MonsterCObj(void)
 {
+	// this is to be safe, and to fix a random bug we got 1/10,000 times
+	RE::get()->setMonsterHUDText("MONSTER!!", 0);
 	delete rm;
 }
 

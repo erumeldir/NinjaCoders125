@@ -148,7 +148,7 @@ void ServerNetworkManager::update() {
 				// Ok, since we should only have one object on both sides, the id's will match
 				// but how do we get them matching later? maybe the server should send
 				// the client the id back or something?
-				o = new PlayerSObj(som->genId());
+				o = new PlayerSObj(som->genId(), client_id);
 				som->add(o);
 				sessionsobjid.insert( pair<unsigned int, unsigned int>(temp_c_id, o->getId()) );
 			} else {

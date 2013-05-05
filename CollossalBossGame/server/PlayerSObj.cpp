@@ -6,62 +6,31 @@
 #include "defs.h"
 #include "PhysicsEngine.h"
 
-PlayerSObj::PlayerSObj(uint id) : ServerObject(id) {
-	// Configuration options
+PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
+	// Save parameters here
+	this->clientId = clientId;
+	DC::get()->print("Player %d with obj id %d created\n", clientId, id);
+
+	// Set all your pointers to NULL here, so initialize()
+	// knows if it should create them or not
 	pm = NULL;
-	initialize();
-#if 0
-	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
-	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
-	if(SOM::get()->debugFlag) DC::get()->print("Reinitialized PlayerSObj %d\n", this->getId());
 
-	Point_t pos = Point_t(0, 5, 10);
-	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
-
-	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
-	pm->addBox(bxVol);
-
-	lastCollision = pos;
-	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
-
-	// Initialize input status
-	istat.attack = false;
-	istat.jump = false;
-	istat.quit = false;
-	istat.start = false;
-	istat.specialPower = false;
-	istat.rotAngle = 0.0;
-	istat.rotHoriz = 0.0;
-	istat.rotVert = 0.0;
-	istat.rightDist = 0.0;
-	istat.forwardDist = 0.0;
-
-	newJump = true; // any jump at this point is a new jump
-	newAttack = true; // same here
-	appliedJumpForce = false;
-
-	lastGravDir = PE::get()->getGravDir();
-	t = 1;
-	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
-	yawRot = Quat_t();
-	initUpRot = Quat_t();
-	finalUpRot = Quat_t();
-
-	bool firedeath = false;
-	attacking = false;
-	gravityTimer = 0;
-	modelAnimationState = IDLE;
-	ready = false;
-#endif
+	// Other re-initializations (things that don't depend on parameters, like config)
+	this->initialize();
 }
 
 void PlayerSObj::initialize() {
 	// Configuration options
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");
 	movDamp = CM::get()->find_config_as_int("MOV_DAMP");
+	chargeForce = CM::get()->find_config_as_float("CHARGE_FORCE");
+	swordDamage = CM::get()->find_config_as_int("SWORD_DAMAGE");
+	chargeDamage = CM::get()->find_config_as_int("CHARGE_DAMAGE");
+	chargeUpdate = CM::get()->find_config_as_float("CHARGE_UPDATE");
+	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 
 
-	if(SOM::get()->debugFlag) DC::get()->print("Created new PlayerSObj %d\n", this->getId());
+	if(SOM::get()->debugFlag) DC::get()->print("Initialized new PlayerSObj %d\n", this->getId());
 
 	Point_t pos = Point_t(0, 5, 10);
 	Box bxVol = CM::get()->find_config_as_box("BOX_CUBE");//Box(-10, 0, -10, 20, 20, 20);
@@ -72,7 +41,7 @@ void PlayerSObj::initialize() {
 	pm = new PhysicsModel(pos, Quat_t(), CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 	lastCollision = pos;
-	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
+
 	// Initialize input status
 	istat.attack = false;
 	istat.jump = false;
@@ -87,15 +56,22 @@ void PlayerSObj::initialize() {
 	istat.camLock = false;
 	camLocked = true;
 
+	// Avoids button holding to keep applying ability
 	newJump = true; // any jump at this point is a new jump
 	newAttack = true; // same here
+	newCharge = true; // yes yes, we get the idea
+
 	appliedJumpForce = false;
-	bool firedeath = false;
+	firedeath = false;
 	attacking = false;
 	gravityTimer = 0;
+	charging = false;
+	charge = 0.0;
+	damage = 0;
+	modelAnimationState = IDLE;
 	ready = false;
 
-	lastGravDir = PE::get()->getGravDir();
+	lastGravDir = DOWN;
 	t = 1;
 	tRate = CM::get()->find_config_as_float("GRAVITY_SWITCH_CAMERA_SPEED");
 	yaw = 0;
@@ -115,7 +91,7 @@ PlayerSObj::~PlayerSObj(void) {
 bool PlayerSObj::update() {
 
 	if (istat.start && !ready) {
-		ready = true; // delete me!
+		ready = true;
 	}
 
 	if (istat.quit) {
@@ -126,7 +102,7 @@ bool PlayerSObj::update() {
 	{
 		firedeath = false;
 
-		if(istat.attack && newAttack) attacking = true;
+		attacking = istat.attack && newAttack;
 		newAttack = !istat.attack;
 
 		//if (attacking) attackCounter++;
@@ -149,11 +125,32 @@ bool PlayerSObj::update() {
 
 		appliedJumpForce = false; // we apply it on collision
 
-		if (istat.specialPower) {
-			// Determine special power logic here
-			pm->ref->setPos(Vec3f()); // your special power is to return to the origin
+		/*if (istat.specialPower && newCharge && !getFlag(IS_FALLING)) {
+			// CHARGE!!!
+			// todo for now up, should be forward (or up + forward?)
+			Vec3f up = (PE::get()->getGravVec() * -1);
+			pm->applyForce(up * chargeForce);
+			charging = true;
 		}
+		newCharge = !istat.specialPower;*/
 
+		damage = charging ? chargeDamage : attacking ? swordDamage : 0;
+/*
+#if 1
+		Rot_t rt = pm->ref->getRot();
+		float yaw = rt.y + istat.rotHoriz,
+			  pitch = rt.x + istat.rotVert;
+		if (yaw > M_TAU || yaw < -M_TAU) yaw = 0;
+		if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
+		pm->ref->setRot(Rot_t(0, yaw, 0));
+#else
+		float yaw;
+		if(istat.forwardDist > 0) {
+			yaw = istat.rotAngle;
+			pm->ref->setRot(Rot_t(0, yaw, 0));
+		} else {
+			yaw = pm->ref->getRot().y;
+*/
 		//Update up direction
 		PE *pe = PE::get();
 		if(lastGravDir != pe->getGravDir()) {
@@ -211,6 +208,27 @@ bool PlayerSObj::update() {
 		Vec3f total = rotate(Vec3f(0, 0, fwdMag), qRot);
 		
 		pm->applyForce(total);
+
+		// Apply special power
+		if (istat.specialPower/* && !getFlag(IS_FALLING)*/) // holding down increases the charge
+		{
+			charge+=chargeUpdate;
+			if(charge > 13) charge = 13.f;
+		}
+		else
+		{
+			// If we accumulated some charge, fire!
+			if (charge > 0.f)
+			{
+				// Vec3f up = (PE::get()->getGravVec() * -1);
+				//pm->applyForce(up * (chargeForce * charge));
+				pm->applyForce(rotate(Vec3f(0, chargeForce * charge, chargeForce * charge), qRot));
+				charging = true;
+			}
+
+			charge = 0.f;
+		}
+
 		
 		// change animation according to state
 		if(pm->vel.x <= 0.25 && pm->vel.x >= -0.25 && pm->vel.z <= 0.25 && pm->vel.z >= -0.25) {
@@ -219,6 +237,8 @@ bool PlayerSObj::update() {
 			this->setAnimationState(WALK);
 		}
 	} else {
+		damage = 0; // you can't kill things if you're dead xD
+
 		// TODO Franklin: THE PLAYER IS DEAD. WHAT DO?
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
@@ -247,9 +267,11 @@ float PlayerSObj::controlAngles(float des, float cur) {
 
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
-	state->modelNum = MDL_PLAYER;
+	// This helps us distinguish between what model goes to what player
+	state->modelNum = (Model)(MDL_PLAYER_1 + this->clientId);
 	state->health = health;
 	state->ready = ready;
+	state->charge = charge;
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
 	state->camRot = this->camRot;
@@ -312,4 +334,5 @@ void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
 	// Set last collision pos for bouncing off different surfaces
 	lastCollision = pm->ref->getPos();
 	jumping = false;
+	charging = false;
 }

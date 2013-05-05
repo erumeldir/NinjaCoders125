@@ -20,6 +20,7 @@ public:
 
 private:
 	int health;
+	float charge;
 	RenderModel *rm;
 	float cameraPitch;
 	Quat_t camRot;
