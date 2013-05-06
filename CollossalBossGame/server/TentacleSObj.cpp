@@ -19,9 +19,17 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	pm = new PhysicsModel(pos, rot, 50*CM::get()->find_config_as_float("PLAYER_MASS"));
 	pm->addBox(bxVol);
 	//this does not take rotation into account. Hopefully that doesn't matter?
-	pm->updateBox(0, *(new Box(-10, -10, 0, 20, 20, 50)));
-	pm->addBox(*(new Box(-10, -10, 50, 20, 20, 150)));
-	pm->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
+	if (rot.x == 0 && rot.y == 0 && rot.z == 0)
+	{
+		pm->updateBox(0, *(new Box(-10, 10, 0, 20, 20, 50)));
+		pm->addBox(*(new Box(-10, -10, -50, 20, 20, 150)));
+		pm->addBox(*(new Box(-10, -10, -200, 20, 20, 105)));
+	} else {
+		pm->updateBox(0, *(new Box(-10, -10, 0, 20, 20, 50)));
+		pm->addBox(*(new Box(-10, -10, 50, 20, 20, 150)));
+		pm->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
+
+	}
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
 	
 	this->setFlag(IS_STATIC, 1);
@@ -71,7 +79,7 @@ bool TentacleSObj::update() {
 		Box middle = this->getPhysicsModel()->colBoxes.at(1);
 		Box tip = this->getPhysicsModel()->colBoxes.at(2);
 		Vec3f pos;
-		if (attackCounter - attackBuffer < 13) {
+		/*if (attackCounter - attackBuffer < 13) {
 			middle.z = middle.z - 4;
 			tip.z = tip.z - 10;
 			middle.x = middle.x + 4;
@@ -98,7 +106,7 @@ bool TentacleSObj::update() {
 			attackFrames = rand() % 15;
 			modelAnimationState = T_IDLE;
 		}
-
+		*/
 		this->getPhysicsModel()->updateBox(1, middle);
 		this->getPhysicsModel()->updateBox(2, tip);
 	}
