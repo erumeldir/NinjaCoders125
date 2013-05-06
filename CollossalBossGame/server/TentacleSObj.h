@@ -36,7 +36,7 @@ private:
 	int attackBuffer; // how many frames pass before we're harmful again
 	int attackFrames; // how many continuous frames we are harmful
 	bool sweepingZPositive; // are we sweeping in the direction which makes z positive 
-
+	int dir;
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 

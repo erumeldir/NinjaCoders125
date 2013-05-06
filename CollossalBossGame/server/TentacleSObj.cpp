@@ -6,6 +6,7 @@
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 #include <time.h>
+#include <random>
 
 TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, MonsterSObj* master) : ServerObject(id)
 {
@@ -22,10 +23,14 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	pm->addBox(*(new Box(-10, -10, 50, 20, 20, 150)));
 	pm->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
-	attackCounter = 0;
+	
 	this->setFlag(IS_STATIC, 1);
 	modelAnimationState = T_IDLE;
-
+	
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution(1,50);
+	attackCounter = distribution(generator);
+	
 	//srand((uint)time(NULL)); // initialize our random number generator
 
 	// Configuration options
@@ -61,50 +66,41 @@ bool TentacleSObj::update() {
 	 * CYCLE*2 = when the tentacle is back at the default position
 	 */
 
-	if (modelAnimationState == T_SWEEP)
+	if (modelAnimationState != T_IDLE)
 	{
-		switch (attackCounter - attackBuffer)
-		{
-			case CYCLE/2:		//we flip direction
-				sweepingZPositive = false;
-				break;
-			case CYCLE/2 * 3:	//reversing direction the other way
-				sweepingZPositive = true;
-				break;
-			case CYCLE*2:		//we're ending
-				attackCounter = 0;
-				this->setFlag(IS_HARMFUL, 0);
-				attackBuffer = rand() % 40;
-				attackFrames = rand() % 15;
-				modelAnimationState = T_IDLE;
-				break;
-			default:			//we're sweeping normally
-				Box updatedTip = this->getPhysicsModel()->colBoxes[2];
-				Box updatedMiddle = this->getPhysicsModel()->colBoxes[1];
-				int newX = updatedMiddle.x, newZ = updatedMiddle.z;
-				if (attackCounter - attackBuffer > CYCLE/2 &&
-					attackCounter - attackBuffer < CYCLE/2 * 3) {
-					newZ = updatedMiddle.z - 2;
-					updatedTip.x = updatedTip.x - 3;
-				} else {
-					newZ = updatedMiddle.z + 2;
-					updatedTip.x = updatedTip.x + 3;
-				}
-				
-				if (!sweepingZPositive) {
-					newX = updatedMiddle.x - 7;
-					updatedTip.x = updatedTip.x - 10;
-				}
-				else {
-					newX = updatedMiddle.x + 7;
-					updatedTip.x = updatedTip.x + 10;
-				}	
-				updatedMiddle = Box (newX, updatedMiddle.y, newZ, updatedMiddle.w,updatedMiddle.h, updatedMiddle.l);
-
-				this->getPhysicsModel()->updateBox(1, updatedMiddle);
-
+		Box middle = this->getPhysicsModel()->colBoxes.at(1);
+		Box tip = this->getPhysicsModel()->colBoxes.at(2);
+		Vec3f pos;
+		if (attackCounter - attackBuffer < 13) {
+			middle.z = middle.z - 4;
+			tip.z = tip.z - 10;
+			middle.x = middle.x + 4;
+			tip.x = tip.x + 10;
+		} else if (attackCounter - attackBuffer < 23) {
+			middle.z = middle.z + 4;
+			tip.z = tip.z + 10;
+			middle.x = middle.x - 4;
+			tip.x = tip.x - 10;
+		}else if (attackCounter - attackBuffer < 35) {
+			middle.z = middle.z - 4;
+			tip.z = tip.z - 10;
+			middle.x = middle.x + 4;
+			tip.x = tip.x + 10;
+		}else if (attackCounter - attackBuffer < 50) {
+			middle.z = middle.z + 4;
+			tip.z = tip.z + 10;
+			middle.x = middle.x - 4;
+			tip.x = tip.x - 10;
+		} else {
+			attackCounter = 0;
+			this->setFlag(IS_HARMFUL, 0);
+			attackBuffer = rand() % 40;
+			attackFrames = rand() % 15;
+			modelAnimationState = T_IDLE;
 		}
 
+		this->getPhysicsModel()->updateBox(1, middle);
+		this->getPhysicsModel()->updateBox(2, tip);
 	}
 
 	if (health <= 0) {
