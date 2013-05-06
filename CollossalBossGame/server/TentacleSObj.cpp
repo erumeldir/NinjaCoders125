@@ -21,13 +21,13 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	//this does not take rotation into account. Hopefully that doesn't matter?
 	if (rot.x == 0 && rot.y == 0 && rot.z == 0)
 	{
-		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 50)));
-		pm->addBox(*(new Box(-10, -10, -150, 30, 30, 150)));
-		pm->addBox(*(new Box(-10, -10, -200, 20, 20, 50)));
+		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 80)));
+		pm->addBox(*(new Box(-10, -10, -80, 30, 30, 150)));
+		pm->addBox(*(new Box(-10, -10, -230, 20, 20, 70)));
 	} else {
 		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 50)));
-		pm->addBox(*(new Box(-10, -10, 50, 30, 30, 150)));
-		pm->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
+		pm->addBox(*(new Box(-10, -10, 40, 30, 30, 150)));
+		pm->addBox(*(new Box(-10, -10, 190, 20, 20, 105)));
 
 	}
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
@@ -66,10 +66,9 @@ bool TentacleSObj::update() {
 	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
 		if (this->getFlag(IS_HARMFUL))
 		{
-			attackCounter = 0;
 			this->setFlag(IS_HARMFUL, 0);
 			attackBuffer = rand() % 40;
-			//attackFrames = rand() % 15;
+			attackFrames = - rand() % 15;
 			modelAnimationState = T_IDLE;
 		} else {
 			this->setFlag(IS_HARMFUL, 1);
@@ -78,45 +77,42 @@ bool TentacleSObj::update() {
 	}
 
 	/* Cycle logic:
-	 * CYCLE*1/2 = The tentacle is on one side
-	 * CYCLE*3/2 = tentacle is on the other side
-	 * CYCLE*2 = when the tentacle is back at the default position
+	 * CYCLE*1/2 = The tentacle is extended
+	 * CYCLE = when the tentacle is back at the default position
 	 */
 
-	if (modelAnimationState != T_IDLE)
+	if (modelAnimationState == T_IDLE)
 	{
-		int invScale = 2;
 		Box base = this->getPhysicsModel()->colBoxes.at(0);
 		Box middle = this->getPhysicsModel()->colBoxes.at(1);
 		Box tip = this->getPhysicsModel()->colBoxes.at(2);
 		Vec3f pos;
-		if (attackCounter%CYCLE < CYCLE * 1/2) {
-			base.w = base.w + 1/invScale;
-			/*
-			*/
-			middle.z = middle.z + 9/invScale;
-			middle.x = middle.x - 9/invScale;
-			middle.l = middle.l - 8/invScale;
-			middle.w = middle.w + 9/invScale;
-			/*
-			*/
-			tip.z = tip.z + 17/invScale;
-			tip.x = tip.x - 18/invScale;
-			tip.l = tip.l - 7/invScale;
-			tip.w = tip.w + 3/invScale;
-		}else if (attackCounter%CYCLE < CYCLE) {
-			base.w = base.w - 1/invScale;
-			/*
-			*/
-			middle.z = middle.z - 9/invScale;
-			middle.x = middle.x + 9/invScale;
-			middle.l = middle.l + 8/invScale;
-			middle.w = middle.w - 9/invScale;
-			/**/
-			tip.z = tip.z - 17/invScale;
-			tip.x = tip.x + 18/invScale;
-			tip.l = tip.l + 7/invScale;
-			tip.w = tip.w - 3/invScale;
+		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+			/*middle.h = middle.h + 4;
+			middle.y = middle.y + 4;*/
+		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE){
+			/*middle.h = middle.h - 4;
+			middle.y = middle.y - 4;*/
+		} 
+
+		this->getPhysicsModel()->updateBox(0, base);
+		this->getPhysicsModel()->updateBox(1, middle);
+		this->getPhysicsModel()->updateBox(2, tip);
+	} else {
+		Box base = this->getPhysicsModel()->colBoxes.at(0);
+		Box middle = this->getPhysicsModel()->colBoxes.at(1);
+		Box tip = this->getPhysicsModel()->colBoxes.at(2);
+		Vec3f pos;
+		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+			middle.h = middle.h + 2;
+			middle.y = middle.y - 2;
+			tip.z = tip.z + 6;
+			//middle.l = middle.l - 2;
+		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
+			middle.h = middle.h - 2;
+			middle.y = middle.y + 2;
+			tip.z = tip.z - 6;
+			//middle.l = middle.l + 2;
 		} 
 
 		this->getPhysicsModel()->updateBox(0, base);
