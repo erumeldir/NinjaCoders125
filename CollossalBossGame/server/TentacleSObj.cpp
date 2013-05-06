@@ -79,26 +79,26 @@ bool TentacleSObj::update() {
 		Box middle = this->getPhysicsModel()->colBoxes.at(1);
 		Box tip = this->getPhysicsModel()->colBoxes.at(2);
 		Vec3f pos;
-		/*if (attackCounter - attackBuffer < 13) {
-			middle.z = middle.z - 4;
-			tip.z = tip.z - 10;
+		if (attackCounter%CYCLE < CYCLE * 1/4) {
+		//	middle.z = middle.z - 4;
+		//	tip.z = tip.z - 10;
 			middle.x = middle.x + 4;
 			tip.x = tip.x + 10;
-		} else if (attackCounter - attackBuffer < 23) {
-			middle.z = middle.z + 4;
-			tip.z = tip.z + 10;
+		} else if (attackCounter%CYCLE < CYCLE * 1/2) {
+		//	middle.z = middle.z + 4;
+		//	tip.z = tip.z + 10;
 			middle.x = middle.x - 4;
 			tip.x = tip.x - 10;
-		}else if (attackCounter - attackBuffer < 35) {
-			middle.z = middle.z - 4;
-			tip.z = tip.z - 10;
+		}else if (attackCounter%CYCLE < CYCLE * 3/4) {
+		//	middle.z = middle.z - 4;
+		//	tip.z = tip.z - 10;
+			middle.x = middle.x - 4;
+			tip.x = tip.x - 10;
+		}else if (attackCounter%CYCLE < CYCLE) {
+		//	middle.z = middle.z + 4;
+		//	tip.z = tip.z + 10;
 			middle.x = middle.x + 4;
 			tip.x = tip.x + 10;
-		}else if (attackCounter - attackBuffer < 50) {
-			middle.z = middle.z + 4;
-			tip.z = tip.z + 10;
-			middle.x = middle.x - 4;
-			tip.x = tip.x - 10;
 		} else {
 			attackCounter = 0;
 			this->setFlag(IS_HARMFUL, 0);
@@ -106,7 +106,7 @@ bool TentacleSObj::update() {
 			attackFrames = rand() % 15;
 			modelAnimationState = T_IDLE;
 		}
-		*/
+		
 		this->getPhysicsModel()->updateBox(1, middle);
 		this->getPhysicsModel()->updateBox(2, tip);
 	}
