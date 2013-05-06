@@ -21,12 +21,12 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	//this does not take rotation into account. Hopefully that doesn't matter?
 	if (rot.x == 0 && rot.y == 0 && rot.z == 0)
 	{
-		pm->updateBox(0, *(new Box(-10, 10, 0, 20, 20, 50)));
-		pm->addBox(*(new Box(-10, -10, -50, 20, 20, 150)));
-		pm->addBox(*(new Box(-10, -10, -200, 20, 20, 105)));
+		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 50)));
+		pm->addBox(*(new Box(-10, -10, -150, 30, 30, 150)));
+		pm->addBox(*(new Box(-10, -10, -200, 20, 20, 50)));
 	} else {
-		pm->updateBox(0, *(new Box(-10, -10, 0, 20, 20, 50)));
-		pm->addBox(*(new Box(-10, -10, 50, 20, 20, 150)));
+		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 50)));
+		pm->addBox(*(new Box(-10, -10, 50, 30, 30, 150)));
 		pm->addBox(*(new Box(-10, -10, 200, 20, 20, 105)));
 
 	}
@@ -76,29 +76,38 @@ bool TentacleSObj::update() {
 
 	if (modelAnimationState != T_IDLE)
 	{
+		int invScale = 2;
+		Box base = this->getPhysicsModel()->colBoxes.at(0);
 		Box middle = this->getPhysicsModel()->colBoxes.at(1);
 		Box tip = this->getPhysicsModel()->colBoxes.at(2);
 		Vec3f pos;
-		if (attackCounter%CYCLE < CYCLE * 1/4) {
-		//	middle.z = middle.z - 4;
-		//	tip.z = tip.z - 10;
-		//	middle.x = middle.x + 4;
-			tip.x = tip.x - 10;
-		} else if (attackCounter%CYCLE < CYCLE * 1/2) {
-		//	middle.z = middle.z + 4;
-		//	tip.z = tip.z + 10;
-		//	middle.x = middle.x - 4;
-			tip.x = tip.x + 10;
-		}else if (attackCounter%CYCLE < CYCLE * 3/4) {
-		//	middle.z = middle.z - 4;
-		//	tip.z = tip.z - 10;
-		//	middle.x = middle.x - 4;
-			tip.x = tip.x + 10;
+		if (attackCounter%CYCLE < CYCLE * 1/2) {
+			base.w = base.w + 1/invScale;
+			/*
+			*/
+			middle.z = middle.z + 9/invScale;
+			middle.x = middle.x - 9/invScale;
+			middle.l = middle.l - 8/invScale;
+			middle.w = middle.w + 9/invScale;
+			/*
+			*/
+			tip.z = tip.z + 17/invScale;
+			tip.x = tip.x - 18/invScale;
+			tip.l = tip.l - 7/invScale;
+			tip.w = tip.w + 3/invScale;
 		}else if (attackCounter%CYCLE < CYCLE) {
-		//	middle.z = middle.z + 4;
-		//	tip.z = tip.z + 10;
-		//	middle.x = middle.x + 4;
-			tip.x = tip.x - 10;
+			base.w = base.w - 1/invScale;
+			/*
+			*/
+			middle.z = middle.z - 9/invScale;
+			middle.x = middle.x + 9/invScale;
+			middle.l = middle.l + 8/invScale;
+			middle.w = middle.w - 9/invScale;
+			/**/
+			tip.z = tip.z - 17/invScale;
+			tip.x = tip.x + 18/invScale;
+			tip.l = tip.l + 7/invScale;
+			tip.w = tip.w - 3/invScale;
 		} else {
 			attackCounter = 0;
 			this->setFlag(IS_HARMFUL, 0);
@@ -106,7 +115,8 @@ bool TentacleSObj::update() {
 			attackFrames = rand() % 15;
 			modelAnimationState = T_IDLE;
 		}
-		
+
+		this->getPhysicsModel()->updateBox(0, base);
 		this->getPhysicsModel()->updateBox(1, middle);
 		this->getPhysicsModel()->updateBox(2, tip);
 	}
