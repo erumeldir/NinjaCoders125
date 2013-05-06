@@ -59,8 +59,8 @@ bool PlayerCObj::update() {
 		}
 
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		Quat_t objDir = rm->getFrameOfRef()->getRot();
-		RE::get()->getCamera()->update(objPos, objDir, cameraPitch);
+		//Quat_t objDir = rm->getFrameOfRef()->getRot();
+		RE::get()->getCamera()->update(objPos, camRot, cameraPitch);
 		showStatus();
 		
 		((ChargeEffect*)(RE::get()->ps))->setPosition(objPos, charge);
@@ -74,6 +74,7 @@ void PlayerCObj::deserialize(char* newState) {
 	this->health = state->health;
 	this->ready = state->ready;
 	this->charge = state->charge;
+	camRot = state->camRot;
 
 	if(this->ready == false) {
 		RE::get()->gamestarted = false;

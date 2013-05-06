@@ -39,16 +39,25 @@ private:
 	float chargeForce, chargeUpdate;
 	int movDamp;
 
+	//Rotational tracking
 	float t;
 	float tRate;
-	Quat_t yawRot;			//Yaw about the default up vector
+	//Quat_t yawRot;			//Yaw about the default up vector
+	//Quat_t camYawRot;		//Camera yaw about the default up vector
+	float yaw;
+	float camYaw;
+	Quat_t camRot;
 	Quat_t initUpRot;
 	Quat_t finalUpRot;
 	DIRECTION lastGravDir;
+	bool camLocked;
+	float camKp, camKpFast, camKpSlow;
 
 	bool firedeath;
 	int gravityTimer;
 	int modelAnimationState;
 	int swordDamage, chargeDamage;
+
+	float controlAngles(float des, float cur);
 };
 

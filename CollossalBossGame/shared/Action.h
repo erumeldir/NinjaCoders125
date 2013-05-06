@@ -20,6 +20,7 @@ struct inputstatus {
 	bool specialPower; // B
 	bool quit; // Back
 	bool start; // Start
+	bool camLock;
 	float rightDist, forwardDist; // Left Joystick
 	float rotAngle; // Right Joystick
 	float rotVert, rotHoriz;
