@@ -63,9 +63,18 @@ bool TentacleSObj::update() {
 	// this emulates an attack
 
 	// start attacking!
-	if (attackCounter > attackBuffer && !(attackCounter % CYCLE)){
-		this->setFlag(IS_HARMFUL, 1);
-		modelAnimationState = T_SLAM;
+	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
+		if (this->getFlag(IS_HARMFUL))
+		{
+			attackCounter = 0;
+			this->setFlag(IS_HARMFUL, 0);
+			attackBuffer = rand() % 40;
+			//attackFrames = rand() % 15;
+			modelAnimationState = T_IDLE;
+		} else {
+			this->setFlag(IS_HARMFUL, 1);
+			modelAnimationState = T_SLAM;
+		}
 	}
 
 	/* Cycle logic:
@@ -108,13 +117,7 @@ bool TentacleSObj::update() {
 			tip.x = tip.x + 18/invScale;
 			tip.l = tip.l + 7/invScale;
 			tip.w = tip.w - 3/invScale;
-		} else {
-			attackCounter = 0;
-			this->setFlag(IS_HARMFUL, 0);
-			attackBuffer = rand() % 40;
-			attackFrames = rand() % 15;
-			modelAnimationState = T_IDLE;
-		}
+		} 
 
 		this->getPhysicsModel()->updateBox(0, base);
 		this->getPhysicsModel()->updateBox(1, middle);
