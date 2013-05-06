@@ -6,7 +6,7 @@
 class MonsterSObj;
 
 
-#define CYCLE 50
+#define CYCLE 30
 
 class TentacleSObj : public ServerObject
 {

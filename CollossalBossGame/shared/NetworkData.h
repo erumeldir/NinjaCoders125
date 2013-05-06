@@ -164,6 +164,7 @@ struct TentacleState {
 
 enum TentacleActionState {
 	T_IDLE,
+	T_SLAM,
 	T_SWEEP,
 	NUM_T
 	//int health;

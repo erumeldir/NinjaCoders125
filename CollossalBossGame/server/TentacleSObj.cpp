@@ -65,7 +65,7 @@ bool TentacleSObj::update() {
 	// start attacking!
 	if (attackCounter > attackBuffer && !(attackCounter % CYCLE)){
 		this->setFlag(IS_HARMFUL, 1);
-		modelAnimationState = T_SWEEP;
+		modelAnimationState = T_SLAM;
 	}
 
 	/* Cycle logic:
@@ -82,23 +82,23 @@ bool TentacleSObj::update() {
 		if (attackCounter%CYCLE < CYCLE * 1/4) {
 		//	middle.z = middle.z - 4;
 		//	tip.z = tip.z - 10;
-			middle.x = middle.x + 4;
-			tip.x = tip.x + 10;
+		//	middle.x = middle.x + 4;
+			tip.x = tip.x - 10;
 		} else if (attackCounter%CYCLE < CYCLE * 1/2) {
 		//	middle.z = middle.z + 4;
 		//	tip.z = tip.z + 10;
-			middle.x = middle.x - 4;
-			tip.x = tip.x - 10;
+		//	middle.x = middle.x - 4;
+			tip.x = tip.x + 10;
 		}else if (attackCounter%CYCLE < CYCLE * 3/4) {
 		//	middle.z = middle.z - 4;
 		//	tip.z = tip.z - 10;
-			middle.x = middle.x - 4;
-			tip.x = tip.x - 10;
+		//	middle.x = middle.x - 4;
+			tip.x = tip.x + 10;
 		}else if (attackCounter%CYCLE < CYCLE) {
 		//	middle.z = middle.z + 4;
 		//	tip.z = tip.z + 10;
-			middle.x = middle.x + 4;
-			tip.x = tip.x + 10;
+		//	middle.x = middle.x + 4;
+			tip.x = tip.x - 10;
 		} else {
 			attackCounter = 0;
 			this->setFlag(IS_HARMFUL, 0);
