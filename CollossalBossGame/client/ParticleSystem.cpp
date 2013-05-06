@@ -97,7 +97,7 @@ void ParticleSystem::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
 	//direct3dDevice->SetRenderState( D3DRS_SRCBLEND, 0);
     //direct3dDevice->SetRenderState( D3DRS_DESTBLEND, 1);
 
-    //direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+    direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
     direct3dDevice->SetRenderState( D3DRS_LIGHTING, false);
 
 
@@ -110,7 +110,7 @@ void ParticleSystem::postRender(LPDIRECT3DDEVICE9 direct3dDevice)
     direct3dDevice->SetRenderState( D3DRS_POINTSCALEENABLE, false);
     direct3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, false);
 
-    //direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
+    direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 }
 

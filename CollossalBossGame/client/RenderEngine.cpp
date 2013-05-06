@@ -178,7 +178,7 @@ RenderEngine::RenderEngine() {
 	cam = new Camera(cameraDist);
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
 //	ps = new CollisionBoxPoints();
-	ps = new ChargeEffect(50);
+	ps = new ChargeEffect(10);
 	ps->init(this->direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
