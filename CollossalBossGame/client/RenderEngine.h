@@ -54,10 +54,12 @@ public:
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
+	CollisionBoxPoints* getColBxPts() { return colBxPts; }
 
 	void setHUDText(string newText, int health, float charge) { hudText = newText; healthPts = health; this->charge = charge;}
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
-
+	void addParticleEffect(ParticleSystem* ps) { ps->init(this->direct3dDevice); this->particleSystems.push_back(ps);  }
+	
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
 	bool loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat);
@@ -67,12 +69,6 @@ public:
 	IXAnimator *getAnim() { return xAnimator; }
 
 	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
-
-
-	//const D3DVERTEXELEMENT9 g_VBDecl_Geometry[5];
-	//const D3DVERTEXELEMENT9 g_VBDecl_InstanceData[5];
-	ParticleSystem* ps;
-
 
 private:
 	void startWindow ();
@@ -100,7 +96,8 @@ private:
 
 	Camera* cam;
 	HeadsUpDisplay* hud;
-
+	vector<ParticleSystem*> particleSystems;
+	CollisionBoxPoints* colBxPts;
 	//Configuration fields
 	float cameraDist;
 };
