@@ -22,6 +22,8 @@ public:
 
 	int getHealth() { return health; }
 
+	float angleToNearestPlayer();
+
 	char serialbuffer[100];
 
 private:

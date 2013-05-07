@@ -167,7 +167,8 @@ bool TentacleSObj::update() {
 		//attackFrames = 0;
 	}
 
-		return false;
+
+	return false;
 }
 
 int TentacleSObj::serialize(char * buf) {
@@ -195,6 +196,48 @@ int TentacleSObj::serialize(char * buf) {
 	{
 		return pm->ref->serialize(buf + sizeof(TentacleState)) + sizeof(TentacleState);
 	}
+}
+
+/**
+ * Checks if there's a player we can smash, if so
+ * returns the angle we need to roll before we attack.
+ * If no player is within range, we return -1.
+ * Author: Haro
+ */
+float TentacleSObj::angleToNearestPlayer()
+{
+	float angle = -1.f;
+
+	// Find player with minimum distance to me
+	vector<ServerObject *> players;
+	SOM::get()->findObjects(OBJ_PLAYER, &players);
+
+	#define TENTACLE_LENGTH 200
+
+	float minDist = TENTACLE_LENGTH;
+	float currDist;
+	Vec3f difference;
+
+	for(vector<ServerObject *>::iterator it = players.begin(); it != players.end(); ++it) {
+		difference = (*it)->getPhysicsModel()->ref->getPos() - this->getPhysicsModel()->ref->getPos();
+		currDist = magnitude(difference);
+		if (currDist < minDist) {
+			minDist = currDist;
+		}
+	}
+
+	if (minDist < TENTACLE_LENGTH)
+	{
+		// ignoring z... this is with respect to the y axis (since the tentacle smashes DOWN)
+		angle = atan2(difference.x, -1*difference.y);
+		//DC::get()->print("CAN I SMASH A PLAYER?.....YES!!! angle is: %f          \r", angle*180/M_PI);
+	}
+	/*else
+	{
+		DC::get()->print("CAN I SMASH A PLAYER?.....NO....                       \r");
+	}*/
+
+	return angle;
 }
 
 void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
