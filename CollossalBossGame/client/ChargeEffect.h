@@ -12,7 +12,9 @@ public:
 	void killAllParticles();
 
 	int numParticles;
+	int charge, killCounter;
 	D3DXVECTOR3 min;
 	D3DXVECTOR3 max;
+	D3DXVECTOR3 middle;
 };
 

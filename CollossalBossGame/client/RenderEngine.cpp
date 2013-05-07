@@ -230,7 +230,7 @@ void RenderEngine::renderThis(ClientObject *obj) {
 void RenderEngine::render() {
 	//Update the view matrix
 	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-	ps->update(33);
+	ps->update(.33);
 	// clear the window to a deep blue
 	//direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0);
 	direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0, 0.0f), 1.0f, 0);
