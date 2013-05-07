@@ -32,12 +32,10 @@ void ParticleSystem::init(LPDIRECT3DDEVICE9 pDevice)
 								D3DPOOL_DEFAULT,
 								&vb,
 								0);
-	HRESULT hr = D3DXCreateTextureFromFile(pDevice,   //Direct3D Device
+	D3DXCreateTextureFromFile(pDevice,   //Direct3D Device
                              "res/particle.bmp",       //File Name
 	                          &texture);    //Texture handle
 					
-
-	//D3DXCreateTexture(pDevice,640,480,D3DUSAGE_DYNAMIC,1,D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &texture);
 }
 
 ParticleSystem::~ParticleSystem(void)

@@ -9,7 +9,6 @@ public:
 	virtual void resetParticle(ParticleAttributes* a);
 	virtual void update(float timeDelta);
 	virtual void setPosition(Vec3f pos, int charge);
-	void killAllParticles();
 
 	int numParticles;
 	int charge, killCounter;
