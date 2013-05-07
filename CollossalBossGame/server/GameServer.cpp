@@ -1,6 +1,7 @@
 #include "GameServer.h"
 #include "ConfigurationManager.h"
 #include "ServerObjectManager.h"
+#include "ServerWorldManager.h"
 #include "PhysicsEngine.h"
 #include "game.h"
 #include <Windows.h>
@@ -50,6 +51,7 @@ int main()
 
 		// Send state to client
 		SOM::get()->sendState();
+		ServerWorldManager::get()->sendState();
 
 		// Wait until next clock tick
 		time(&endLoopTimer);

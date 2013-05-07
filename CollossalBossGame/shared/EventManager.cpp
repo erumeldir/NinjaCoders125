@@ -43,8 +43,13 @@ void EventManager::registerHandler(EventType evt, CBGEventHandler * handleobj) {
 
 void EventManager::fireEvent(EventType evt, EventData * data, void* obj) {
 	vector<CBGEventHandler *> * handles = handlers->find(evt)->second;
+	vector<int> rm;
 	for(uint i = 0; i < handles->size(); i++) {
 		CBGEventHandler * handle = (*handles)[i];
+		if(handle == NULL) {
+			rm.push_back(i);
+			continue;
+		}
 		switch(evt) {
 		case EVENT_PLAYER_DEATH:
 			handle->event_player_death(data, obj);
@@ -67,5 +72,9 @@ void EventManager::fireEvent(EventType evt, EventData * data, void* obj) {
 		default:
 			assert(false && "Firing new event");	
 		}
+	}
+	// Clean up any objects that may have been deleted.
+	for(int i = 0; i < rm.size(); i++) {
+		handles->erase(handles->begin()+rm[i]);
 	}
 }

@@ -127,12 +127,12 @@ void ServerObjectManager::sendState()
 			//Serialize the object
 			datalen = it->second->serialize(buf + sizeof(CreateHeader)) + sizeof(CreateHeader);
 			totalData += datalen;
-			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
+			SNM::get()->sendToAll(OBJECT_MANAGER, it->second->getId(), it->first, datalen);
 			break;
 			}
 		case CMD_DELETE:
 			datalen = 0;
-			SNM::get()->sendToAll(ACTION_EVENT, it->second->getId(), it->first, datalen);
+			SNM::get()->sendToAll(OBJECT_MANAGER, it->second->getId(), it->first, datalen);
 			delete it->second;	//We are finally done with this object
 		}
 	}
@@ -146,7 +146,7 @@ void ServerObjectManager::sendState()
 			++it) {
 		// If object changed...
 		int datalen = it->second->serialize(ServerNetworkManager::get()->getSendBuffer());
-		ServerNetworkManager::get()->sendToAll(ACTION_EVENT, it->second->getId(), datalen);
+		ServerNetworkManager::get()->sendToAll(OBJECT_MANAGER, it->second->getId(), datalen);
 	}
 */
 }

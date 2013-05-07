@@ -23,6 +23,8 @@ public:
 	void event_monster_spawn(EventData * data, void * obj);
 	void event_disconnect(EventData * data, void * obj);
 
+	void sendState();
+	int serialize(char * buf);
 private:
 	static ServerWorldManager world; // Statics ftw.
 

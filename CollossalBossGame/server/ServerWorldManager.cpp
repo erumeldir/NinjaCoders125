@@ -73,3 +73,12 @@ void ServerWorldManager::event_disconnect(EventData * data, void * obj) {
 	assert((totalPlayerCount < 0) && "Implementation Error");
 }
 
+void ServerWorldManager::sendState() {
+	WorldState ws;
+	int datalen = serialize((char *)(&ws));
+	SNM::get()->sendToAll(OBJECT_MANAGER, it->second->getId(), it->first, datalen);
+}
+
+int ServerWorldManager::serialize(char * buf) {
+
+}

@@ -193,7 +193,7 @@ bool ClientNetworkManager::update()
 				connected = true;
 				ret = false;
 				break;
-            case ACTION_EVENT:
+            case OBJECT_MANAGER:
                 //DC::get()->print("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
@@ -223,7 +223,7 @@ void ClientNetworkManager::sendData(char * data, int datalen, int objectID) {
 
 	Packet packet;
 	packet.iteration = this->iteration_count;
-	packet.packet_type = ACTION_EVENT;
+	packet.packet_type = OBJECT_MANAGER;
 	packet.object_id = objectID;
 	packet.command_type = CMD_ACTION;
 	packet.data_size = datalen;

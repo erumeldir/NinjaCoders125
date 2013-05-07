@@ -204,7 +204,7 @@ void ServerNetworkManager::receiveFromClients() {
                 case INIT_CONNECTION:
                     if(debugFlag) DC::get()->print("server received init packet from client %d\n", iter->first);
                     break;
-                case ACTION_EVENT:
+                case OBJECT_MANAGER:
 					if(debugFlag) DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
 					destObject = SOM::get()->find(packet.object_id);
 

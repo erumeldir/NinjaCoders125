@@ -9,9 +9,9 @@
 
 // The type of message sent between client and server.
 enum PacketTypes {
-    INIT_CONNECTION = 0,
-    ACTION_EVENT = 1,
-	MESSAGE = 2,
+    INIT_CONNECTION,
+    OBJECT_MANAGER,
+	WORLD_MANAGER,
 	COMPLETE
 };
 
@@ -149,4 +149,17 @@ enum PlayerAnimationState {
 	JUMP = 2,
 	ATK  = 3,
 	DEAD = 4
+};
+
+struct WorldState {
+	// World States
+	int gamebegin;
+	int gameOverFlag;
+
+	// World Statistics
+	int totalPlayerCount;
+	int totalMonsterCount;
+	int playerDeathCount;
+	int monsterDeathCount;
+	int resetCount;
 };
