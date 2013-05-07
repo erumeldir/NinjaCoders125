@@ -21,13 +21,13 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	//this does not take rotation into account. Hopefully that doesn't matter?
 	if (rot.x == 0 && rot.y == 0 && rot.z == 0)
 	{
-		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 80)));
-		pm->addBox(*(new Box(-10, -10, -80, 30, 30, 150)));
-		pm->addBox(*(new Box(-10, -10, -230, 20, 20, 70)));
+		pm->updateBox(0, *(	new Box(-10, -10,	-50,  30, 30,	130)));
+		pm->addBox(*(		new Box(-10,  0,	-180, 30, 60,	150)));
+		pm->addBox(*(		new Box(-10, -10,	-230, 20, 20,	50)));
 	} else {
-		pm->updateBox(0, *(new Box(-10, -10, 0, 30, 30, 50)));
-		pm->addBox(*(new Box(-10, -10, 40, 30, 30, 150)));
-		pm->addBox(*(new Box(-10, -10, 190, 20, 20, 105)));
+		pm->updateBox(0, *(	new Box(-10, 10,	50,   30, 30,	130)));
+		pm->addBox(*(		new Box(-10,  0,	180,  30, 60,	150)));
+		pm->addBox(*(		new Box(-10, -10,	230, 20, 20,	50)));
 
 	}
 	//this->updatableBoxIndex = pm->addBox(updatableBox);
@@ -63,6 +63,7 @@ bool TentacleSObj::update() {
 	// this emulates an attack
 
 	// start attacking!
+	/*
 	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
 		if (this->getFlag(IS_HARMFUL))
 		{
@@ -75,7 +76,7 @@ bool TentacleSObj::update() {
 			modelAnimationState = T_SLAM;
 		}
 	}
-
+	*/
 	/* Cycle logic:
 	 * CYCLE*1/2 = The tentacle is extended
 	 * CYCLE = when the tentacle is back at the default position
