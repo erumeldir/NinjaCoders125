@@ -63,7 +63,7 @@ bool TentacleSObj::update() {
 	// this emulates an attack
 
 	// start attacking!
-	/*
+	
 	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
 		if (this->getFlag(IS_HARMFUL))
 		{
@@ -76,7 +76,7 @@ bool TentacleSObj::update() {
 			modelAnimationState = T_SLAM;
 		}
 	}
-	*/
+	
 	/* Cycle logic:
 	 * CYCLE*1/2 = The tentacle is extended
 	 * CYCLE = when the tentacle is back at the default position
@@ -94,7 +94,7 @@ bool TentacleSObj::update() {
 		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE){
 			/*middle.h = middle.h - 4;
 			middle.y = middle.y - 4;*/
-		} 
+		}
 
 		this->getPhysicsModel()->updateBox(0, base);
 		this->getPhysicsModel()->updateBox(1, middle);
@@ -105,14 +105,49 @@ bool TentacleSObj::update() {
 		Box tip = this->getPhysicsModel()->colBoxes.at(2);
 		Vec3f pos;
 		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+			//changing the tip
+			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/4)
+			{
+				//decrease y
+				tip.y = tip.y - 7;
+				//increase height
+				tip.h = tip.h + 3;
+			} else {
+				//increase y
+				tip.y = tip.y + 7;
+				//decrease height
+				tip.h = tip.h - 3;
+			}
+			//decrease depth
+			tip.l = tip.l - 1;
+			//decrease z
+			tip.z = tip.z + 6;
+
 			middle.h = middle.h + 2;
 			middle.y = middle.y - 2;
-			tip.z = tip.z + 6;
+			//tip.z = tip.z + 6;
 			//middle.l = middle.l - 2;
 		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
+			//changing the tip
+			if ((attackCounter - attackBuffer)%CYCLE < 3*CYCLE/4)
+			{
+				//decrease y
+				tip.y = tip.y - 7;
+				//increase height
+				tip.h = tip.h + 3;
+			} else {
+				//increase y
+				tip.y = tip.y + 7;
+				//decrease height
+				tip.h = tip.h - 3;
+			}
+			//increase z
+			tip.z = tip.z - 6;
+			//increase depth
+			tip.l = tip.l + 1;
 			middle.h = middle.h - 2;
 			middle.y = middle.y + 2;
-			tip.z = tip.z - 6;
+			//tip.z = tip.z - 6;
 			//middle.l = middle.l + 2;
 		} 
 
