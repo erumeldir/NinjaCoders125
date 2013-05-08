@@ -72,8 +72,15 @@ bool TentacleSObj::update() {
 			attackFrames = - rand() % 15;
 			modelAnimationState = T_IDLE;
 		} else {
-			this->setFlag(IS_HARMFUL, 1);
-			modelAnimationState = T_SLAM;
+			float angle = this->angleToNearestPlayer();
+			if (angle != -1.f)
+			{
+				Vec3f axis = Vec3f(0,0,1);
+				Vec4f qAngle = Vec4f(axis,angle);
+				this->getPhysicsModel()->ref->rotate(qAngle);
+				this->setFlag(IS_HARMFUL, 1);
+				modelAnimationState = T_SLAM;
+			}
 		}
 	}
 	
