@@ -40,6 +40,6 @@ private:
 	int dir;
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
-
+	Quat_t lastRotation;
 };
 

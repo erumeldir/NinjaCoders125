@@ -71,12 +71,14 @@ bool TentacleSObj::update() {
 			attackBuffer = rand() % 40;
 			attackFrames = - rand() % 15;
 			modelAnimationState = T_IDLE;
+			this->getPhysicsModel()->ref->setRot(lastRotation);
 		} else {
 			float angle = this->angleToNearestPlayer();
 			if (angle != -1.f)
 			{
 				Vec3f axis = Vec3f(0,0,1);
 				Vec4f qAngle = Vec4f(axis,angle);
+				lastRotation = this->getPhysicsModel()->ref->getRot();
 				this->getPhysicsModel()->ref->rotate(qAngle);
 				this->setFlag(IS_HARMFUL, 1);
 				modelAnimationState = T_SLAM;
@@ -179,7 +181,7 @@ bool TentacleSObj::update() {
 	middle.w += changeProportionM.x;
 	middle.h += changeProportionM.y;
 	middle.l += changeProportionM.z;
-	
+
 	this->getPhysicsModel()->updateBox(0, base);
 	this->getPhysicsModel()->updateBox(1, middle);
 	this->getPhysicsModel()->updateBox(2, tip);
