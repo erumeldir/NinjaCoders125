@@ -150,16 +150,3 @@ enum PlayerAnimationState {
 	ATK  = 3,
 	DEAD = 4
 };
-
-struct WorldState {
-	// World States
-	int gamebegin;
-	int gameOverFlag;
-
-	// World Statistics
-	int totalPlayerCount;
-	int totalMonsterCount;
-	int playerDeathCount;
-	int monsterDeathCount;
-	int resetCount;
-};

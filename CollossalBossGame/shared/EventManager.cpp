@@ -14,6 +14,7 @@ EventManager::EventManager() {
 	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_PLAYER_DEATH, new vector<CBGEventHandler *>()));
 	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_DEATH, new vector<CBGEventHandler *>()));
 	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_RESET, new vector<CBGEventHandler *>()));
+	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_HARD_RESET, new vector<CBGEventHandler *>()));
 	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_CONNECTION, new vector<CBGEventHandler *>()));
 	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_MONSTER_SPAWN, new vector<CBGEventHandler *>()));
 	handlers->insert(pair<EventType, vector<CBGEventHandler *>*>(EVENT_DISCONNECT, new vector<CBGEventHandler *>()));

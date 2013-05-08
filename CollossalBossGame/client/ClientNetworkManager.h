@@ -29,6 +29,7 @@ public:
 	static ClientNetworkManager * get();
 	int receivePackets(char *);
 	bool update();
+	void sendData(int messagetype, char * data, int datalen, int objectID);
 	void sendData(char * data, int datalen, int objectID);
 	bool isConnected();
 private:

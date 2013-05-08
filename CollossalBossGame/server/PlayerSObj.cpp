@@ -200,9 +200,9 @@ void PlayerSObj::deserialize(char* newInput)
 {
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
-	if (istat.start) {
-		EventManager::get()->fireEvent(EVENT_RESET, NULL, this); 
-	}
+	//if (istat.start) {
+	//	EventManager::get()->fireEvent(EVENT_RESET, NULL, this);
+	//}
 }
 
 void PlayerSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {

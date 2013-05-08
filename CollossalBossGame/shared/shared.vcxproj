@@ -77,6 +77,7 @@
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="NetworkServices.cpp" />
+    <ClCompile Include="WorldState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Action.h" />
@@ -88,6 +89,7 @@
     <ClInclude Include="Frame.h" />
     <ClInclude Include="NetworkData.h" />
     <ClInclude Include="NetworkServices.h" />
+    <ClInclude Include="WorldState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

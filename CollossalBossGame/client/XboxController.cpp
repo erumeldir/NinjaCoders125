@@ -90,6 +90,17 @@ void XboxController::sendInput() {
 		}*/
 	}
 	//Send the input data, zero'd if nothing is there
+	if(istat.start || istat.quit) {
+		WorldData wd;
+		wd.reset = istat.start;
+		wd.start = istat.start;
+		wd.hardreset = istat.quit;
+		wd.playerid = COM::get()->player_id;
+		ClientNetworkManager::get()->sendData(WORLD_MANAGER, reinterpret_cast<char*>(&wd), sizeof(WorldData), COM::get()->player_id);
+	}
+	if(istat.quit) {
+
+	}
 	ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus), COM::get()->player_id);
 }
 

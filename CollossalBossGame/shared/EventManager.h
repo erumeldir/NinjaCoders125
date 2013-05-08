@@ -11,7 +11,8 @@ enum EventType {
 	EVENT_RESET,
 	EVENT_CONNECTION,
 	EVENT_MONSTER_SPAWN,
-	EVENT_DISCONNECT
+	EVENT_DISCONNECT,
+	EVENT_HARD_RESET
 };
 
 typedef void (*eventHandler)(EventData * data, void * obj	);

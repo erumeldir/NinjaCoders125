@@ -165,4 +165,12 @@ struct EventData {
 	int value;
 };
 
+struct WorldData {
+	int start;
+	int reset;
+	int hardreset;
+	int playerid;
+	int clientready;
+};
+
 #endif

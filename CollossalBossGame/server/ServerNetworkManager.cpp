@@ -1,6 +1,7 @@
 #include "ServerNetworkManager.h"
 #include "Action.h"
 #include "ServerObjectManager.h"
+#include "ServerWorldManager.h"
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
 #include "ServerWorldManager.h"
@@ -162,7 +163,8 @@ void ServerNetworkManager::update() {
 			if(temp_c_id == client_id) {
 				client_id++;
 			}
-			EventManager::get()->fireEvent(EVENT_CONNECTION, NULL, o);
+			int pid = o->getId();
+			EventManager::get()->fireEvent(EVENT_CONNECTION, (EventData *)&pid, NULL);
 		}
 	} while (sessions.empty());
 	// Collect data from clients
@@ -211,8 +213,11 @@ void ServerNetworkManager::receiveFromClients() {
 					if (destObject != NULL) {
 						destObject->deserialize(packet.packet_data);
 					}
-
+					
                     break;
+				case WORLD_MANAGER:
+					ServerWorldManager::get()->
+					break;
                 default:
                     DC::get()->print("error in packet types\n");
                     break;
@@ -234,8 +239,6 @@ bool ServerNetworkManager::acceptNewClient(unsigned int & id) {
 	SecureZeroMemory(&service, socklen);
     ClientSocket = accept(ListenSocket, reinterpret_cast<sockaddr *>(&service), &socklen);
     if (ClientSocket != INVALID_SOCKET) {
-		// cout << (int)service.sin_addr.S_un.S_un_b.s_b1 << (int)service.sin_addr.S_un.S_un_b.s_b2 << (int)service.sin_addr.S_un.S_un_b.s_b3 << (int)service.sin_addr.S_un.S_un_b.s_b4 << endl;
-		// cout << service.sin_addr.S_un.S_addr << endl;
         //disable nagle on the client's socket
         char value = 1;
         setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );

@@ -1,6 +1,7 @@
 #include "ClientNetworkManager.h"
 #include "ConfigurationManager.h"
 #include "ClientObjectManager.h"
+#include "ClientWorldManager.h"
 #include "TestObject.h"
 #include <iostream>
 #include <string>
@@ -201,6 +202,9 @@ bool ClientNetworkManager::update()
 				if(debugFlag) DC::get()->print(CONSOLE | LOGFILE, "%s %d: Action event received\n", __FILE__, __LINE__);
 				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
+			case WORLD_MANAGER:
+				ClientWorldManager::get()->serverUpdate(packet.packet_data);
+				break;
 			case COMPLETE:
 				if(debugFlag) DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);
 				ret = false;
@@ -224,6 +228,25 @@ void ClientNetworkManager::sendData(char * data, int datalen, int objectID) {
 	Packet packet;
 	packet.iteration = this->iteration_count;
 	packet.packet_type = OBJECT_MANAGER;
+	packet.object_id = objectID;
+	packet.command_type = CMD_ACTION;
+	packet.data_size = datalen;
+	packet.packet_number = this->response_packet_number;
+    
+	memcpy(packet.packet_data, data, datalen);
+    packet.serialize(packet_data);
+
+    NetworkServices::sendMessage(ConnectSocket, packet_data, sizeof(Packet));
+}
+
+void ClientNetworkManager::sendData(int messagetype, char * data, int datalen, int objectID) {
+	// std::cout << data << std::endl;
+	
+    char packet_data[sizeof(Packet)];
+
+	Packet packet;
+	packet.iteration = this->iteration_count;
+	packet.packet_type = messagetype;
 	packet.object_id = objectID;
 	packet.command_type = CMD_ACTION;
 	packet.data_size = datalen;

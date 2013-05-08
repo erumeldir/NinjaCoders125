@@ -50,8 +50,8 @@ int main()
 		SOM::get()->update();
 
 		// Send state to client
-		SOM::get()->sendState();
 		ServerWorldManager::get()->sendState();
+		SOM::get()->sendState();
 
 		// Wait until next clock tick
 		time(&endLoopTimer);

@@ -5,6 +5,7 @@
 #include "ServerObject.h"
 #include "EventManager.h"
 #include "CBGEventHandler.h"
+#include "WorldState.h"
 
 class ServerWorldManager : public CBGEventHandler
 {
@@ -19,23 +20,17 @@ public:
 	void event_player_death(EventData * data, void * obj);
 	void event_monster_death(EventData * data, void * obj);
 	void event_reset(EventData * data, void * obj);
+	void event_hard_reset(EventData * data, void * obj);
 	void event_connection(EventData * data, void * obj);
 	void event_monster_spawn(EventData * data, void * obj);
 	void event_disconnect(EventData * data, void * obj);
 
 	void sendState();
-	int serialize(char * buf);
+	void updateState(char * buf);
+
 private:
 	static ServerWorldManager world; // Statics ftw.
 
-	// World States
-	int gamebegin;
-	int gameOverFlag;
+	WorldState ws;
 
-	// World Statistics
-	int totalPlayerCount;
-	int totalMonsterCount;
-	int playerDeathCount;
-	int monsterDeathCount;
-	int resetCount;
 };
