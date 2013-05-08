@@ -6,7 +6,7 @@ CollisionBoxPoints::CollisionBoxPoints(void) : ParticleSystem()
 	vbSize = 2048;
 	vbOffset = 0;
 	vbBatchSize = 512;
-	pointSize = 1.0f;
+	pointSize = 2.5f;
 }
 
 
@@ -23,15 +23,15 @@ void CollisionBoxPoints::resetParticle(ParticleAttributes* a)
 
 void CollisionBoxPoints::update(float timeDelta)
 {
-	list<ParticleAttributes>::iterator i;
-	for(i = particles.begin(); i != particles.end(); i++)
-	{
-		//inside?
-		if(i->pos.y < 0)
-		{
-			resetParticle(&(*i));
-		}
-	}
+	//list<ParticleAttributes>::iterator i;
+	//for(i = particles.begin(); i != particles.end(); i++)
+	//{
+	//	//inside?
+	//	if(i->pos.y < 0)
+	//	{
+	//		resetParticle(&(*i));
+	//	}
+	//}
 	particles.clear();
 }
 
@@ -41,7 +41,9 @@ void CollisionBoxPoints::addParticles(vector<Vec3f> pts)
 	{
 		Vec3f pt = pts[i];
 		ParticleAttributes a;
-		resetParticle(&a);
+		//resetParticle(&a);
+		a.color = D3DXCOLOR(0.0f,1.0f,0.5f,1.0f);
+		a.isAlive = true;
 		a.pos = D3DXVECTOR3(pt.x, pt.y, pt.z);
 		particles.push_back(a);
 	}
