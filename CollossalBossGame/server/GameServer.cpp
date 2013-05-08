@@ -19,7 +19,7 @@ GameServer::GameServer(void)
 /* the main function on the server side, initalizes the server loop
 
 */
-int main()
+int main234()
 {
 	// CM::get();
 	// cout << CM::get()->find_config("asdf") << endl;

@@ -11,6 +11,7 @@
 #include "ClientObjectManager.h"
 #include "PlayerCObj.h"
 #include "ConfigurationManager.h"
+#include "ClientGameStateManager.h"
 #include <mmsystem.h>
 
 #if defined(DEBUG) | defined(_DEBUG)
@@ -158,7 +159,31 @@ void RenderEngine::renderInitalization()
  * Author(s): Franklin
  */
 void RenderEngine::gamestartdisplaylogic() {
-	hud->displayStart();
+	switch(CGSM::get()->gs.currentState) {
+		case GAME_CONNECTING:
+		case GAME_SCENE_SELECT:
+			hud->displaySceneSelect();
+			break;
+		case GAME_LOADING:
+			hud->displayLoadingScreen();
+			break;
+		case GAME_CLASS_SELECT:
+			hud->displayClassSelect();
+			break;
+		case GAME_START:
+			hud->displayStart(); 
+			break;
+		case GAME_RUNNING:
+			// no hud. This isn't really a hud. It's really just a screen thing.
+		case GAME_END:
+			if(CGSM::get()->gs.playerDeathCount == CGSM::get()->gs.totalPlayerCount) { hud->displayGameOver(); }
+			else if(CGSM::get()->gs.monsterDeathCount == CGSM::get()->gs.totalMonsterCount) { hud->displayVictory(); }
+			break;
+		default:
+			// cout << "Odd State" << endl;
+			break;
+	}
+	
 }
 
 /*

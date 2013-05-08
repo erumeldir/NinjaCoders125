@@ -139,8 +139,6 @@ void ServerObjectManager::sendState()
 	}
 	lsObjsToSend.clear();
 	//DC::get()->print("Total data sent to client is %d\n", totalData);
-	SNM::get()->getSendBuffer();
-	SNM::get()->sendToAll(COMPLETE, 0);
 /*
 	for(map<uint, ServerObject *>::iterator it = mObjs.begin();
 			it != mObjs.end();

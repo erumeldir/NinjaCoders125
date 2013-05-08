@@ -22,6 +22,9 @@ public:
 	void displayGameOver();
 	void displayVictory();
 	void displayStart();
+	void displayClassSelect();
+	void displaySceneSelect();
+	void displayLoadingScreen();
 
 private:
 	bool * gamestart;

@@ -23,6 +23,11 @@ public:
 	void sendState();
 	void updateState(char * buf);
 
+	void gameStart();
+	void gameLoop();
+	void initializeGame();
+	void teardownGame();
+
 private:
 	static ServerGameStateManager game; // Statics ftw.
 

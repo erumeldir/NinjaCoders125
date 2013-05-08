@@ -89,8 +89,21 @@ void XboxController::sendInput() {
 			istat.rotHoriz = magnitude * cos(angle);
 			istat.rotVert  = magnitude * sin(angle);
 		}*/
+		bool lshb = (gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
+		bool rshb = (gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
+		if(istat.start || istat.quit || lshb || rshb) {
+			GameData gd;
+			gd.clear();
+			gd.start = istat.start;
+			gd.hardreset = istat.quit;
+			gd.left = lshb;
+			gd.right = rshb;
+			gd.playerid = COM::get()->player_id;
+			ClientNetworkManager::get()->sendData(GAMESTATE_MANAGER, reinterpret_cast<char*>(&gd), sizeof(GameData), COM::get()->player_id);
+		}
 	}
 	//Send the input data, zero'd if nothing is there
+
 	ClientNetworkManager::get()->sendData(OBJECT_MANAGER, reinterpret_cast<char*>(&istat), sizeof(inputstatus), COM::get()->player_id);
 }
 

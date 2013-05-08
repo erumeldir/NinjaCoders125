@@ -12,6 +12,7 @@ enum PacketTypes {
     INIT_CONNECTION = 0,
     OBJECT_MANAGER = 1,
 	GAMESTATE_MANAGER = 2,
+	RESET = 3,
 	COMPLETE
 };
 

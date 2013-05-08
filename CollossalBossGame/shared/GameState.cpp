@@ -35,7 +35,7 @@ void GameState::playerconnect(int playerid) {
 }
 
 void GameState::playerready(int playerid) {
-	if(this->currentState != GAME_BEGIN) {
+	if(this->currentState != GAME_START) {
 		// Ignore it if it's not the right state.
 		return;
 	}
@@ -68,6 +68,34 @@ void GameState::clientready(int playerid) {
 		}
 	}
 	if(allready) {
-		this->currentState = GAME_BEGIN;
+		this->currentState = GAME_START;
+	}
+}
+
+int GameState::getplayerlocation(int playerid) {
+	for(int i = 0; i < 4; i++) {
+		if(playersconnected[i] == playerid) {
+			return i;
+		}
+	}
+}
+
+void GameState::classselect(int playerid, bool inc, bool dec) {
+	bool done = false;
+	int i = (inc) ? 1 : -1;
+	while(!done) {
+		int playerloc = getplayerlocation(playerid);
+		int searchvalue = (classselection[playerloc]+i)%5;
+		bool acceptablevalue = true;
+		for(int i = 0; i < 4; i++) {
+			if(classselection[i] == searchvalue) {
+				acceptablevalue = false;
+			}
+		}
+		if(acceptablevalue) {
+			classselection[playerloc] = (classselection[playerloc]+i)%5;
+		} else {
+			(inc) ? i++ : i--;
+		}
 	}
 }

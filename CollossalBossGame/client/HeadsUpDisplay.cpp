@@ -1,5 +1,7 @@
 #include "HeadsUpDisplay.h"
 #include "ConfigurationManager.h"
+#include "ClientGameStateManager.h"
+#include "GameState.h"
 
 HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs)
 {
@@ -163,7 +165,6 @@ void HeadsUpDisplay::displayText(string hudText, string monsterHUDText)
 
 void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, float charge)
 {
-
 	D3DXVECTOR2 blines[] = {D3DXVECTOR2(10.0f, 40.0f), D3DXVECTOR2(110.0f, 40.0f)};
 	backgroundLine->SetWidth(15.0f);
 	backgroundLine->Draw(blines, 2, D3DCOLOR_ARGB(255, 0, 0, 0));
@@ -190,10 +191,6 @@ void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, floa
 	D3DXVECTOR2 clines[] = {D3DXVECTOR2(10.0f, 140.0f), D3DXVECTOR2(charge + 10.f , 140.0f)};
 	chargeLine->SetWidth(10.0f);
 	chargeLine->Draw(clines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - charge) / 100.0), (int)(255.0 * charge / 100.0), (int)(charge * 2)));
-
-
-	if(playerHealth == 0) displayGameOver();
-	else if(monsterHealth == 0) displayVictory(); // todo Franklin fix so that we only Victory on last phase
 
 	//D3DXVECTOR3 pos;
 	//pos.x=0.0f;
@@ -261,6 +258,42 @@ void displaytexture(LPD3DXSPRITE * sprite, D3DXVECTOR3 * pos, IDirect3DTexture9 
 
 void HeadsUpDisplay::displayStart()
 {
+	GameState * s = &CGSM::get()->gs;
+	int playercount = s->totalPlayerCount;
+	int playernumber = s->getplayerlocation(COM::get()->player_id);
+	if(playercount >= 1) {
+		D3DXVECTOR3 p1c(0,0,0.25);
+		D3DXVECTOR3 p1r(0,0,0);
+		if (s->playersready[0]) { displaytexture(&playerready, &p1r, &playerreadytxt); }
+		(playernumber == 1) ? displaytexture(&youarep1, &p1c, &youarep1txt) : displaytexture(&p1connect, &p1c, &p1connecttxt);
+	}
+	if(playercount >= 2) {
+		D3DXVECTOR3 p2c(300,0,0.25);
+		D3DXVECTOR3 p2r(300,0,0);
+		if (s->playersready[1]) { displaytexture(&playerready, &p2r, &playerreadytxt); }
+		(playernumber == 2) ? displaytexture(&youarep2, &p2c, &youarep2txt) : displaytexture(&p2connect, &p2c, &p2connecttxt);
+	}
+	if(playercount >= 3) {
+		D3DXVECTOR3 p3c(0,300,0.25);
+		D3DXVECTOR3 p3r(0,300,0);
+		if (s->playersready[2]) { displaytexture(&playerready, &p3r, &playerreadytxt); }
+		(playernumber == 3) ? displaytexture(&youarep3, &p3c, &youarep3txt) : displaytexture(&p3connect, &p3c, &p3connecttxt);
+	}
+	if(playercount >= 4) {
+		D3DXVECTOR3 p4c(300,300,0.25);
+		D3DXVECTOR3 p4r(300,300,0);
+		if (s->playersready[3]) { displaytexture(&playerready, &p4r, &playerreadytxt); }
+		(playernumber == 4) ? displaytexture(&youarep4, &p4c, &youarep4txt) : displaytexture(&p4connect, &p4c, &p4connecttxt);
+	}
+	if(!s->clientsready[playernumber]) {
+		D3DXVECTOR3 rdy(300,200,0);
+		displaytexture(&pressstart, &rdy, &pressstarttxt);
+	}
+	D3DXVECTOR3 blk(0,0,0.5);
+	displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
+
+#pragma region commented out old stuff
+	/*
 	if (!*gamestart) {
 		int pid = COM::get()->player_id;
 		int playercount = 0;
@@ -319,5 +352,39 @@ void HeadsUpDisplay::displayStart()
 			*gamestart = true;
 		}
 	}
+	*/
+#pragma endregion
+}
 
+void HeadsUpDisplay::displayClassSelect() {
+	D3DXVECTOR3 blk(0,0,0.5);
+	displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
+
+	RECT middleofscreen;
+	SetRect(&middleofscreen, hudTopX+300, hudTopY+300, 1024, 768);
+	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
+    direct3dText->DrawText(sprite1, "CLASS SELECT SCREEN", -1, &middleofscreen, DT_LEFT|DT_NOCLIP, 0xFFFFFFFF);
+	sprite1->End();
+}
+
+void HeadsUpDisplay::displaySceneSelect() {
+	D3DXVECTOR3 blk(0,0,0.5);
+	displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
+
+	RECT middleofscreen;
+	SetRect(&middleofscreen, hudTopX+300, hudTopY+300, 1024, 768);
+	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
+    direct3dText->DrawText(sprite1, "SCENE SELECT SCREEN", -1, &middleofscreen, DT_LEFT|DT_NOCLIP, 0xFFFFFFFF);
+	sprite1->End();
+}
+
+void HeadsUpDisplay::displayLoadingScreen() {
+	D3DXVECTOR3 blk(0,0,0.5);
+	displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
+
+	RECT middleofscreen;
+	SetRect(&middleofscreen, hudTopX+300, hudTopY+300, 1024, 768);
+	sprite1->Begin(D3DXSPRITE_ALPHABLEND);
+    direct3dText->DrawText(sprite1, "WE'RE LOADING", -1, &middleofscreen, DT_LEFT|DT_NOCLIP, 0xFFFFFFFF);
+	sprite1->End();
 }

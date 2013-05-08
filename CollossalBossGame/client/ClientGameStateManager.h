@@ -17,3 +17,4 @@ public:
 private:
 	static ClientGameStateManager game; // Statics ftw.
 };
+typedef ClientGameStateManager CGSM;

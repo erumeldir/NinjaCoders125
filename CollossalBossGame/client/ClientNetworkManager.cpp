@@ -204,6 +204,9 @@ bool ClientNetworkManager::update()
 			case GAMESTATE_MANAGER:
 				ClientGameStateManager::get()->serverUpdate(packet.packet_data);
 				break;
+			case RESET:
+				// RESET LOGIC. Like destroying everything and resetting.
+				break;
 			case COMPLETE:
 				if(debugFlag) DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);
 				ret = false;
