@@ -76,6 +76,7 @@ void PlayerCObj::deserialize(char* newState) {
 
 	if(this->ready == false) {
 		RE::get()->gamestarted = false;
+		chargingEffect->kill();
 	}
 
 	this->getRenderModel()->setModelState(state->animationstate);

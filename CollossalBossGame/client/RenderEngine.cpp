@@ -203,6 +203,10 @@ void RenderEngine::drawHUD() {
 		hud->displayText(this->hudText,this->monsterHUDText);
 		hud->displayHealthBars(this->healthPts, this->monsterHealthPts, this->charge);
 	}
+	else
+	{
+		this->colBxPts->kill();
+	}
 }
 
 /*where we actually draw a scene
