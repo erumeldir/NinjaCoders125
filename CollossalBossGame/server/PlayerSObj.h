@@ -58,6 +58,8 @@ private:
 	int modelAnimationState;
 	int swordDamage, chargeDamage;
 
+	void  calcUpVector(Quat_t *upRot);
+	void  controlCamera(const Quat_t &upRot);
 	float controlAngles(float des, float cur);
 };
 
