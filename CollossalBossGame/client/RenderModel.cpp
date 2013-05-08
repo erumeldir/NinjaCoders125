@@ -220,7 +220,7 @@ void RenderModel::render() {
 				pts.push_back(topLeftBack);
 				pts.push_back(topRightBacl);
 
-				((CollisionBoxPoints*)(RE::get()->ps))->addParticles(pts);
+				RE::get()->getColBxPts()->addParticles(pts);
 			}
 		}
 	}

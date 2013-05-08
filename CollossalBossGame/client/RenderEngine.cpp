@@ -174,11 +174,11 @@ RenderEngine::RenderEngine() {
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
 	D3DXMatrixIdentity(&world);
+	colBxPts = new CollisionBoxPoints();
+	this->addParticleEffect(colBxPts);
 
 	cam = new Camera(cameraDist);
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
-	ps = new CollisionBoxPoints();
-	ps->init(this->direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
 
@@ -191,6 +191,7 @@ RenderEngine::RenderEngine() {
 * Bryan
 */
 RenderEngine::~RenderEngine() {
+	RE::re = NULL;
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
 	delete hud;
@@ -201,6 +202,10 @@ void RenderEngine::drawHUD() {
 	if(gamestarted) {
 		hud->displayText(this->hudText,this->monsterHUDText);
 		hud->displayHealthBars(this->healthPts, this->monsterHealthPts, this->charge);
+	}
+	else
+	{
+		this->colBxPts->kill();
 	}
 }
 
@@ -230,11 +235,10 @@ void RenderEngine::renderThis(ClientObject *obj) {
 * Bryan
 */
 void RenderEngine::render() {
+	this->colBxPts->update(.33);
 	//Update the view matrix
 	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-	ps->update(33);
 	// clear the window to a deep blue
-	//direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0);
 	direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0, 0.0f), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
@@ -242,8 +246,10 @@ void RenderEngine::render() {
 	gamestartdisplaylogic();
 	hud->displayBackground();
 	sceneDrawing();
-	ps->render(direct3dDevice);
-
+	for(int i = 0; i < this->particleSystems.size(); i++)
+	{
+		this->particleSystems[i]->render(direct3dDevice);
+	}
 	drawHUD();
 	//ps->render(direct3dDevice);
 	direct3dDevice->EndScene(); // ends the 3D scene

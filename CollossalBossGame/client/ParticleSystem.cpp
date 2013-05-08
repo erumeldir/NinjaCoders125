@@ -32,12 +32,10 @@ void ParticleSystem::init(LPDIRECT3DDEVICE9 pDevice)
 								D3DPOOL_DEFAULT,
 								&vb,
 								0);
-	HRESULT hr = D3DXCreateTextureFromFile(pDevice,   //Direct3D Device
+	D3DXCreateTextureFromFile(pDevice,   //Direct3D Device
                              "res/particle.bmp",       //File Name
 	                          &texture);    //Texture handle
 					
-
-	//D3DXCreateTexture(pDevice,640,480,D3DUSAGE_DYNAMIC,1,D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &texture);
 }
 
 ParticleSystem::~ParticleSystem(void)
@@ -53,6 +51,11 @@ void ParticleSystem::reset()
 	{
 		resetParticle(&(*i));
 	}
+}
+
+void ParticleSystem::kill()
+{
+	particles.clear();
 }
 
 void ParticleSystem::addParticle()
@@ -97,7 +100,7 @@ void ParticleSystem::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
 	//direct3dDevice->SetRenderState( D3DRS_SRCBLEND, 0);
     //direct3dDevice->SetRenderState( D3DRS_DESTBLEND, 1);
 
-    //direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+    direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
     direct3dDevice->SetRenderState( D3DRS_LIGHTING, false);
 
 
@@ -110,7 +113,7 @@ void ParticleSystem::postRender(LPDIRECT3DDEVICE9 direct3dDevice)
     direct3dDevice->SetRenderState( D3DRS_POINTSCALEENABLE, false);
     direct3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, false);
 
-    //direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
+    direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 }
 
@@ -167,7 +170,6 @@ void ParticleSystem::render(LPDIRECT3DDEVICE9 direct3dDevice)
 			{
 				v->pt = i->pos;
 				v->color = i->color;
-				//v->color = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
 				v++;
 				numParticlesInBatch++;
 				if(numParticlesInBatch == vbBatchSize)
@@ -189,11 +191,12 @@ void ParticleSystem::render(LPDIRECT3DDEVICE9 direct3dDevice)
 
 		if(numParticlesInBatch)
 		{
-			direct3dDevice->DrawPrimitive( D3DPT_POINTLIST, vbOffset, vbBatchSize);
+			direct3dDevice->DrawPrimitive( D3DPT_POINTLIST, vbOffset, numParticlesInBatch);
 		}
 
 		vbOffset += vbBatchSize;
 		postRender(direct3dDevice);
+
 	}
 }
 
