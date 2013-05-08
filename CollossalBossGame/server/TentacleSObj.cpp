@@ -91,11 +91,13 @@ bool TentacleSObj::update() {
 	Box base = this->getPhysicsModel()->colBoxes.at(0);
 	Box middle = this->getPhysicsModel()->colBoxes.at(1);
 	Box tip = this->getPhysicsModel()->colBoxes.at(2);
-	Vec3f pos;
+	Vec3f changePosT = Vec3f(), changeProportionT = Vec3f();
+	Vec3f changePosM = Vec3f(), changeProportionM = Vec3f();
 
 	if (modelAnimationState == T_IDLE)
 	{
 		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+			int i;
 			/*middle.h = middle.h + 4;
 			middle.y = middle.y + 4;*/
 		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE){
@@ -110,22 +112,22 @@ bool TentacleSObj::update() {
 			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/4)
 			{
 				//decrease y
-				tip.y = tip.y - 7;
-				//increase height
-				tip.h = tip.h + 3;
+				changePosT.y -= 7;
+				//increase height (h)
+				changeProportionT.y += 3;
 			} else {
 				//increase y
-				tip.y = tip.y + 7;
-				//decrease height
-				tip.h = tip.h - 3;
+				changePosT.y += 7;
+				//decrease height (h)
+				changeProportionT.y -= 3;
 			}
-			//decrease depth
-			tip.l = tip.l - 1;
-			//decrease z
-			tip.z = tip.z + 6;
+			//decrease depth (l)
+			changeProportionT.z  -= 1;
+			//increase z
+			changePosT.z += 6;
 
-			middle.h = middle.h + 2;
-			middle.y = middle.y - 2;
+			changeProportionM.y += 2;
+			changePosM.y -= 2;
 			//tip.z = tip.z + 6;
 			//middle.l = middle.l - 2;
 		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
@@ -133,25 +135,50 @@ bool TentacleSObj::update() {
 			if ((attackCounter - attackBuffer)%CYCLE < 3*CYCLE/4)
 			{
 				//decrease y
-				tip.y = tip.y - 7;
-				//increase height
-				tip.h = tip.h + 3;
+				changePosT.y -= 7;
+				//increase height (h)
+				changeProportionT.y += 3;
 			} else {
 				//increase y
-				tip.y = tip.y + 7;
-				//decrease height
-				tip.h = tip.h - 3;
+				changePosT.y += 7;
+				//decrease height (h)
+				changeProportionT.y -= 3;
 			}
 			//increase z
-			tip.z = tip.z - 6;
-			//increase depth
-			tip.l = tip.l + 1;
-			middle.h = middle.h - 2;
-			middle.y = middle.y + 2;
+			changePosT.z -= 6;
+			//increase depth (l, associated with z)
+			changeProportionT.x += 1;
+			
+			changeProportionM.y -= 2;
+			changePosM.y += 2;
 			//tip.z = tip.z - 6;
 			//middle.l = middle.l + 2;
 		} 
 	}
+	
+	//get the actual axis
+	Vec4f axis = this->getPhysicsModel()->ref->getRot();
+
+	changePosT = axis.rotateToThisAxis(changePosT);
+	changeProportionT = axis.rotateToThisAxis(changeProportionT);
+	changePosM = axis.rotateToThisAxis(changePosM);
+	changeProportionM = axis.rotateToThisAxis(changeProportionM);
+	
+	tip.x += changePosT.x;
+	tip.y += changePosT.y;
+	tip.z += changePosT.z;
+
+	tip.w += changeProportionT.x;
+	tip.h += changeProportionT.y;
+	tip.l += changeProportionT.z;
+
+	middle.x += changePosM.x;
+	middle.y += changePosM.y;
+	middle.z += changePosM.z;
+
+	middle.w += changeProportionM.x;
+	middle.h += changeProportionM.y;
+	middle.l += changeProportionM.z;
 	
 	this->getPhysicsModel()->updateBox(0, base);
 	this->getPhysicsModel()->updateBox(1, middle);

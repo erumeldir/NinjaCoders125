@@ -78,43 +78,6 @@ typedef struct Vec3f {
 		z -= rhs.z;
 	}
 
-	/*Add along what should be this model's X axis if this is unrotated
-	 *
-	 * Author: Bryan
-	 */
-	void addAlongXAxis(int i, Vec4f actualAxis) {
-		addAlongAxis( Vec3f(i, 0, 0), actualAxis);
-	}
-
-	/*Add along what should be this model's Y axis if this is unrotated
-	 *
-	 * Author: Bryan
-	 */
-	void addAlongYAxis(int i, Vec4f actualAxis) {
-		addAlongAxis( Vec3f(0, i, 0), actualAxis);
-	}
-
-	/*Add along what should be this model's Y axis if this is unrotated
-	 *
-	 * Author: Bryan
-	 */
-	void addAlongZAxis(int i, Vec4f actualAxis) {
-		addAlongAxis( Vec3f(0, 0, i), actualAxis);
-	}
-
-	/* Given a vector of the change we want to make,
-	 *  and the actual axis we are currently on,
-	 *  make the appropriate change in this vector.
-	 *
-	 * Author: Bryan
-	 */
-	void addAlongAxis(Vec3f change, Vec4f actualAxis) {
-		Vec3f actualAddition = rotate(change, actualAxis);
-		x += actualAddition.x;
-		y += actualAddition.y;
-		z += actualAddition.z;
-	}
-
 	Vec3f operator*	(float rhs) const {
 		return Vec3f(this->x * rhs, 
 			this->y * rhs, 
@@ -226,6 +189,15 @@ typedef struct Vec4f {
 		z /= mag;
 		w /= mag;
 	}
+
+	
+	/* Given a vector of the change we want to make,
+	 *  and the actual axis we are currently on,
+	 *  make the appropriate change in this vector.
+	 *
+	 * Author: Bryan
+	 */
+	Vec3f rotateToThisAxis(Vec3f change);
 } Quat_t;
 
 Quat_t inverse(const Quat_t &q);
