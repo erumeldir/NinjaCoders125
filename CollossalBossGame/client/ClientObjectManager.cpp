@@ -13,6 +13,7 @@ ClientObjectManager *ClientObjectManager::com;
 ClientObjectManager::ClientObjectManager(void) {
 	curId = 0;
 	debugFlag = CM::get()->find_config_as_bool("COM_DEBUG_FLAG");
+	collisionMode = CM::get()->find_config_as_bool("COLLISION_MODE");
 }
 
 

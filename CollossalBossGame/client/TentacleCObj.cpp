@@ -20,5 +20,21 @@ bool TentacleCObj::update() {
 
 void TentacleCObj::deserialize(char* newState) {
 	TentacleState *state = (TentacleState*)newState;
-	rm->getFrameOfRef()->deserialize(newState + sizeof(TentacleState));
+
+	if (COM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(newState + sizeof(TentacleState));
+
+		rm->colBoxes.clear();
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			rm->colBoxes.push_back(collState->boxes[i]);
+		}
+
+		rm->getFrameOfRef()->deserialize(newState + sizeof(TentacleState) + sizeof(CollisionState));
+	}
+	else
+	{
+		rm->getFrameOfRef()->deserialize(newState + sizeof(TentacleState));
+	}
 }

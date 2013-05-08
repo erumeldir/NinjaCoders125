@@ -98,6 +98,11 @@ bool PlayerSObj::update() {
 		return true; // delete me!
 	}
 	
+	
+	Quat_t upRot;
+	calcUpVector(&upRot);
+	controlCamera(upRot);
+
 	if(this->health > 0)
 	{
 		firedeath = false;
@@ -135,62 +140,7 @@ bool PlayerSObj::update() {
 		newCharge = !istat.specialPower;*/
 
 		damage = charging ? chargeDamage : attacking ? swordDamage : 0;
-/*
-#if 1
-		Rot_t rt = pm->ref->getRot();
-		float yaw = rt.y + istat.rotHoriz,
-			  pitch = rt.x + istat.rotVert;
-		if (yaw > M_TAU || yaw < -M_TAU) yaw = 0;
-		if (pitch > M_TAU || pitch < -M_TAU) pitch = 0;
-		pm->ref->setRot(Rot_t(0, yaw, 0));
-#else
-		float yaw;
-		if(istat.forwardDist > 0) {
-			yaw = istat.rotAngle;
-			pm->ref->setRot(Rot_t(0, yaw, 0));
-		} else {
-			yaw = pm->ref->getRot().y;
-*/
-		//Update up direction
-		PE *pe = PE::get();
-		if(lastGravDir != pe->getGravDir()) {
-			lastGravDir = pe->getGravDir();
-			//pm->ref->rotate(pe->getCurGravRot());
-			slerp(&initUpRot, initUpRot, finalUpRot, t);	//We may not have finished rotating
-			finalUpRot = pe->getCurGravRot();
-			t = 0;
-		}
-
-		//Vec3f up = rotateUp(pm->ref->getRot());
-
-		//Rotate by amount specified by player (does not affect up direction)
-		Quat_t upRot;
-		slerp(&upRot, initUpRot, finalUpRot, t);
-		if(t < 1.0f) {
-			t += tRate;
-		}
-
-		//Update the camera yaw
-		if(istat.camLock) {
-			camKp = camKpFast;
-		} else {
-			camKp = camKpSlow;
-		}
-
-		if(istat.camLock) {
-			camLocked = true;
-		} else if(camLocked && fabs(istat.rotHoriz) > 0) {
-			camLocked = false;
-		}
-
-		if(camLocked) {
-			camYaw = controlAngles(yaw, camYaw);
-		} else {
-			camYaw += istat.rotHoriz;
-		}
-		if(camYaw < -M_PI) camYaw += M_TAU;
-		else if(camYaw > M_PI) camYaw -= M_TAU;
-		camRot = upRot * Quat_t(Vec3f(0,1,0), camYaw);
+		
 
 		//Update the yaw rotation of the player (about the default up vector)
 		if(fabs(istat.forwardDist) > 0.0f || fabs(istat.rightDist) > 0.0f) {
@@ -210,7 +160,7 @@ bool PlayerSObj::update() {
 		pm->applyForce(total);
 
 		// Apply special power
-		if (istat.specialPower/* && !getFlag(IS_FALLING)*/) // holding down increases the charge
+		if (istat.specialPower && !getFlag(IS_FALLING)) // holding down increases the charge
 		{
 			charge+=chargeUpdate;
 			if(charge > 13) charge = 13.f;
@@ -246,7 +196,55 @@ bool PlayerSObj::update() {
 			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
 		}
 	}
+
 	return false;
+}
+
+void PlayerSObj::calcUpVector(Quat_t *upRot) {
+	//Update up direction
+	PE *pe = PE::get();
+	if(lastGravDir != pe->getGravDir()) {
+		lastGravDir = pe->getGravDir();
+		//pm->ref->rotate(pe->getCurGravRot());
+		slerp(&initUpRot, initUpRot, finalUpRot, t);	//We may not have finished rotating
+		finalUpRot = pe->getCurGravRot();
+		t = 0;
+	}
+
+	//Rotate by amount specified by player (does not affect up direction)
+	slerp(upRot, initUpRot, finalUpRot, t);
+	if(t < 1.0f) {
+		t += tRate;
+	}
+}
+
+void PlayerSObj::controlCamera(const Quat_t &upRot) {
+		//If the camera lock button is pressed, then we interpolate much faster
+		if(istat.camLock) {
+			camKp = camKpFast;
+		} else {
+			camKp = camKpSlow;
+		}
+
+		//Update the camera-lock state: Locked to or unlocked from the player
+		if(istat.camLock) {
+			camLocked = true;
+		} else if(camLocked && fabs(istat.rotHoriz) > 0) {
+			camLocked = false;
+		}
+
+		//If the camera is locked, calculate the yaw as a function of kp,
+		// player yaw, and camera yaw.  Otherwise, control with right joystick
+		if(camLocked) {
+			camYaw = controlAngles(yaw, camYaw);
+		} else {
+			camYaw += istat.rotHoriz;
+		}
+
+		//Correct the camera angle so it is between +/-pi
+		if(camYaw < -M_PI) camYaw += M_TAU;
+		else if(camYaw > M_PI) camYaw -= M_TAU;
+		camRot = upRot * Quat_t(Vec3f(0,1,0), camYaw);
 }
 
 float PlayerSObj::controlAngles(float des, float cur) {
@@ -275,7 +273,26 @@ int PlayerSObj::serialize(char * buf) {
 	if (SOM::get()->debugFlag) DC::get()->print("CURRENT MODEL STATE %d\n",this->modelAnimationState);
 	state->animationstate = this->modelAnimationState;
 	state->camRot = this->camRot;
-	return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+
+	if (SOM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(buf + sizeof(PlayerState));
+
+		vector<Box> objBoxes = pm->colBoxes;
+
+		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
+
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
+		}
+
+		return pm->ref->serialize(buf + sizeof(PlayerState) + sizeof(CollisionState)) + sizeof(PlayerState) + sizeof(CollisionState);
+	}
+	else
+	{
+		return pm->ref->serialize(buf + sizeof(PlayerState)) + sizeof(PlayerState);
+	}
 }
 
 void PlayerSObj::deserialize(char* newInput)

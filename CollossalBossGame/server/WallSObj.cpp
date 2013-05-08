@@ -71,5 +71,24 @@ bool WallSObj::update() {
 int WallSObj::serialize(char * buf) {
 	ObjectState *state = (ObjectState*)buf;
 	state->modelNum = modelNum;
-	return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
+
+	if (SOM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(buf + sizeof(ObjectState));
+
+		vector<Box> objBoxes = pm->colBoxes;
+
+		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
+
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
+		}
+
+		return pm->ref->serialize(buf + sizeof(ObjectState) + sizeof(CollisionState)) + sizeof(ObjectState) + sizeof(CollisionState);
+	}
+	else
+	{
+		return pm->ref->serialize(buf + sizeof(ObjectState)) + sizeof(ObjectState);
+	}
 }

@@ -23,7 +23,11 @@
 #include "XAnimator_lib.h"
 #include "Camera.h"
 #include "HeadsUpDisplay.h"
+#include "ParticleSystem.h"
 #include <time.h>
+#include "Snow.h"
+#include "CollisionBoxPoints.h"
+#include "ChargeEffect.h"
 
 using namespace std;
 
@@ -50,10 +54,12 @@ public:
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
+	CollisionBoxPoints* getColBxPts() { return colBxPts; }
 
 	void setHUDText(string newText, int health, float charge) { hudText = newText; healthPts = health; this->charge = charge;}
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
-
+	void addParticleEffect(ParticleSystem* ps) { ps->init(this->direct3dDevice); this->particleSystems.push_back(ps);  }
+	
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
 	bool loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat);
@@ -63,6 +69,7 @@ public:
 	IXAnimator *getAnim() { return xAnimator; }
 
 	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
+
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
@@ -89,7 +96,8 @@ private:
 
 	Camera* cam;
 	HeadsUpDisplay* hud;
-
+	vector<ParticleSystem*> particleSystems;
+	CollisionBoxPoints* colBxPts;
 	//Configuration fields
 	float cameraDist;
 };

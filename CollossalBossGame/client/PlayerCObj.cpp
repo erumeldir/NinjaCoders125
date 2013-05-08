@@ -20,11 +20,15 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
 	cameraPitch = DEFAULT_PITCH;
 	ready = false;
+	chargingEffect = new ChargeEffect(10);
+	// Register with RE, SO SMART :O
+	RE::get()->addParticleEffect(chargingEffect);
 }
 
 PlayerCObj::~PlayerCObj(void)
 {
 	delete rm;
+	delete chargingEffect;
 
 	//Quit the game
 	CE::get()->exit();
@@ -34,10 +38,6 @@ void PlayerCObj::showStatus()
 {
 	std::stringstream status;
 	status << "Player " << getId() << "\n";
-	//std::string s1 ("[");
-	//std::string s2 (floor(health/20 + 0.5f), '~');
-	//std::string s3 ("]");
-	//status << s1 << s2 << s3;
 	RE::get()->setHUDText(status.str(), health, charge);
 }
 
@@ -59,9 +59,10 @@ bool PlayerCObj::update() {
 		}
 
 		Point_t objPos = rm->getFrameOfRef()->getPos();
-		//Quat_t objDir = rm->getFrameOfRef()->getRot();
 		RE::get()->getCamera()->update(objPos, camRot, cameraPitch);
 		showStatus();
+		chargingEffect->setPosition(objPos, charge);
+		chargingEffect->update(.33);
 	}
 	return false;
 }
@@ -71,12 +72,28 @@ void PlayerCObj::deserialize(char* newState) {
 	this->health = state->health;
 	this->ready = state->ready;
 	this->charge = state->charge;
+	camRot = state->camRot;
 
 	if(this->ready == false) {
 		RE::get()->gamestarted = false;
 	}
 
 	this->getRenderModel()->setModelState(state->animationstate);
-	camRot = state->camRot;
-	rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
+
+	if (COM::get()->collisionMode)
+	{
+		CollisionState *collState = (CollisionState*)(newState + sizeof(PlayerState));
+
+		rm->colBoxes.clear();
+		for (int i=0; i<collState->totalBoxes; i++)
+		{
+			rm->colBoxes.push_back(collState->boxes[i]);
+		}
+
+		rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState) + sizeof(CollisionState));
+	}
+	else
+	{
+		rm->getFrameOfRef()->deserialize(newState + sizeof(PlayerState));
+	}
 }

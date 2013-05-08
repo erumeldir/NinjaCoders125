@@ -174,6 +174,8 @@ RenderEngine::RenderEngine() {
 	xAnimator=CreateXAnimator(direct3dDevice);	//get our animator
 
 	D3DXMatrixIdentity(&world);
+	colBxPts = new CollisionBoxPoints();
+	this->addParticleEffect(colBxPts);
 
 	cam = new Camera(cameraDist);
 	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
@@ -189,6 +191,7 @@ RenderEngine::RenderEngine() {
 * Bryan
 */
 RenderEngine::~RenderEngine() {
+	RE::re = NULL;
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
 	delete hud;
@@ -224,23 +227,26 @@ void RenderEngine::renderThis(ClientObject *obj) {
 * Bryan
 */
 void RenderEngine::render() {
+	this->colBxPts->update(.33);
 	//Update the view matrix
 	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
-
 	// clear the window to a deep blue
-	direct3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(21, 0, 105), 1.0f, 0);
+	direct3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0, 0.0f), 1.0f, 0);
 
 	direct3dDevice->BeginScene(); // begins the 3D scene
 
 	gamestartdisplaylogic();
 	hud->displayBackground();
-
 	sceneDrawing();
+	for(int i = 0; i < this->particleSystems.size(); i++)
+	{
+		this->particleSystems[i]->render(direct3dDevice);
+	}
 	drawHUD();
-
+	//ps->render(direct3dDevice);
 	direct3dDevice->EndScene(); // ends the 3D scene
 
-	direct3dDevice->Present(NULL, NULL, NULL, NULL); // displays the created frame
+	direct3dDevice->Present(0, 0, 0, 0); // displays the created frame
 }
 
 // todo take time
