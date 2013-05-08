@@ -10,8 +10,8 @@
 // The type of message sent between client and server.
 enum PacketTypes {
     INIT_CONNECTION = 0,
-    ACTION_EVENT = 1,
-	MESSAGE = 2,
+    OBJECT_MANAGER = 1,
+	GAMESTATE_MANAGER = 2,
 	COMPLETE
 };
 

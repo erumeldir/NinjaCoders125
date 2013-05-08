@@ -1,9 +1,9 @@
 #include "ServerNetworkManager.h"
 #include "Action.h"
 #include "ServerObjectManager.h"
+#include "ServerGameStateManager.h"
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
-#include "WorldManager.h"
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
@@ -162,7 +162,7 @@ void ServerNetworkManager::update() {
 			if(temp_c_id == client_id) {
 				client_id++;
 			}
-			EventManager::get()->fireEvent(EVENT_CONNECTION, o);
+			SGSM::get()->event_connection(o->getId());
 		}
 	} while (sessions.empty());
 	// Collect data from clients
@@ -204,7 +204,7 @@ void ServerNetworkManager::receiveFromClients() {
                 case INIT_CONNECTION:
                     if(debugFlag) DC::get()->print("server received init packet from client %d\n", iter->first);
                     break;
-                case ACTION_EVENT:
+                case OBJECT_MANAGER:
 					if(debugFlag) DC::get()->print("server received action event packet from client %d (player id %d)\n", iter->first, packet.object_id);
 					destObject = SOM::get()->find(packet.object_id);
 
@@ -213,6 +213,9 @@ void ServerNetworkManager::receiveFromClients() {
 					}
 
                     break;
+				case GAMESTATE_MANAGER:
+
+					break;
                 default:
                     DC::get()->print("error in packet types\n");
                     break;

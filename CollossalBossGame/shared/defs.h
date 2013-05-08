@@ -261,4 +261,12 @@ typedef enum ACTION {
 	ACT_NUM_ACTIONS
 };
 
+struct GameData {
+	int start;
+	int reset;
+	int hardreset;
+	int playerid;
+	int clientready;
+};
+
 #endif
