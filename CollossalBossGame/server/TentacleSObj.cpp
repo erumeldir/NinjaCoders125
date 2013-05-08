@@ -88,13 +88,13 @@ bool TentacleSObj::update() {
 	 * CYCLE*1/2 = The tentacle is extended
 	 * CYCLE = when the tentacle is back at the default position
 	 */
+	Box base = this->getPhysicsModel()->colBoxes.at(0);
+	Box middle = this->getPhysicsModel()->colBoxes.at(1);
+	Box tip = this->getPhysicsModel()->colBoxes.at(2);
+	Vec3f pos;
 
 	if (modelAnimationState == T_IDLE)
 	{
-		Box base = this->getPhysicsModel()->colBoxes.at(0);
-		Box middle = this->getPhysicsModel()->colBoxes.at(1);
-		Box tip = this->getPhysicsModel()->colBoxes.at(2);
-		Vec3f pos;
 		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
 			/*middle.h = middle.h + 4;
 			middle.y = middle.y + 4;*/
@@ -103,14 +103,8 @@ bool TentacleSObj::update() {
 			middle.y = middle.y - 4;*/
 		}
 
-		this->getPhysicsModel()->updateBox(0, base);
-		this->getPhysicsModel()->updateBox(1, middle);
-		this->getPhysicsModel()->updateBox(2, tip);
 	} else {
-		Box base = this->getPhysicsModel()->colBoxes.at(0);
-		Box middle = this->getPhysicsModel()->colBoxes.at(1);
-		Box tip = this->getPhysicsModel()->colBoxes.at(2);
-		Vec3f pos;
+		
 		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
 			//changing the tip
 			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/4)
@@ -157,12 +151,12 @@ bool TentacleSObj::update() {
 			//tip.z = tip.z - 6;
 			//middle.l = middle.l + 2;
 		} 
-
-		this->getPhysicsModel()->updateBox(0, base);
-		this->getPhysicsModel()->updateBox(1, middle);
-		this->getPhysicsModel()->updateBox(2, tip);
 	}
-
+	
+	this->getPhysicsModel()->updateBox(0, base);
+	this->getPhysicsModel()->updateBox(1, middle);
+	this->getPhysicsModel()->updateBox(2, tip);
+	
 	if (health <= 0) {
 		health = 0;
 		overlord->removeTentacle(this);
@@ -219,7 +213,7 @@ float TentacleSObj::angleToNearestPlayer()
 	vector<ServerObject *> players;
 	SOM::get()->findObjects(OBJ_PLAYER, &players);
 
-	#define TENTACLE_LENGTH 200
+	#define TENTACLE_LENGTH 300
 
 	float minDist = TENTACLE_LENGTH;
 	float currDist;
