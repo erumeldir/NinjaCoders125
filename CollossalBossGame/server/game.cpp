@@ -60,7 +60,7 @@ void gameInit() {
 	som->add(wobj);
 
 	//MonsterSObj* monster = new MonsterSObj(som->genId(), 2);
-	MonsterSObj* monster = new MonsterSObj(som->genId(), 2); // 4
+	MonsterSObj* monster = new MonsterSObj(som->genId(), 4); // 4
 	som->add(monster);
 }
 

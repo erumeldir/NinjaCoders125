@@ -102,8 +102,7 @@ bool TentacleSObj::update() {
 				lastRotation = this->getPhysicsModel()->ref->getRot();
 				this->getPhysicsModel()->ref->rotate(qAngle);
 				this->setFlag(IS_HARMFUL, 1);
-				//modelAnimationState = T_SLAM;
-				modelAnimationState = T_IDLE;
+				modelAnimationState = T_SLAM;
 			}
 		}
 	}
