@@ -241,6 +241,11 @@ typedef struct Box {
 		return Box(x + pt.x, y + pt.y, z + pt.z,
 				   w,        h,        l);
 	}
+
+	Box operator- (const Box &bx) const {
+		return Box(x - bx.x, y - bx.y, z - bx.z,
+				   w - bx.w, h - bx.h, l - bx.l);
+	}
 } Vol_t;
 
 //Enumerations

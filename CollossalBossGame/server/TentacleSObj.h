@@ -40,6 +40,6 @@ private:
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 	Quat_t lastRotation;
-	Vec3f boxDims[3]; // stores initial dimmensions of the idle collision boxes
+	Box idleBoxes[3]; // stores initial idle collision boxes
 };
 
