@@ -87,8 +87,6 @@ bool TentacleSObj::update() {
 	//get the actual axis
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
-	bool reset = false;
-
 	if (modelAnimationState == T_IDLE)
 	{
 		// reset your state
@@ -105,11 +103,8 @@ bool TentacleSObj::update() {
 
 			tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
 			tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
-
-			reset = true; // todo cleanup this!
-
 		}
-		if(idleCounter < 15) {
+		else if(idleCounter < 15) {
 			changeProportionM.y+=7;
 			changePosM.y--;
 			changePosT.y++;
@@ -171,26 +166,21 @@ bool TentacleSObj::update() {
 			//tip.z = tip.z - 6;
 			//middle.l = middle.l + 2;
 		} 
-		/*pm->colBoxes[0] = base;
-		pm->colBoxes[1] = middle;
-		pm->colBoxes[2] = tip;*/
 	}
 	
-	if (!reset)
-	{
-		changePosT = axis.rotateToThisAxis(changePosT);
-		changeProportionT = axis.rotateToThisAxis(changeProportionT);
-		changePosM = axis.rotateToThisAxis(changePosM);
-		changeProportionM = axis.rotateToThisAxis(changeProportionM);
+	// Rotate the relative change according to where we're facing
+	changePosT = axis.rotateToThisAxis(changePosT);
+	changeProportionT = axis.rotateToThisAxis(changeProportionT);
+	changePosM = axis.rotateToThisAxis(changePosM);
+	changeProportionM = axis.rotateToThisAxis(changeProportionM);
 	
-		tip.setRelPos(changePosT);
-		tip.setRelSize(changeProportionT);
+	tip.setRelPos(changePosT);
+	tip.setRelSize(changeProportionT);
 
-		middle.setRelPos(changePosM);
-		middle.setRelSize(changeProportionM);
-	}
-
+	middle.setRelPos(changePosM);
+	middle.setRelSize(changeProportionM);
 	
+	// Set new collision boxes
 	pm->colBoxes[0] = base;
 	pm->colBoxes[1] = middle;
 	pm->colBoxes[2] = tip;
