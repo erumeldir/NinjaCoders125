@@ -227,7 +227,6 @@ void RenderEngine::renderThis(ClientObject *obj) {
 * Bryan
 */
 void RenderEngine::render() {
-	this->colBxPts->update(.33);
 	//Update the view matrix
 	direct3dDevice->SetTransform(D3DTS_VIEW, cam->getViewMatrix());
 	// clear the window to a deep blue
@@ -247,6 +246,9 @@ void RenderEngine::render() {
 	direct3dDevice->EndScene(); // ends the 3D scene
 
 	direct3dDevice->Present(0, 0, 0, 0); // displays the created frame
+
+	//Clear collision-box particles
+	this->colBxPts->update(.33);
 }
 
 // todo take time

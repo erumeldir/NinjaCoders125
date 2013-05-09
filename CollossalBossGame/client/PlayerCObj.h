@@ -3,6 +3,12 @@
 #include "ChargeEffect.h"
 #include "ClientObject.h"
 
+#define HMAP_TEST 0
+#if HMAP_TEST
+#include "HMap.h"
+#endif
+
+
 class PlayerCObj : public ClientObject
 {
 public:
@@ -26,5 +32,11 @@ private:
 	float cameraPitch;
 	Quat_t camRot;
 	ChargeEffect* chargingEffect;
+#if HMAP_TEST
+	///////////////////////////////////////////////////////////////
+	//TEST
+	vector<Point_t> hmapPts;
+	///////////////////////////////////////////////////////////////
+#endif
 };
 
