@@ -246,6 +246,30 @@ typedef struct Box {
 		return Box(x - bx.x, y - bx.y, z - bx.z,
 				   w - bx.w, h - bx.h, l - bx.l);
 	}
+
+	void setPos(const Vec3f &pos) {
+		x = pos.x; y = pos.y; z = pos.z;
+	}
+
+	void setRelPos(const Vec3f &pos) {
+		x += pos.x; y += pos.y; z += pos.z;
+	}
+
+	void setSize(const Vec3f &size) {
+		w = size.x; h = size.y; l = size.z;
+	}
+
+	void setRelSize(const Vec3f &size) {
+		w += size.x; h += size.y; l += size.z;
+	}
+
+	Vec3f getPos() {
+		return Vec3f(x, y, z);
+	}
+
+	Vec3f getSize() {
+		return Vec3f(w, h, l);
+	}
 } Vol_t;
 
 //Enumerations
