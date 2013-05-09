@@ -13,6 +13,7 @@ enum PacketTypes {
     OBJECT_MANAGER = 1,
 	GAMESTATE_MANAGER = 2,
 	RESET = 3,
+	CLIENT_READY = 4,
 	COMPLETE
 };
 

@@ -11,6 +11,7 @@ public:
 
 	void serverUpdate(char * buf);
 	void init();
+	void reset();
 	static ClientGameStateManager * get();
 
 	GameState gs;

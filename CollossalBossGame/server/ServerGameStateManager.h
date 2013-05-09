@@ -28,10 +28,9 @@ public:
 	void initializeGame();
 	void teardownGame();
 
+	GameState gs;
 private:
 	static ServerGameStateManager game; // Statics ftw.
-
-	GameState gs;
 
 };
 typedef ServerGameStateManager SGSM;

@@ -26,11 +26,11 @@ void GameState::deserialize(char * buf) {
 
 void GameState::playerconnect(int playerid) {
 	for(int i = 0; i < 4; i++) {
-		if(playersconnected[i] == playerid) {
+		if(playersconnected[i] == playerid+1) {
 			return;
 		}
 	}
-	playersconnected[totalPlayerCount] = playerid;
+	playersconnected[totalPlayerCount] = playerid+1;
 	totalPlayerCount++;
 }
 
@@ -40,8 +40,8 @@ void GameState::playerready(int playerid) {
 		return;
 	}
 	bool allready = true;
-	for(int i = 0; i < 4; i++) {
-		if(playersconnected[i] == playerid) {
+	for(int i = 0; i < totalPlayerCount; i++) {
+		if(playersconnected[i] == playerid+1) {
 			playersready[i] = true;
 		}
 		if(playersready[i] == false) {
@@ -59,8 +59,8 @@ void GameState::clientready(int playerid) {
 		return;
 	}
 	bool allready = true;
-	for(int i = 0; i < 4; i++) {
-		if(playersconnected[i] == playerid) {
+	for(int i = 0; i < totalPlayerCount; i++) {
+		if(playersconnected[i] == playerid+1) {
 			playersready[i] = true;
 		}
 		if(playersready[i] == false) {
@@ -74,7 +74,7 @@ void GameState::clientready(int playerid) {
 
 int GameState::getplayerlocation(int playerid) {
 	for(int i = 0; i < 4; i++) {
-		if(playersconnected[i] == playerid) {
+		if(playersconnected[i] == playerid+1) {
 			return i;
 		}
 	}

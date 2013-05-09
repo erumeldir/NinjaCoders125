@@ -216,6 +216,9 @@ void ServerNetworkManager::receiveFromClients() {
 				case GAMESTATE_MANAGER:
 					SGSM::get()->updateState(packet.packet_data);
 					break;
+				case CLIENT_READY:
+					SGSM::get()->gs.clientready(packet.object_id);
+					break;
                 default:
                     DC::get()->print("error in packet types\n");
                     break;

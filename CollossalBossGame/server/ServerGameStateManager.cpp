@@ -55,6 +55,9 @@ void ServerGameStateManager::event_player_death(int playerid) {
 
 void ServerGameStateManager::event_monster_death() {
 	gs.monsterDeathCount++;
+	if(gs.monsterDeathCount == gs.totalMonsterCount) {
+		gs.currentState = GAME_END;
+	}
 	assert((gs.monsterDeathCount <= gs.totalMonsterCount) && "Implementation Error");
 }
 
@@ -94,7 +97,11 @@ void ServerGameStateManager::updateState(char * buf) {
 		case GAME_SCENE_SELECT:
 			if(gd.left && (gs.getplayerlocation(gd.playerid) == 0)) { gs.sceneselection--; }
 			if(gd.right && (gs.getplayerlocation(gd.playerid) == 0)) { gs.sceneselection++; }
-			if(gd.start) { gs.sceneselection++; }
+ 			if(gd.start) { 
+				gs.currentState = GAME_LOADING; 
+				// Initialize the world depending on the current scene selection.
+				gameInit();
+			}
 			break;
 		case GAME_LOADING:
 			if(gd.clientready) { gs.clientready(gd.playerid); }
@@ -163,6 +170,9 @@ void ServerGameStateManager::gameLoop() {
 		case GAME_CONNECTING:
 		case GAME_SCENE_SELECT:
 			SNM::get()->update();
+			this->sendState();
+			SNM::get()->getSendBuffer();
+			SNM::get()->sendToAll(COMPLETE, 0);
 			break;
 		case GAME_LOADING:
 		case GAME_CLASS_SELECT:
@@ -172,6 +182,7 @@ void ServerGameStateManager::gameLoop() {
 			SNM::get()->update();
 			SOM::get()->update();
 			SOM::get()->sendState();
+			this->sendState();
 			SNM::get()->getSendBuffer();
 			SNM::get()->sendToAll(COMPLETE, 0);
 			break;

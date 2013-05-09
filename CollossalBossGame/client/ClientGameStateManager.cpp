@@ -1,4 +1,6 @@
+#include "ClientNetworkManager.h"
 #include "ClientGameStateManager.h"
+#include "ClientEngine.h"
 
 ClientGameStateManager ClientGameStateManager::game;
 
@@ -19,4 +21,10 @@ void ClientGameStateManager::init() {
 
 void ClientGameStateManager::serverUpdate(char * buf) {
 	gs.deserialize(buf);
+}
+
+void ClientGameStateManager::reset() {
+	// Shutdown and reset network manager
+	// clean Client Engine
+	// reinit Client Engine
 }

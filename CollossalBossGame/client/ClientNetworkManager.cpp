@@ -138,7 +138,9 @@ ClientNetworkManager::ClientNetworkManager(void) {
     setsockopt( ConnectSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 }
 
-ClientNetworkManager::~ClientNetworkManager(void) { }
+ClientNetworkManager::~ClientNetworkManager(void) {
+	closesocket(ConnectSocket);
+}
 
 bool ClientNetworkManager::isConnected()
 {
@@ -206,6 +208,7 @@ bool ClientNetworkManager::update()
 				break;
 			case RESET:
 				// RESET LOGIC. Like destroying everything and resetting.
+				ClientGameStateManager::get()->reset();
 				break;
 			case COMPLETE:
 				if(debugFlag) DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);

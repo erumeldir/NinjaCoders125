@@ -2,6 +2,7 @@
  * ClientEngine.cpp
  */
 #include "ClientNetworkManager.h"
+#include "ClientGameStateManager.h"
 #include "ClientEngine.h"
 #include "defs.h"
 #include "RenderEngine.h"
@@ -74,5 +75,10 @@ void ClientEngine::run() {
 		
 
 		//Sleep(10);
+
+		if(CGSM::get()->gs.currentState == GAME_LOADING) {
+			char a[4];
+			ClientNetworkManager::get()->sendData(CLIENT_READY, a, 4, COM::get()->player_id);
+		}
 	}
 }
