@@ -17,21 +17,43 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	this->modelNum = modelNum;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	pm = new PhysicsModel(pos, rot, 50*CM::get()->find_config_as_float("PLAYER_MASS"));
-	pm->addBox(bxVol);
-	//this does not take rotation into account. Hopefully that doesn't matter?
+
+	/////////////// Collision Boxes /////////////////
+
+	// This only works for the north and south walls
+	// but adding more walls should be pretty easy =D
+	// just modify this axis (add more if/else)
+	Vec3f axis;
 	if (rot.x == 0 && rot.y == 0 && rot.z == 0)
 	{
-		pm->updateBox(0, *(	new Box(-10, -10,	-50,  30, 30,	130)));
-		pm->addBox(*(		new Box(-10,  0,	-180, 30, 60,	150)));
-		pm->addBox(*(		new Box(-10, -10,	-230, 20, 20,	50)));
-	} else {
-		pm->updateBox(0, *(	new Box(-10, 10,	50,   30, 30,	130)));
-		pm->addBox(*(		new Box(-10,  0,	180,  30, 60,	150)));
-		pm->addBox(*(		new Box(-10, -10,	230, 20, 20,	50)));
-
+		axis = Vec3f(0, 0, -1);
 	}
-	//this->updatableBoxIndex = pm->addBox(updatableBox);
+	else if (rot.x == 1 && rot.y == 0 && rot.z == 0)
+	{
+		axis = Vec3f(0, 0, 1);
+	}
+
+	boxDims[0] = CM::get()->find_config_as_point("DIM_MONSTER1"); 
+	boxDims[1] = CM::get()->find_config_as_point("DIM_MONSTER2");
+	boxDims[2] = CM::get()->find_config_as_point("DIM_MONSTER3");
+
+	// Add your first box
+	Vec3f initPos = CM::get()->find_config_as_point("INIT_TENTACLE_POS");
+
+	Box boxes[3];
+	boxes[0] = Box(initPos.x, initPos.y, initPos.z, boxDims[0].x, boxDims[0].y, boxDims[0].z);
+	pm->addBox(boxes[0]);
 	
+	// Now add the rest!
+	for (int i=1; i<3; i++)
+	{
+		boxes[i] = Box(	boxes[i-1].x + (axis.x*boxes[i-1].w), 
+						boxes[i-1].y + (axis.y*boxes[i-1].h), 
+						boxes[i-1].z + (axis.z*boxes[i-1].l),
+						boxDims[i].x, boxDims[i].y, boxDims[i].z);
+		assert(pm->addBox(boxes[i]) == i && "Your physics model is out of sync with the rest of the world...");
+	}
+
 	this->setFlag(IS_STATIC, 1);
 	modelAnimationState = T_IDLE;
 	
@@ -39,8 +61,6 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	std::uniform_int_distribution<int> distribution(1,50);
 	attackCounter = distribution(generator);
 	
-	//srand((uint)time(NULL)); // initialize our random number generator
-
 	// Configuration options
 	attackBuffer = CM::get()->find_config_as_int("TENTACLE_ATTACK_BUF");
 	attackFrames = CM::get()->find_config_as_int("TENTACLE_ATTACK_FRAMES");
@@ -54,16 +74,9 @@ TentacleSObj::~TentacleSObj(void)
 }
 
 bool TentacleSObj::update() {
-	//changing collision boxes
-	//updatableBox.y = -updatableBox.y;
-	//pm->updateBox(this->updatableBoxIndex,this->updatableBox);
-
 	attackCounter++;
 
-	// this emulates an attack
-
 	// start attacking!
-	
 	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
 		if (this->getFlag(IS_HARMFUL))
 		{
@@ -96,19 +109,49 @@ bool TentacleSObj::update() {
 	Vec3f changePosT = Vec3f(), changeProportionT = Vec3f();
 	Vec3f changePosM = Vec3f(), changeProportionM = Vec3f();
 
+
 	if (modelAnimationState == T_IDLE)
 	{
-		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
-			int i;
-			/*middle.h = middle.h + 4;
-			middle.y = middle.y + 4;*/
-		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE){
-			/*middle.h = middle.h - 4;
-			middle.y = middle.y - 4;*/
+		static int i = 0;
+		// reset your state
+		if (i==0) {
+			middle.w = boxDims[1].x;
+			middle.h = boxDims[1].y;
+			middle.l = boxDims[1].z;
+			middle.y = -45;
+
+			tip.w = boxDims[2].x;
+			tip.h = boxDims[2].y;
+			tip.l = boxDims[2].z;
+			tip.y = -15;
+			/*changeProportionM.y=30;
+			changePosM.y=-45;
+			changePosT.y=-15;*/
+		}
+		if(i < 15) {
+			/*middle.h+=10;
+			  middle.y--;
+			  tip.y++;*/
+			changeProportionM.y+=7;
+			changePosM.y--;
+			changePosT.y++;
+		}
+		else {
+			/*middle.h-=10;
+			  middle.y++;
+			  tip.y--;*/
+			changeProportionM.y-=7;
+			changePosM.y++;
+			changePosT.y--;
 		}
 
-	} else {
-		
+		i= (i + 1) % 31;
+
+	} else { // SLAM
+		//Box base = this->getPhysicsModel()->colBoxes.at(0);
+		//Box middle = this->getPhysicsModel()->colBoxes.at(2);
+		//Box tip = this->getPhysicsModel()->colBoxes.at(4);
+		Vec3f pos;
 		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
 			//changing the tip
 			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/4)
@@ -156,6 +199,9 @@ bool TentacleSObj::update() {
 			//tip.z = tip.z - 6;
 			//middle.l = middle.l + 2;
 		} 
+		/*pm->colBoxes[0] = base;
+		pm->colBoxes[1] = middle;
+		pm->colBoxes[2] = tip;*/
 	}
 	
 	//get the actual axis
@@ -182,10 +228,15 @@ bool TentacleSObj::update() {
 	middle.h += changeProportionM.y;
 	middle.l += changeProportionM.z;
 
-	this->getPhysicsModel()->updateBox(0, base);
-	this->getPhysicsModel()->updateBox(1, middle);
-	this->getPhysicsModel()->updateBox(2, tip);
+	//this->getPhysicsModel()->updateBox(0, base);
+	//this->getPhysicsModel()->updateBox(1, middle);
+	//this->getPhysicsModel()->updateBox(2, tip);
 	
+
+	pm->colBoxes[0] = base;
+	pm->colBoxes[1] = middle;
+	pm->colBoxes[2] = tip;
+
 	if (health <= 0) {
 		health = 0;
 		overlord->removeTentacle(this);
@@ -204,22 +255,18 @@ bool TentacleSObj::update() {
 int TentacleSObj::serialize(char * buf) {
 	TentacleState *state = (TentacleState*)buf;
 	state->modelNum = this->modelNum;
-	//state->health = health;
 	state->animationState = this->modelAnimationState;
 
 	if (SOM::get()->collisionMode)
 	{
 		CollisionState *collState = (CollisionState*)(buf + sizeof(TentacleState));
-
 		vector<Box> objBoxes = pm->colBoxes;
-
 		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
-
+		
 		for (int i=0; i<collState->totalBoxes; i++)
 		{
 			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
 		}
-
 		return pm->ref->serialize(buf + sizeof(TentacleState) + sizeof(CollisionState)) + sizeof(TentacleState) + sizeof(CollisionState);
 	}
 	else
@@ -260,13 +307,7 @@ float TentacleSObj::angleToNearestPlayer()
 	{
 		// ignoring z... this is with respect to the y axis (since the tentacle smashes DOWN)
 		angle = atan2(difference.x, -1*difference.y);
-		//DC::get()->print("CAN I SMASH A PLAYER?.....YES!!! angle is: %f          \r", angle*180/M_PI);
 	}
-	/*else
-	{
-		DC::get()->print("CAN I SMASH A PLAYER?.....NO....                       \r");
-	}*/
-
 	return angle;
 }
 
@@ -284,11 +325,7 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 	if(!s.compare("class PlayerSObj")) 
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
-		//if(player->attacking && player->getHealth() > 0) 
-		//{
-			health-= player->damage;
-		//	player->attacking = false;
-		//}
+		health-= player->damage;
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
 	}

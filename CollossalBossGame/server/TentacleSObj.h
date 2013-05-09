@@ -30,7 +30,6 @@ private:
 	PhysicsModel *pm;
 	Model modelNum;
 	MonsterSObj* overlord;
-	uint updatableBoxIndex;
 	Box updatableBox;
 	int health;
 	int attackCounter; // number of frames in between when the monster is harmful (emulates an 'attack')
@@ -41,5 +40,6 @@ private:
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 	Quat_t lastRotation;
+	Vec3f boxDims[3]; // stores initial dimmensions of the idle collision boxes
 };
 
