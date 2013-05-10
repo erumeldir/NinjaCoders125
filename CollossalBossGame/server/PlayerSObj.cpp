@@ -6,7 +6,7 @@
 #include "defs.h"
 #include "PhysicsEngine.h"
 
-PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
+PlayerSObj::PlayerSObj(uint id, uint clientId, CharacterClass cc) : ServerObject(id) {
 	// Save parameters here
 	this->clientId = clientId;
 	DC::get()->print("Player %d with obj id %d created\n", clientId, id);
@@ -14,6 +14,7 @@ PlayerSObj::PlayerSObj(uint id, uint clientId) : ServerObject(id) {
 	// Set all your pointers to NULL here, so initialize()
 	// knows if it should create them or not
 	pm = NULL;
+	charclass = cc;
 
 	// Other re-initializations (things that don't depend on parameters, like config)
 	this->initialize();
@@ -170,10 +171,7 @@ bool PlayerSObj::update() {
 			// If we accumulated some charge, fire!
 			if (charge > 0.f)
 			{
-				// Vec3f up = (PE::get()->getGravVec() * -1);
-				//pm->applyForce(up * (chargeForce * charge));
-				pm->applyForce(rotate(Vec3f(0, chargeForce * charge, chargeForce * charge), qRot));
-				charging = true;
+				releaseCharge();
 			}
 
 			charge = 0.f;
@@ -266,7 +264,20 @@ float PlayerSObj::controlAngles(float des, float cur) {
 int PlayerSObj::serialize(char * buf) {
 	PlayerState *state = (PlayerState*)buf;
 	// This helps us distinguish between what model goes to what player
-	state->modelNum = (Model)(MDL_PLAYER_1 + this->clientId);
+	switch(this->charclass) {
+		case CHAR_CLASS_CYBORG:
+			state->modelNum = (Model)(MDL_PLAYER_1);
+			break;
+		case CHAR_CLASS_SHOOTER:
+			state->modelNum = (Model)(MDL_PLAYER_2);
+			break;
+		case CHAR_CLASS_SCIENTIST:
+			state->modelNum = (Model)(MDL_PLAYER_3);
+			break;
+		case CHAR_CLASS_MECHANIC:
+			state->modelNum = (Model)(MDL_PLAYER_4);
+			break;
+	}
 	state->health = health;
 	state->ready = ready;
 	state->charge = charge;

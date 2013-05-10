@@ -2,6 +2,7 @@
 #include "ServerObjectManager.h"
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
+#include "PlayerSObj.h"
 
 ServerObjectManager *ServerObjectManager::som;
 
@@ -124,7 +125,10 @@ void ServerObjectManager::sendState()
 			//Fill out the header
 			CreateHeader *h = (CreateHeader*)buf;
 			h->type = it->second->getType();
-
+			if(it->second->getType() == OBJ_PLAYER) {
+				PlayerSObj * pso = (PlayerSObj *)(it->second);
+				h->cc = pso->charclass;
+			}
 			//Serialize the object
 			datalen = it->second->serialize(buf + sizeof(CreateHeader)) + sizeof(CreateHeader);
 			totalData += datalen;

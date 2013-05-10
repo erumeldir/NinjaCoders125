@@ -109,7 +109,7 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);
 	}
 
-	if(!s.compare("class PlayerSObj")) 
+	if(obj->getType() == OBJ_PLAYER) 
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
 		//if(player->attacking && player->getHealth() > 0) 

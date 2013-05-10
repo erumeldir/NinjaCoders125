@@ -9,7 +9,7 @@ public:
 	PlayerCObj(uint id, char *data);
 	virtual ~PlayerCObj(void);
 
-	void showStatus();
+	virtual void showStatus();
 
 	virtual bool update();
 

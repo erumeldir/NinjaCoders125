@@ -88,6 +88,7 @@
     <ClCompile Include="ClientObject.cpp" />
     <ClCompile Include="ClientObjectManager.cpp" />
     <ClCompile Include="CollisionBoxPoints.cpp" />
+    <ClCompile Include="CyborgCObj.cpp" />
     <ClCompile Include="HeadsUpDisplay.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MonsterCObj.cpp" />
@@ -95,6 +96,7 @@
     <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
+    <ClCompile Include="ShooterCObj.cpp" />
     <ClCompile Include="Snow.cpp" />
     <ClCompile Include="TentacleCObj.cpp" />
     <ClCompile Include="TestObject.cpp" />
@@ -108,6 +110,7 @@
     <ClInclude Include="ClientObject.h" />
     <ClInclude Include="ClientObjectManager.h" />
     <ClInclude Include="CollisionBoxPoints.h" />
+    <ClInclude Include="CyborgCObj.h" />
     <ClInclude Include="HeadsUpDisplay.h" />
     <ClInclude Include="MonsterCObj.h" />
     <ClInclude Include="ParticleSystem.h" />
@@ -115,6 +118,7 @@
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ShooterCObj.h" />
     <ClInclude Include="Snow.h" />
     <ClInclude Include="TentacleCObj.h" />
     <ClInclude Include="TestObject.h" />
