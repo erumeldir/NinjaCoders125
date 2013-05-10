@@ -21,7 +21,7 @@ PhysicsEngine::PhysicsEngine(void)
 	xNeg = yNeg = zNeg = 0;
 	gravVec = Vec3f(0, -1, 0);
 	gravDir = DOWN;
-//	this->setGravDir(NORTH);
+	this->setGravDir(DOWN);
 }
 
 

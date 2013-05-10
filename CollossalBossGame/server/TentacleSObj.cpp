@@ -17,29 +17,24 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	this->modelNum = modelNum;
 	this->health = CM::get()->find_config_as_int("INIT_HEALTH");
 	pm = new PhysicsModel(pos, rot, 50*CM::get()->find_config_as_float("PLAYER_MASS"));
-	pm->addBox(bxVol);
-	//this does not take rotation into account. Hopefully that doesn't matter?
-	if (rot.x == 0 && rot.y == 0 && rot.z == 0)
-	{
-		pm->updateBox(0, *(	new Box(-10, -10,	-50,  30, 30,	130)));
-		pm->addBox(*(		new Box(-10,  0,	-180, 30, 60,	150)));
-		pm->addBox(*(		new Box(-10, -10,	-230, 20, 20,	50)));
-	} else {
-		pm->updateBox(0, *(	new Box(-10, 10,	50,   30, 30,	130)));
-		pm->addBox(*(		new Box(-10,  0,	180,  30, 60,	150)));
-		pm->addBox(*(		new Box(-10, -10,	230, 20, 20,	50)));
 
+	/////////////// Collision Boxes /////////////////
+	idleBoxes[0] = CM::get()->find_config_as_box("BOX_TENT_BASE"); 
+	idleBoxes[1] = CM::get()->find_config_as_box("BOX_TENT_MID");
+	idleBoxes[2] = CM::get()->find_config_as_box("BOX_TENT_TIP");
+
+	for (int i=0; i<3; i++) {
+		assert(pm->addBox(idleBoxes[i]) == i && "Your physics model is out of sync with the rest of the world...");
 	}
-	//this->updatableBoxIndex = pm->addBox(updatableBox);
-	
+
 	this->setFlag(IS_STATIC, 1);
-	modelAnimationState = T_IDLE;
+	modelAnimationState = T_IDLE; // the boxes will be rotated appropriately within the idle part of update()
 	
 	std::default_random_engine generator;
 	std::uniform_int_distribution<int> distribution(1,50);
 	attackCounter = distribution(generator);
 	
-	//srand((uint)time(NULL)); // initialize our random number generator
+	idleCounter = 0;
 
 	// Configuration options
 	attackBuffer = CM::get()->find_config_as_int("TENTACLE_ATTACK_BUF");
@@ -54,16 +49,9 @@ TentacleSObj::~TentacleSObj(void)
 }
 
 bool TentacleSObj::update() {
-	//changing collision boxes
-	//updatableBox.y = -updatableBox.y;
-	//pm->updateBox(this->updatableBoxIndex,this->updatableBox);
-
 	attackCounter++;
 
-	// this emulates an attack
-
 	// start attacking!
-	
 	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
 		if (this->getFlag(IS_HARMFUL))
 		{
@@ -96,19 +84,41 @@ bool TentacleSObj::update() {
 	Vec3f changePosT = Vec3f(), changeProportionT = Vec3f();
 	Vec3f changePosM = Vec3f(), changeProportionM = Vec3f();
 
+	//get the actual axis
+	Vec4f axis = this->getPhysicsModel()->ref->getRot();
+
 	if (modelAnimationState == T_IDLE)
 	{
-		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
-			int i;
-			/*middle.h = middle.h + 4;
-			middle.y = middle.y + 4;*/
-		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE){
-			/*middle.h = middle.h - 4;
-			middle.y = middle.y - 4;*/
+		// reset your state
+		if (idleCounter == 0) {
+			Box origBase = idleBoxes[0];
+			Box origMiddle = idleBoxes[1];
+			Box origTip = idleBoxes[2];
+
+			base.setPos(axis.rotateToThisAxis(origBase.getPos()));
+			base.setSize(axis.rotateToThisAxis(origBase.getSize()));
+
+			middle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
+			middle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
+
+			tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
+			tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
+		}
+		else if(idleCounter < 15) {
+			changeProportionM.y+=7;
+			changePosM.y--;
+			changePosT.y++;
+		}
+		else {
+			changeProportionM.y-=7;
+			changePosM.y++;
+			changePosT.y--;
 		}
 
-	} else {
-		
+		idleCounter = (idleCounter + 1) % 31;
+
+	} else { // SLAM
+		Vec3f pos;
 		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
 			//changing the tip
 			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/4)
@@ -158,34 +168,23 @@ bool TentacleSObj::update() {
 		} 
 	}
 	
-	//get the actual axis
-	Vec4f axis = this->getPhysicsModel()->ref->getRot();
-
+	// Rotate the relative change according to where we're facing
 	changePosT = axis.rotateToThisAxis(changePosT);
 	changeProportionT = axis.rotateToThisAxis(changeProportionT);
 	changePosM = axis.rotateToThisAxis(changePosM);
 	changeProportionM = axis.rotateToThisAxis(changeProportionM);
 	
-	tip.x += changePosT.x;
-	tip.y += changePosT.y;
-	tip.z += changePosT.z;
+	tip.setRelPos(changePosT);
+	tip.setRelSize(changeProportionT);
 
-	tip.w += changeProportionT.x;
-	tip.h += changeProportionT.y;
-	tip.l += changeProportionT.z;
-
-	middle.x += changePosM.x;
-	middle.y += changePosM.y;
-	middle.z += changePosM.z;
-
-	middle.w += changeProportionM.x;
-	middle.h += changeProportionM.y;
-	middle.l += changeProportionM.z;
-
-	this->getPhysicsModel()->updateBox(0, base);
-	this->getPhysicsModel()->updateBox(1, middle);
-	this->getPhysicsModel()->updateBox(2, tip);
+	middle.setRelPos(changePosM);
+	middle.setRelSize(changeProportionM);
 	
+	// Set new collision boxes
+	pm->colBoxes[0] = base;
+	pm->colBoxes[1] = middle;
+	pm->colBoxes[2] = tip;
+
 	if (health <= 0) {
 		health = 0;
 		overlord->removeTentacle(this);
@@ -204,22 +203,18 @@ bool TentacleSObj::update() {
 int TentacleSObj::serialize(char * buf) {
 	TentacleState *state = (TentacleState*)buf;
 	state->modelNum = this->modelNum;
-	//state->health = health;
 	state->animationState = this->modelAnimationState;
 
 	if (SOM::get()->collisionMode)
 	{
 		CollisionState *collState = (CollisionState*)(buf + sizeof(TentacleState));
-
 		vector<Box> objBoxes = pm->colBoxes;
-
 		collState->totalBoxes = min(objBoxes.size(), maxBoxes);
-
+		
 		for (int i=0; i<collState->totalBoxes; i++)
 		{
 			collState->boxes[i] = objBoxes[i] + pm->ref->getPos(); // copying applyPhysics
 		}
-
 		return pm->ref->serialize(buf + sizeof(TentacleState) + sizeof(CollisionState)) + sizeof(TentacleState) + sizeof(CollisionState);
 	}
 	else
@@ -260,13 +255,7 @@ float TentacleSObj::angleToNearestPlayer()
 	{
 		// ignoring z... this is with respect to the y axis (since the tentacle smashes DOWN)
 		angle = atan2(difference.x, -1*difference.y);
-		//DC::get()->print("CAN I SMASH A PLAYER?.....YES!!! angle is: %f          \r", angle*180/M_PI);
 	}
-	/*else
-	{
-		DC::get()->print("CAN I SMASH A PLAYER?.....NO....                       \r");
-	}*/
-
 	return angle;
 }
 
@@ -284,11 +273,7 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 	if(!s.compare("class PlayerSObj")) 
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
-		//if(player->attacking && player->getHealth() > 0) 
-		//{
-			health-= player->damage;
-		//	player->attacking = false;
-		//}
+		health-= player->damage;
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
 	}

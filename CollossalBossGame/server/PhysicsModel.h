@@ -36,15 +36,6 @@ struct PhysicsModel
 	}
 	
 	int addBox(Box b) { colBoxes.push_back(b); return colBoxes.size() - 1; }
-	bool updateBox(uint i, Box b) 
-	{ 
-		if(i < colBoxes.size())
-		{
-			colBoxes[i] = b; 
-			return true;
-		}
-		return false;
-	}
 
 	Frame *ref;	//Frame of Reference/skeleton; also root position and collision info
 	Vec3f vel;			//Current velocity
