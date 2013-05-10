@@ -6,7 +6,7 @@ CollisionBoxPoints::CollisionBoxPoints(void) : ParticleSystem()
 	vbSize = 2048;
 	vbOffset = 0;
 	vbBatchSize = 512;
-	pointSize = 2.5f;
+	pointSize = 3.0f;
 }
 
 

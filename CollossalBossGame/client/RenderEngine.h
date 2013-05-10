@@ -62,6 +62,7 @@ public:
 	
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
+
 	bool loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat);
 
 	bool debugFlag;

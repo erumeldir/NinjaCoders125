@@ -12,8 +12,10 @@ public:
 	virtual RenderModel* getRenderModel() { return rm; }
 
 	virtual void deserialize(char* newState);
+	virtual RenderModel * getBox();
 
 private:
+	RenderModel * box;
 	RenderModel *rm;
 };
 

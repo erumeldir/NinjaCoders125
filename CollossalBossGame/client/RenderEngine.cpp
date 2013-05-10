@@ -49,7 +49,7 @@ void RenderEngine::startWindow()
 	windowHandle = CreateWindowEx(
 		NULL,
 		"WindowClass",
-		"Our First Direct3D Program",
+		"Seek, Scavenge, Slay",
 		WS_EX_TOPMOST | WS_POPUP,
 		CW_USEDEFAULT, CW_USEDEFAULT, //0, 0,
 		SCREEN_WIDTH, SCREEN_HEIGHT,
@@ -96,8 +96,8 @@ void RenderEngine::renderInitalization()
 		D3DDEVTYPE_HAL,
 		windowHandle,
 //		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-		D3DCREATE_MIXED_VERTEXPROCESSING,
-//		D3DCREATE_HARDWARE_VERTEXPROCESSING,
+//		D3DCREATE_MIXED_VERTEXPROCESSING,
+		D3DCREATE_HARDWARE_VERTEXPROCESSING,
 		&deviceInfo,
 		&direct3dDevice);
 
@@ -213,10 +213,14 @@ void RenderEngine::drawHUD() {
 * Bryan
 */
 void RenderEngine::sceneDrawing() {
+	//Telling the world to advance any animations we have
 	for(list<ClientObject *>::iterator it = lsObjs.begin();
 			it != lsObjs.end();
 			++it) {
-		(*it)->getRenderModel()->render();
+		if ((*it)->getRenderModel() != NULL)
+			(*it)->getRenderModel()->render();
+		/*if ((*it)->getBox() != NULL)
+			(*it)->getBox()->render();*/
 	}
 	lsObjs.clear();
 }
