@@ -95,6 +95,7 @@
     <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
+    <ClCompile Include="ShootingEffect.cpp" />
     <ClCompile Include="Snow.cpp" />
     <ClCompile Include="TentacleCObj.cpp" />
     <ClCompile Include="TestObject.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ShootingEffect.h" />
     <ClInclude Include="Snow.h" />
     <ClInclude Include="TentacleCObj.h" />
     <ClInclude Include="TestObject.h" />
