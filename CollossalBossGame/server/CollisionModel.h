@@ -42,5 +42,5 @@ private:
 	bool bCreatedHMap;
 };
 
-bool aabbOnAabbCollision(const Box &bx1, const Box &bx2);
-bool aabbOnHMapCollision(const Box &bx1, const Point_t &hmapCenter, const HMapModel &hmap);
+bool areColliding(const Box &bx1, const Box &bx2);
+bool areColliding(const Box &bx1, const Point_t &hmapCenter, const HMapModel &hmap);
