@@ -13,8 +13,11 @@ BulletCObj::BulletCObj(uint id, char *serializedData) :
 
 	ObjectState *state = (ObjectState*)serializedData;
 
-	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
+	// todo send -1
+	rm = new RenderModel(Point_t(),Quat_t(), (Model)-1);
 	deserialize(serializedData);
+	pewPew = new ShootingEffect();
+	RE::get()->addParticleEffect(pewPew);
 }
 
 
@@ -22,9 +25,12 @@ BulletCObj::~BulletCObj(void)
 {
 	// delete xctrl;
 	delete rm;
+	RE::get()->removeParticleEffect(pewPew);
 }
 
 bool BulletCObj::update() {
+	pewPew->setPosition(rm->getFrameOfRef()->getPos());
+	pewPew->update(.33);
 	return false;
 }
 

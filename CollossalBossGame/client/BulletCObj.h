@@ -2,6 +2,7 @@
 
 #include "ClientObject.h"
 #include "Action.h"
+#include "ShootingEffect.h"
 
 class BulletCObj : public ClientObject
 {
@@ -17,5 +18,6 @@ public:
 
 private:
 	RenderModel *rm;
+	ShootingEffect* pewPew;
 };
 

@@ -49,9 +49,10 @@ void buildRoom() {
 	som->add(south);
 }
 
-
 void gameInit() {
 	ServerObjectManager *som = SOM::get();
+	
+	float xBase = 0, yBase = 10, zBase = -300;
 
 	buildRoom();
 								
@@ -59,8 +60,8 @@ void gameInit() {
 	WorldSObj *wobj = new WorldSObj(som->genId());
 	som->add(wobj);
 
-	// todo config numparts
-	MonsterSObj* monster = new MonsterSObj(som->genId(), 2);
+	//MonsterSObj* monster = new MonsterSObj(som->genId(), 2);
+	MonsterSObj* monster = new MonsterSObj(som->genId(), 4); // 4
 	som->add(monster);
 
 	Point_t pos = Point_t(0, 10, 15);
@@ -68,3 +69,4 @@ void gameInit() {
 	BulletSObj * bul = new BulletSObj(som->genId(), MDL_TEST_BOX, pos, force, 1);
 	som->add(bul);
 }
+

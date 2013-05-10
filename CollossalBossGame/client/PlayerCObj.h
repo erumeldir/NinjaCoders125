@@ -16,10 +16,11 @@ public:
 	virtual RenderModel* getRenderModel() { return rm; }
 
 	virtual void deserialize(char* newState);
-	
+
 	int ready;
 
 private:
+	RenderModel * box;
 	int health;
 	float charge;
 	RenderModel *rm;

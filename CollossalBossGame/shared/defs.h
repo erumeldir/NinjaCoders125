@@ -131,7 +131,7 @@ typedef struct Vec3f {
 		y /= mag;
 		z /= mag;
 	}
-} Point_t;	//, Rot_t;
+} Point_t, Rot_t;
 
 typedef struct Vec4f {
 	//   (0, 1, 2, 3)
@@ -177,6 +177,11 @@ typedef struct Vec4f {
 		return res;
 	}
 
+	Vec3f extractAxis() {
+		float halfAngle = acos(this->w);
+		return Vec3f(this->x / halfAngle, this->y / halfAngle, this->z / halfAngle);
+	}
+
 	inline void normalize() {
 		float mag = sqrt(x * x + y * y + z * z + w * w);
 		x /= mag;
@@ -184,6 +189,15 @@ typedef struct Vec4f {
 		z /= mag;
 		w /= mag;
 	}
+
+	
+	/* Given a vector of the change we want to make,
+	 *  and the actual axis we are currently on,
+	 *  make the appropriate change in this vector.
+	 *
+	 * Author: Bryan
+	 */
+	Vec3f rotateToThisAxis(Vec3f change);
 } Quat_t;
 
 Quat_t inverse(const Quat_t &q);
@@ -196,6 +210,14 @@ Vec3f rotateRight(const Quat_t &q);
 Vec3f rotateFwd(const Quat_t &q);
 void cross(Vec3f *res, const Vec3f &v1, const Vec3f &v2);
 void slerp(Quat_t *res, const Quat_t &start, const Quat_t &end, float t);
+
+/*
+ * For communicating it's state across the server
+ */
+struct CollisionBoxState {
+	Vec3f position;
+	Vec3f dimensions;
+};
 
 //Axis-aligned bounding box
 typedef struct Box {
@@ -218,6 +240,35 @@ typedef struct Box {
 	Box operator+ (const Vec3f &pt) const {
 		return Box(x + pt.x, y + pt.y, z + pt.z,
 				   w,        h,        l);
+	}
+
+	Box operator- (const Box &bx) const {
+		return Box(x - bx.x, y - bx.y, z - bx.z,
+				   w - bx.w, h - bx.h, l - bx.l);
+	}
+
+	void setPos(const Vec3f &pos) {
+		x = pos.x; y = pos.y; z = pos.z;
+	}
+
+	void setRelPos(const Vec3f &pos) {
+		x += pos.x; y += pos.y; z += pos.z;
+	}
+
+	void setSize(const Vec3f &size) {
+		w = size.x; h = size.y; l = size.z;
+	}
+
+	void setRelSize(const Vec3f &size) {
+		w += size.x; h += size.y; l += size.z;
+	}
+
+	Vec3f getPos() {
+		return Vec3f(x, y, z);
+	}
+
+	Vec3f getSize() {
+		return Vec3f(w, h, l);
 	}
 } Vol_t;
 

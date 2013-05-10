@@ -173,6 +173,13 @@ struct MonsterState {
  */
 struct TentacleState {
 	Model modelNum;
+	int animationState;
+};
+
+enum TentacleActionState {
+	T_IDLE,
+	T_SLAM,
+	NUM_T
 	//int health;
 };
 

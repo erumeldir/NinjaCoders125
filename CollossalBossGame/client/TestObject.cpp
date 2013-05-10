@@ -14,7 +14,7 @@ TestObject::TestObject(uint id, char *serializedData) :
 
 	ObjectState *state = (ObjectState*)serializedData;
 
-	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
+	rm = new RenderModel(Point_t(), Quat_t(), state->modelNum);
 	deserialize(serializedData);
 }
 
@@ -48,4 +48,8 @@ void TestObject::deserialize(char* newState) {
 	{
 		rm->getFrameOfRef()->deserialize(newState + sizeof(ObjectState));
 	}
+}
+
+RenderModel * TestObject::getBox(){
+	return NULL;
 }

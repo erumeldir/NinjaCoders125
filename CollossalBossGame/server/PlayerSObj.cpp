@@ -20,6 +20,7 @@ PlayerSObj::PlayerSObj(uint id, uint clientId, CharacterClass cc) : ServerObject
 	this->initialize();
 }
 
+
 void PlayerSObj::initialize() {
 	// Configuration options
 	jumpDist = CM::get()->find_config_as_float("JUMP_DIST");

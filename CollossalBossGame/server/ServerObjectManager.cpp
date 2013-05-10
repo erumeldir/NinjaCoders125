@@ -105,6 +105,18 @@ void ServerObjectManager::update() {
 	lsObjsAddQueue.clear();
 }
 
+/*
+ * Populates the vector with all client objects of ObjectType type.
+ * Author: Franklin
+ */
+void ServerObjectManager::findObjects(ObjectType type, vector<ServerObject *> * l) {
+	for(map<uint, ServerObject *>::iterator it = mObjs.begin(); it != mObjs.end(); ++it) {
+		if (it->second->getType() == type) {
+			l->push_back(it->second);
+		}
+	}
+}
+
 /**
  * Sends the object states to the clients.
  * Author: Haro
