@@ -7,6 +7,7 @@
 #include "PlayerCObj.h"
 #include "CyborgCObj.h"
 #include "ShooterCObj.h"
+#include "BulletCObj.h"
 #include "MonsterCObj.h"
 #include "TentacleCObj.h"
 
@@ -132,6 +133,9 @@ void ClientObjectManager::create(uint id, char *data) {
 				break;
 		}
 		//obj = new PlayerCObj(id, data + sizeof(CreateHeader));
+		break;
+	case OBJ_BULLET:
+		obj = new BulletCObj(id, data + sizeof(CreateHeader));
 		break;
 	case OBJ_MONSTER:
 		obj = new MonsterCObj(id, data + sizeof(CreateHeader));

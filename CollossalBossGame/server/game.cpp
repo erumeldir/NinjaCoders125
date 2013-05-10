@@ -10,6 +10,7 @@
 //Objects we can build
 #include "TestSObj.h"
 #include "WallSObj.h"
+#include "BulletSObj.h"
 #include "MonsterSObj.h"
 #include "PhysicsEngine.h"
 #include "WorldSObj.h"
@@ -61,4 +62,9 @@ void gameInit() {
 	// todo config numparts
 	MonsterSObj* monster = new MonsterSObj(som->genId(), 2);
 	som->add(monster);
+
+	Point_t pos = Point_t(0, 10, 15);
+	Vec3f force = Vec3f(0, 0, 0);
+	BulletSObj * bul = new BulletSObj(som->genId(), MDL_TEST_BOX, pos, force, 1);
+	som->add(bul);
 }

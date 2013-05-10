@@ -3,19 +3,22 @@
 #include "defs.h"
 #include <math.h>
 
-BulletSObj::BulletSObj(uint id, Model modelNum, Point_t pos, Vec3f initialForce) : ServerObject(id)
+BulletSObj::BulletSObj(uint id, Model modelNum, Point_t pos, Vec3f initialForce, int dmg) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new Bullet %d ", id);
 	Box bxVol;
 	Quat_t rot = Quat_t();
-	bxVol = Box(pos.x, pos.y, pos.z, 1, 1, 1);
+	bxVol = Box(-5, -5, -5, 10, 10, 10);
 	rot = Quat_t();
 
-	pm = new PhysicsModel(pos, rot, 500);
+	pm = new PhysicsModel(pos, rot, 50);
 	pm->addBox(bxVol);
+	pm->applyForce(initialForce);
+
 	this->modelNum = modelNum;
 	t = 0;
 	health = 5;
+	this->damage = dmg;
 }
 
 
@@ -28,7 +31,12 @@ bool BulletSObj::update() {
 	// Apply Force of Gravity on every time step - or not, since we wanted an arc-ing shot
 	// return true when it collides with something?
 	// That'll wait for onCollision, I suppose.
-	return this->health;
+	if(this->health > 0) {
+		return false;
+	} else {
+		return true;
+		//return false;
+	}
 }
 
 int BulletSObj::serialize(char * buf) {
@@ -59,8 +67,11 @@ int BulletSObj::serialize(char * buf) {
 }
 
 void BulletSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
-	if(obj->getType() == OBJ_TENTACLE
-		|| obj->getType() == OBJ_GENERAL) {
+	if(obj->getType() == OBJ_GENERAL) {
 		this->health = 0;
+	} else {
+ 		if(obj->getType() == OBJ_TENTACLE) {
+			this->health = 0;
+		}
 	}
 }
