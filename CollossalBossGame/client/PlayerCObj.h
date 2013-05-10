@@ -1,7 +1,6 @@
 #pragma once
 #include "RenderModel.h"
 #include "ChargeEffect.h"
-#include "ShootingEffect.h"
 #include "ClientObject.h"
 
 class PlayerCObj : public ClientObject
@@ -28,6 +27,5 @@ private:
 	float cameraPitch;
 	Quat_t camRot;
 	ChargeEffect* chargingEffect;
-	ShootingEffect* shootingEffect;
 };
 

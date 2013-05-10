@@ -21,10 +21,8 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	cameraPitch = DEFAULT_PITCH;
 	ready = false;
 	chargingEffect = new ChargeEffect(10);
-	shootingEffect = new ShootingEffect();
 	// Register with RE, SO SMART :O
 	RE::get()->addParticleEffect(chargingEffect);
-	RE::get()->addParticleEffect(shootingEffect);
 }
 
 PlayerCObj::~PlayerCObj(void)
@@ -65,8 +63,6 @@ bool PlayerCObj::update() {
 		showStatus();
 		chargingEffect->setPosition(objPos, charge);
 		chargingEffect->update(.33);
-		shootingEffect->setPosition(objPos);
-		shootingEffect->update(.33);
 	}
 	return false;
 }
