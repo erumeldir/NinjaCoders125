@@ -104,7 +104,7 @@ void RenderEngine::renderInitalization()
 
 	D3DXMATRIX matProj;
 	//TODO: determine clipping
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 800.0f/600.0f, 1.0f, CM::get()->find_config_as_float("CLIPPING_PLANE") );
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/3, 800.0f/600.0f, 1.0f, CM::get()->find_config_as_float("CLIPPING_PLANE") );
 	direct3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 	
 	direct3dDevice->SetRenderState( D3DRS_ZENABLE , D3DZB_TRUE );	//Enable depth buffering
