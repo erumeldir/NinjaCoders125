@@ -160,13 +160,40 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1,
 				 *mdl2 = obj2->getPhysicsModel();
 
 
-	Box bx1 = b1 + mdl1->ref->getPos(),
-		bx2 = b2 + mdl2->ref->getPos();
+	Box oldBx1 = b1 + mdl1->ref->getPos(),
+		oldBx2 = b2 + mdl2->ref->getPos();
 
 	Vec3f collNorm1 = Vec3f(),
 		  collNorm2 = Vec3f();
 
 	//Check for collision
+	// This part works with negative height, width, length
+	Vec3f minCorner1 = Vec3f(	min(oldBx1.x + oldBx1.w, oldBx1.x), 
+								min(oldBx1.y + oldBx1.h, oldBx1.y), 
+								min(oldBx1.z + oldBx1.l, oldBx1.z));
+
+	Vec3f maxCorner1 = Vec3f(	max(oldBx1.x + oldBx1.w, oldBx1.x), 
+								max(oldBx1.y + oldBx1.h, oldBx1.y), 
+								max(oldBx1.z + oldBx1.l, oldBx1.z));
+
+	Vec3f minCorner2 = Vec3f(	min(oldBx2.x + oldBx2.w, oldBx2.x), 
+								min(oldBx2.y + oldBx2.h, oldBx2.y), 
+								min(oldBx2.z + oldBx2.l, oldBx2.z));
+
+	Vec3f maxCorner2 = Vec3f(	max(oldBx2.x + oldBx2.w, oldBx2.x), 
+								max(oldBx2.y + oldBx2.h, oldBx2.y), 
+								max(oldBx2.z + oldBx2.l, oldBx2.z));
+
+	Box bx1 = Box(minCorner1.x, minCorner1.y, minCorner1.z,
+					maxCorner1.x - minCorner1.x,
+					maxCorner1.y - minCorner1.y,
+					maxCorner1.z - minCorner1.z);	
+
+	Box bx2 = Box(minCorner2.x, minCorner2.y, minCorner2.z,
+				maxCorner2.x - minCorner2.x,
+				maxCorner2.y - minCorner2.y,
+				maxCorner2.z - minCorner2.z);		
+
 	if(!aabbCollision(bx1,bx2)) {
 		return;
 	}
@@ -358,6 +385,7 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1,
 	obj2->onCollision(obj1, collNorm2);
 }
 
+// NOTE: This expects positive width, height, length
 bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
 	return !(bx1.x + bx1.w < bx2.x ||
 			 bx1.y + bx1.h < bx2.y ||
