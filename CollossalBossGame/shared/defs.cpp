@@ -122,3 +122,7 @@ void slerp(Quat_t *res, const Quat_t &start, const Quat_t &end, float t) {
 	res->z = end.z * (t) + start.z * (t - 1);
 	res->normalize();
 }
+
+Vec3f Vec4f::rotateToThisAxis(Vec3f change) {
+	return rotate(change, *this);
+}

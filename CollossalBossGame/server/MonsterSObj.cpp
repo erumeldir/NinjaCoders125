@@ -25,10 +25,7 @@ MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
 
 	srand((uint)time(NULL)); // initialize our random number generator
 
-//	stateCounter = 1;
-//	state=IDLE;
 }
-
 
 MonsterSObj::~MonsterSObj(void)
 {
@@ -49,7 +46,7 @@ void MonsterSObj::removeTentacle(TentacleSObj* t)
  * Once we get aiming & smashing a single player, if aiming and we've waited enough time, then we smash
  * If attacking or sweeping, we continue.
  *
- * Author: Bryan
+ * Author: Bryan, Haro, Suman
  */
 bool MonsterSObj::update() {
 	int numTentacles = tentacles.size();
@@ -126,7 +123,7 @@ bool MonsterSObj::update() {
 int MonsterSObj::serialize(char * buf) {
 	MonsterState *state = (MonsterState*)buf;
 	state->health = health;
-	return pm->ref->serialize(buf + sizeof(MonsterState)) + sizeof(MonsterState);
+	return this->getPhysicsModel()->ref->serialize(buf + sizeof(MonsterState)) + sizeof(MonsterState);
 }
 
 void MonsterSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
