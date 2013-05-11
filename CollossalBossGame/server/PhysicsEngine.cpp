@@ -104,53 +104,53 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
 		// go through all the boxes of obj
 		for(std::vector<Box>::iterator box2 = obj2Boxes.begin(); box2 != obj2Boxes.end(); ++box2)
 		{
-			//applyPhysics(obj1, obj2, *box1, *box2);
-			bx1 = *box1 + mdl1->ref->getPos();
-			bx2 = *box2 + mdl2->ref->getPos();
+			applyPhysics(obj1, obj2, *box1, *box2);
+			//bx1 = *box1 + mdl1->ref->getPos();
+			//bx2 = *box2 + mdl2->ref->getPos();
 
-			//Check for collision
-			if(!areColliding(bx1,bx2)) {
-				return;
-			}
+			////Check for collision
+			//if(!areColliding(bx1,bx2)) {
+			//	return;
+			//}
 
-			//Passable objects or static pairs cannot be collided with
-			if((obj1->getFlag(IS_PASSABLE) || obj2->getFlag(IS_PASSABLE)) ||
-					(obj1->getFlag(IS_STATIC) && obj2->getFlag(IS_STATIC))) {
-				obj1->onCollision(obj2, Vec3f());
-				obj2->onCollision(obj1, Vec3f());
-				return;
-			}
+			////Passable objects or static pairs cannot be collided with
+			//if((obj1->getFlag(IS_PASSABLE) || obj2->getFlag(IS_PASSABLE)) ||
+			//		(obj1->getFlag(IS_STATIC) && obj2->getFlag(IS_STATIC))) {
+			//	obj1->onCollision(obj2, Vec3f());
+			//	obj2->onCollision(obj1, Vec3f());
+			//	return;
+			//}
 
-			getCollisionInfo(&shift, &dir, bx1, bx2);
+			//getCollisionInfo(&shift, &dir, bx1, bx2);
 
-			//Handle not-falling status
-			if(dir == gravDir) {
-				obj1->setFlag(IS_FALLING, false);
-				obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
-			} else if(flip(dir) == gravDir) {
-				obj2->setFlag(IS_FALLING, false);
-				obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
-			}
+			////Handle not-falling status
+			//if(dir == gravDir) {
+			//	obj1->setFlag(IS_FALLING, false);
+			//	obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+			//} else if(flip(dir) == gravDir) {
+			//	obj2->setFlag(IS_FALLING, false);
+			//	obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+			//}
 
-			//Get the actual object shifts
-			if(obj1->getFlag(IS_STATIC)) {
-				shift1 = Vec3f();
-				shift2 = shift * -1;
-			} else if(obj2->getFlag(IS_STATIC)) {
-				shift1 = shift;
-				shift2 = Vec3f();
-			} else {
-				shift1 = shift * 0.5;
-				shift2 = shift * -0.5;
-			}
+			////Get the actual object shifts
+			//if(obj1->getFlag(IS_STATIC)) {
+			//	shift1 = Vec3f();
+			//	shift2 = shift * -1;
+			//} else if(obj2->getFlag(IS_STATIC)) {
+			//	shift1 = shift;
+			//	shift2 = Vec3f();
+			//} else {
+			//	shift1 = shift * 0.5;
+			//	shift2 = shift * -0.5;
+			//}
 
-			//Move the objects by the specified amount
-			mdl1->ref->translate(shift1);
-			mdl2->ref->translate(shift2);
+			////Move the objects by the specified amount
+			//mdl1->ref->translate(shift1);
+			//mdl2->ref->translate(shift2);
 
-			//Inform the logic module of the collision event
-			obj1->onCollision(obj2, dirVec(dir));
-			obj2->onCollision(obj1, dirVec(flip(dir)));
+			////Inform the logic module of the collision event
+			//obj1->onCollision(obj2, dirVec(dir));
+			//obj2->onCollision(obj1, dirVec(flip(dir)));
 		}
 	}
 }
