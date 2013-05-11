@@ -64,6 +64,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BulletSObj.cpp">
+	  <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -120,6 +123,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BulletSObj.h">
+	  <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

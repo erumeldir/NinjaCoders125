@@ -71,6 +71,7 @@
   <ItemGroup>
     <ClCompile Include="BulletSObj.cpp" />
     <ClCompile Include="CyborgSObj.cpp" />
+    <ClCompile Include="CollisionModel.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
@@ -90,6 +91,7 @@
   <ItemGroup>
     <ClInclude Include="BulletSObj.h" />
     <ClInclude Include="CyborgSObj.h" />
+    <ClInclude Include="CollisionModel.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameServer.h" />
