@@ -84,3 +84,74 @@ bool areColliding(const Box &bx1, const Point_t &hmapCenter, const HMapModel &hm
 	}
 	return false;
 }
+
+/*
+ * Extract the shift axis and magnitude, as well as the collision normal
+ * The calling function is responsible for deciding which box moves which amount.
+ * Assumes that a collision has already been detected.
+ */
+void getCollisionInfo(Vec3f *shift, DIRECTION *collDir, const Box &bx1, const Box &bx2) {
+	//Move out bounding boxes if collision occurs
+	float fXShift1 = bx2.x - (bx1.x + bx1.w),
+          fXShift2 = (bx2.x + bx2.w) - bx1.x,
+          fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
+    float fYShift1 = bx2.y - (bx1.y + bx1.h),
+          fYShift2 = (bx2.y + bx2.h) - bx1.y,
+          fYShift  = fabs(fYShift1) < fabs(fYShift2) ? fYShift1 : fYShift2;
+    float fZShift1 = bx2.z - (bx1.z + bx1.l),
+          fZShift2 = (bx2.z + bx2.l) - bx1.z,
+          fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
+
+	
+	*shift = Vec3f();	//Clear the shift and normal vectors
+	float sign = 0.0f;
+    if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
+        //Shift by X
+		shift->x = fXShift;
+		*collDir = fXShift < 0 ? WEST : EAST;
+#if 0
+		//Stop the lower object from falling
+        if( ((gravDir == WEST) && (bx2.x + obj2Shift.x > bx1.x + obj1Shift.x)) ||
+			((gravDir == EAST) && (bx2.x + obj2Shift.x < bx1.x + obj1Shift.x)) ) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else if( ((gravDir == WEST) && (bx1.x + obj1Shift.x > bx2.x + obj2Shift.x)) ||
+				   ((gravDir == EAST) && (bx1.x + obj1Shift.x < bx2.x + obj2Shift.x)) ) {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+		}
+#endif
+    } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
+        //Shift by Y (vertical)
+		shift->y = fYShift;
+		*collDir = fYShift < 0 ? DOWN : UP;
+#if 0
+		//Stop the lower object from falling
+        if( ((gravDir == DOWN) && (bx2.y + obj2Shift.y > bx1.y + obj1Shift.y)) ||
+			((gravDir == UP)   && (bx2.y + obj2Shift.y < bx1.y + obj1Shift.y)) ) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else if( ((gravDir == DOWN) && (bx1.y + obj1Shift.y > bx2.y + obj2Shift.y)) ||
+				   ((gravDir == UP)   && (bx1.y + obj1Shift.y < bx2.y + obj2Shift.y)) ) {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+		}
+#endif
+    } else {
+        //Shift by Z
+		shift->z = fZShift;
+		*collDir = fZShift < 0 ? SOUTH : NORTH;
+#if 0
+		//Stop the lower object from falling
+        if( ((gravDir == SOUTH) && (bx2.z + obj2Shift.z > bx1.z + obj1Shift.z)) ||
+			((gravDir == NORTH) && (bx2.z + obj2Shift.z < bx1.z + obj1Shift.z)) ) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else if( ((gravDir == SOUTH) && (bx1.z + obj1Shift.z > bx2.z + obj2Shift.z)) ||
+				   ((gravDir == NORTH) && (bx1.z + obj1Shift.z < bx2.z + obj2Shift.z)) ) {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+		}
+#endif
+	}
+}

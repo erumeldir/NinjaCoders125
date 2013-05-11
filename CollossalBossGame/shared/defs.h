@@ -248,6 +248,11 @@ typedef enum DIRECTION {
 	DOWN  = 0x20	//-y
 };
 
+inline DIRECTION flip(DIRECTION dir) {
+	return (DIRECTION)((dir < 0x7) ? (dir << 3) : (dir >> 3));
+}
+Vec3f dirVec(DIRECTION dir);
+
 
 typedef enum ACTION {
 	ACT_MOVE_X,

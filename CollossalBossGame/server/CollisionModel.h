@@ -44,3 +44,5 @@ private:
 
 bool areColliding(const Box &bx1, const Box &bx2);
 bool areColliding(const Box &bx1, const Point_t &hmapCenter, const HMapModel &hmap);
+
+void getCollisionInfo(Vec3f *shift, DIRECTION *collDir, const Box &bx1, const Box &bx2);
