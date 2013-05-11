@@ -26,6 +26,6 @@ void ShooterSObj::releaseCharge() {
 	position.y = 10 + this->pm->ref->getPos().y;
 	position.z = this->pm->ref->getPos().z;
 	Vec3f force = rotate(Vec3f(0, chargeForce * charge, chargeForce * charge), pm->ref->getRot());
-	BulletSObj * bso = new BulletSObj(SOM::get()->genId(), /*(Model)-1*/MDL_TEST_BOX, position, force, 1);
+	BulletSObj * bso = new BulletSObj(SOM::get()->genId(), (Model)-1/*MDL_TEST_BOX*/, position, force, 1);
 	SOM::get()->add(bso);
 }
