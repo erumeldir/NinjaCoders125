@@ -3,7 +3,6 @@
 #include <assert.h>
 #include "NetworkData.h"
 #include "ServerObject.h"
-#include "EventManager.h"
 
 class WorldManager
 {
@@ -13,14 +12,13 @@ public:
 	void init();
 	static WorldManager * get();
 
-	// static void manageEvent(WorldManager * wm, EventTypes evt, ServerObject * obj);
-
-	void event_player_death(ServerObject * obj);
-	void event_monster_death(ServerObject * obj);
-	void event_reset(ServerObject * obj);
-	void event_connection(ServerObject * obj);
-	void event_monster_spawn(ServerObject * obj);
-	void event_disconnect(ServerObject * obj);
+	void event_player_death(int playerid);
+	void event_monster_death();
+	void event_reset(int playerid);
+	void event_hard_reset(int playerid);
+	void event_connection(int playerid);
+	void event_monster_spawn();
+	void event_disconnect(int playerid);
 
 private:
 	static WorldManager world; // Statics ftw.
