@@ -9,7 +9,7 @@
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
-ServerNetworkManager ServerNetworkManager::SNM;
+ServerNetworkManager * ServerNetworkManager::SNM;
 
 /*
  *	This object handles networking for the server
@@ -118,11 +118,8 @@ ServerNetworkManager::ServerNetworkManager(void)
 }
 
 // Destructor - does nothing.
-ServerNetworkManager::~ServerNetworkManager(void) {}
-
-// Fetch the singleton ServerNetworkManager object.
-ServerNetworkManager * ServerNetworkManager::get() {
-	return &SNM;
+ServerNetworkManager::~ServerNetworkManager(void) {
+	// TODO: Close all open sockets
 }
 
 SOCKET ServerNetworkManager::getSocketById(int cid) {
@@ -164,7 +161,7 @@ void ServerNetworkManager::update() {
 			if(temp_c_id == client_id) {
 				client_id++;
 			}
-			EventManager::get()->fireEvent(EVENT_CONNECTION, o);
+			WorldManager::get()->event_connection(o->getId());
 		}
 	} while (sessions.empty());
 	// Collect data from clients

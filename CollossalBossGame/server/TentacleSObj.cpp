@@ -182,9 +182,9 @@ bool TentacleSObj::update() {
 	middle.setRelSize(changeProportionM);
 	
 	// Set new collision boxes
-	pm->colBoxes[0] = base;
-	pm->colBoxes[1] = middle;
-	pm->colBoxes[2] = tip;
+	pm->colBoxes[0] = *(base.fix());
+	pm->colBoxes[1] = *(middle.fix());
+	pm->colBoxes[2] = *(tip.fix());
 
 	if (health <= 0) {
 		health = 0;

@@ -72,9 +72,9 @@
     <ClCompile Include="BulletSObj.cpp" />
     <ClCompile Include="CyborgSObj.cpp" />
     <ClCompile Include="CollisionModel.cpp" />
-    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="MonsterSObj.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PlayerSObj.cpp" />
@@ -92,7 +92,6 @@
     <ClInclude Include="BulletSObj.h" />
     <ClInclude Include="CyborgSObj.h" />
     <ClInclude Include="CollisionModel.h" />
-    <ClInclude Include="EventManager.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MonsterSObj.h" />
