@@ -194,7 +194,7 @@ bool PlayerSObj::update() {
 		// NOTE: Player should probably be also getting their client id.
 		if(!firedeath) {
 			firedeath = true;
-			EventManager::get()->fireEvent(EVENT_PLAYER_DEATH, this); 
+			WorldManager::get()->event_player_death(this->getId());
 		}
 	}
 
@@ -301,7 +301,7 @@ void PlayerSObj::deserialize(char* newInput)
 	inputstatus* newStatus = reinterpret_cast<inputstatus*>(newInput);
 	istat = *newStatus;
 	if (istat.start) {
-		EventManager::get()->fireEvent(EVENT_RESET, this); 
+		WorldManager::get()->event_reset(this->getId());
 	}
 }
 
