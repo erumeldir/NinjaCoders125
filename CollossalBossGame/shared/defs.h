@@ -8,6 +8,7 @@
 //Standard includes
 #include <stdio.h>
 #include "DebugConsole.h"
+#include "Windows.h"
 #include <set>
 
 //Constants (that we don't want to change, if we might, they should go in the config file)
@@ -310,6 +311,21 @@ typedef enum ACTION {
 	ACT_SPECIAL,
 	ACT_ATTACK,
 	ACT_NUM_ACTIONS
+};
+
+struct GameData {
+	int start;
+	int hardreset;
+	int left;
+	int right;
+	
+	int clientready;
+
+	int playerid;
+
+	void clear() {
+		SecureZeroMemory(this, sizeof(GameData));
+	}
 };
 
 #endif

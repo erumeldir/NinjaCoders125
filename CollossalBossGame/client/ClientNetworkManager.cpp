@@ -7,7 +7,7 @@
 #include <vector>
 #include "Action.h"
 
-ClientNetworkManager ClientNetworkManager::CNM;
+ClientNetworkManager * ClientNetworkManager::CNM;
 
 /*
 	This object handles networking for the client
@@ -138,7 +138,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
 }
 
 ClientNetworkManager::~ClientNetworkManager(void) {
-
+	// TODO: close socket
 }
 
 bool ClientNetworkManager::isConnected()
@@ -159,10 +159,6 @@ int ClientNetworkManager::receivePackets(char * recvbuf)
     }
 
     return iResult;
-}
-
-ClientNetworkManager * ClientNetworkManager::get() {
-	return &CNM;
 }
 
 bool ClientNetworkManager::update()
