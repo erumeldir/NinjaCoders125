@@ -103,7 +103,7 @@ bool TentacleSObj::update() {
 
 			tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
 			tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
-		}
+		}/*
 		else if(idleCounter < 15) {
 			changeProportionM.y+=7;
 			changePosM.y--;
@@ -114,58 +114,94 @@ bool TentacleSObj::update() {
 			changePosM.y++;
 			changePosT.y--;
 		}
-
+		*/
 		idleCounter = (idleCounter + 1) % 31;
 
 	} else { // SLAM
-		Vec3f pos;
-		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
-			//changing the tip
-			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/4)
-			{
-				//decrease y
-				changePosT.y -= 7;
-				//increase height (h)
-				changeProportionT.y += 3;
-			} else {
-				//increase y
-				changePosT.y += 7;
-				//decrease height (h)
-				changeProportionT.y -= 3;
-			}
-			//decrease depth (l)
-			changeProportionT.z  -= 1;
-			//increase z
-			changePosT.z += 6;
 
-			changeProportionM.y += 2;
-			changePosM.y -= 2;
-			//tip.z = tip.z + 6;
-			//middle.l = middle.l - 2;
-		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
-			//changing the tip
-			if ((attackCounter - attackBuffer)%CYCLE < 3*CYCLE/4)
-			{
-				//decrease y
-				changePosT.y -= 7;
-				//increase height (h)
-				changeProportionT.y += 3;
-			} else {
-				//increase y
-				changePosT.y += 7;
-				//decrease height (h)
-				changeProportionT.y -= 3;
+		if (((attackCounter - attackBuffer))%CYCLE == 0) {
+			Box origBase = idleBoxes[0];
+			Box origMiddle = idleBoxes[1];
+			Box origTip = idleBoxes[2];
+
+			base.setPos(axis.rotateToThisAxis(origBase.getPos()));
+			base.setSize(axis.rotateToThisAxis(origBase.getSize()));
+
+			middle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
+			middle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
+
+			tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
+			tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
+		}
+		/*
+		 * What I want when I start slamming:
+		 * BOX_TENT_BASE = -12, -20, 0, 28, 28, 75
+		 * BOX_TENT_MID = -12, -50, -95, 28, 90, 90
+		 * BOX_TENT_TIP = -12, 30, -165, 28, 30, 40
+		 *
+		 * When I'm in the middle of slamming:
+		 * BOX_TENT_BASE = -12, -20, 28, 28, 28, 35
+		 * BOX_TENT_MID = -12, -20, -28, 28, 70, 50
+		 * BOX_TENT_TIP = -12, 8, 28, 28, 105, 35
+		 *
+		 * Base z: 0 -> 28 (-28, or -2 * 2 per 5 + a remainder)
+		 * Base d: 75 -> 35 (-40, or -4 * 2 per 5)
+		 *
+		 * Mid y: -50 -> -20 (+30 or +6 per 5)
+		 * Mid z: -95 -> -28 (+67 or +12 per 5 + a remainder)
+		 * Mid h: 90 -> 70 (-20 or -4 per 5)
+		 * Mid d: 90 -> 50 (-40 or -8 per 5)
+		 *
+		 * Tip y: 30 -> 8 (-22 or -4 per 5)
+		 * Tip z: -165 -> 28 (+193 or +38 per 5)
+		 * Tip h: 28 -> 105 (+77 or +14 per 5)
+		 * Tip d: 40 -> 35 (-5 or -1 per 5)
+		 * 
+		 * Algorithm: 
+		 *  1. at the beginning and end, move DIF % 10 units
+		 *  2. per CYCLE / 10 iterations move everything DIF / 10 units.
+		 * 
+		 * With Cycle = 50, that means we need to get there in 25
+		 * 
+		 */
+		Vec3f pos;
+		if ( ((attackCounter - attackBuffer))%5 == 0 )
+		{
+			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+				//Base z
+				//Base d
+
+				//Mid y
+				changePosM.y -= 5;
+				//Mid z
+				changePosM.z += 14;
+				//Mid d
+				//changeProportionM.z -= 20;
+				
+				//Tip y
+				changePosT.y += 4;
+				//Tip z
+				changePosT.z += 39;
+				//Tip h
+				changeProportionT.y -= 30;
+				
+			} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
+				//Mid y
+				changePosM.y += 5;
+				//Mid z
+				changePosM.z -= 14;
+				//Mid d
+				//changeProportionM.z += 20;
+				
+				//Tip y
+				changePosT.y -= 4;
+				//Tip z
+				changePosT.z -= 39;
+				//Tip h
+				changeProportionT.y += 30;
+				
 			}
-			//increase z
-			changePosT.z -= 6;
-			//increase depth (l, associated with z)
-			changeProportionT.x += 1;
-			
-			changeProportionM.y -= 2;
-			changePosM.y += 2;
-			//tip.z = tip.z - 6;
-			//middle.l = middle.l + 2;
-		} 
+		}
 	}
 	
 	// Rotate the relative change according to where we're facing

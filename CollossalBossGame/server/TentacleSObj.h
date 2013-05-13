@@ -5,7 +5,7 @@
 // fwd decl
 class MonsterSObj;
 
-#define CYCLE 48 //always even because of integer division
+#define CYCLE 50 //always even because of integer division
 
 class TentacleSObj : public ServerObject
 {
