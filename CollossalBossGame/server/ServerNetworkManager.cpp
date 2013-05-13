@@ -7,7 +7,7 @@
 #include <iostream>
 
 unsigned int ServerNetworkManager::client_id;
-ServerNetworkManager ServerNetworkManager::SNM;
+ServerNetworkManager * ServerNetworkManager::SNM;
 
 /*
  *	This object handles networking for the server
@@ -117,11 +117,6 @@ ServerNetworkManager::ServerNetworkManager(void)
 
 // Destructor - does nothing.
 ServerNetworkManager::~ServerNetworkManager(void) {}
-
-// Fetch the singleton ServerNetworkManager object.
-ServerNetworkManager * ServerNetworkManager::get() {
-	return &SNM;
-}
 
 SOCKET ServerNetworkManager::getSocketById(int cid) {
 	std::map<unsigned int, SOCKET>::iterator iter;
