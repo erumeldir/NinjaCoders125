@@ -21,7 +21,7 @@ MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
 
 	this->numParts = numParts;
 	phase = -1;
-	EventManager::get()->fireEvent(EVENT_MONSTER_SPAWN, NULL);
+	WorldManager::get()->event_monster_spawn();
 
 	srand((uint)time(NULL)); // initialize our random number generator
 
@@ -85,7 +85,7 @@ bool MonsterSObj::update() {
 				newTentacle = new TentacleSObj(SOM::get()->genId(), (Model)i, currPlace.first, currPlace.second, this);
 				break;
 			default: // you beat all the phases!
-				EventManager::get()->fireEvent(EVENT_MONSTER_DEATH, NULL);
+				WorldManager::get()->event_monster_death();
 				return true; // I died!
 				// DO NOTHING MORE
 				// DONT YOU DARE
