@@ -10,6 +10,7 @@
 #include "DebugConsole.h"
 #include "Windows.h"
 #include <set>
+#include <math.h>
 
 //Constants (that we don't want to change, if we might, they should go in the config file)
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
@@ -246,6 +247,29 @@ typedef struct Box {
 	Box operator- (const Box &bx) const {
 		return Box(x - bx.x, y - bx.y, z - bx.z,
 				   w - bx.w, h - bx.h, l - bx.l);
+	}
+
+	Box* fix() {
+		// This part works with negative height, width, length
+		if (this->w < 0 || this->h < 0 || this->l < 0)
+		{
+			Vec3f minCorner = Vec3f(	min(this->x + this->w, this->x), 
+										min(this->y + this->h, this->y), 
+										min(this->z + this->l, this->z));
+
+			Vec3f maxCorner = Vec3f(	max(this->x + this->w, this->x), 
+										max(this->y + this->h, this->y), 
+										max(this->z + this->l, this->z));
+
+			this->x = minCorner.x;
+			this->y = minCorner.y; 
+			this->z = minCorner.z,
+			this->w = maxCorner.x - minCorner.x;
+			this->h = maxCorner.y - minCorner.y;
+			this->l = maxCorner.z - minCorner.z;
+		}
+
+		return this;
 	}
 
 	void setPos(const Vec3f &pos) {
