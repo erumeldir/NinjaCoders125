@@ -116,7 +116,9 @@ ServerNetworkManager::ServerNetworkManager(void)
 }
 
 // Destructor - does nothing.
-ServerNetworkManager::~ServerNetworkManager(void) {}
+ServerNetworkManager::~ServerNetworkManager(void) {
+	// TODO: Close all open sockets
+}
 
 SOCKET ServerNetworkManager::getSocketById(int cid) {
 	std::map<unsigned int, SOCKET>::iterator iter;

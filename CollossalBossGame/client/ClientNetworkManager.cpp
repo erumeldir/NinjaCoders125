@@ -138,7 +138,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
 }
 
 ClientNetworkManager::~ClientNetworkManager(void) {
-
+	// TODO: close socket
 }
 
 bool ClientNetworkManager::isConnected()
