@@ -23,6 +23,10 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	idleBoxes[1] = CM::get()->find_config_as_box("BOX_TENT_MID");
 	idleBoxes[2] = CM::get()->find_config_as_box("BOX_TENT_TIP");
 
+	slamBoxes[0] = CM::get()->find_config_as_box("BOX_TENT_BASE_SLAM"); 
+	slamBoxes[1] = CM::get()->find_config_as_box("BOX_TENT_MID_SLAM");
+	slamBoxes[2] = CM::get()->find_config_as_box("BOX_TENT_TIP_SLAM");
+
 	for (int i=0; i<3; i++) {
 		assert(pm->addBox(idleBoxes[i]) == i && "Your physics model is out of sync with the rest of the world...");
 	}
@@ -120,9 +124,9 @@ bool TentacleSObj::update() {
 	} else { // SLAM
 
 		if (((attackCounter - attackBuffer))%CYCLE == 0) {
-			Box origBase = idleBoxes[0];
-			Box origMiddle = idleBoxes[1];
-			Box origTip = idleBoxes[2];
+			Box origBase = slamBoxes[0];
+			Box origMiddle = slamBoxes[1];
+			Box origTip = slamBoxes[2];
 
 			base.setPos(axis.rotateToThisAxis(origBase.getPos()));
 			base.setSize(axis.rotateToThisAxis(origBase.getSize()));
