@@ -38,9 +38,10 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	
 	std::default_random_engine generator;
 	std::uniform_int_distribution<int> distribution(1,50);
-	attackCounter = distribution(generator);
+	//attackCounter = distribution(generator);
 	
-	idleCounter = 0;
+	//idleCounter = 0;
+	stateCounter = 0;
 	attacked = false; // haven't been attacked yet
 	currStateDone = true; // no states have started yet
 
@@ -57,7 +58,7 @@ TentacleSObj::~TentacleSObj(void)
 }
 
 bool TentacleSObj::update() {
-	attackCounter++;
+	stateCounter++;
 
 	////////////////// State transitions /////////////////////
 	// These should maybe be moved to the monster...
@@ -80,7 +81,9 @@ bool TentacleSObj::update() {
 	// i.e. idle(), slam(), spike(), etc...
 	else if (currStateDone)
 	{
-		currStateDone = false; // we're about to start a new state =)
+		// we're about to start a new state =)
+		stateCounter = 0;
+		currStateDone = false; 
 
 		int angryProb = attacked ? 85 : 60;
 		
@@ -163,37 +166,29 @@ bool TentacleSObj::update() {
 	//}
 
 	// for testing todo remove
-	DC::get()->print("Current State is...");
 
 	///////////////////// State logic ///////////////////////
 	switch(modelAnimationState)
 	{
 	case T_IDLE:
-		DC::get()->print("...IDLE!\r");
 		idle();
 		break;
 	case T_PROBE:
-		DC::get()->print("...PROBE!\r");
 		idle(); // todo probe
 		break;
 	case T_SLAM:
-		DC::get()->print("...SLAM!\r");
 		slam();
 		break;
 	case T_COMBO:
-		DC::get()->print("...COMBO!\r");
 		slam(); // todo slam combo
 		break;
 	case T_SHOOT:
-		DC::get()->print("...SHOOT!\r");
 		slam(); // todo shoot (maybe wait until we have a head model?)
 		break;
 	case T_SPIKE:
-		DC::get()->print("...SPIKE!\r");
 		spike();
 		break;
 	case T_RAGE:
-		DC::get()->print("...RAGE!\r");
 		spike(); // todo defense rage
 		break;
 	default:
@@ -223,7 +218,7 @@ void TentacleSObj::idle() {
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
 	// reset your state
-	if (idleCounter == 0) {
+	if (stateCounter == 0) {
 		Box origBase = idleBoxes[0];
 		Box origMiddle = idleBoxes[1];
 		Box origTip = idleBoxes[2];
@@ -237,7 +232,7 @@ void TentacleSObj::idle() {
 		tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
 		tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
 	}
-	else if(idleCounter < 15) {
+	else if(stateCounter < 15) {
 		changeProportionM.y+=7;
 		changePosM.y--;
 		changePosT.y++;
@@ -249,9 +244,9 @@ void TentacleSObj::idle() {
 	}
 
 	// we're done!
-	currStateDone = (idleCounter == 30);
+	currStateDone = (stateCounter == 30);
 
-	idleCounter = (idleCounter + 1) % 31;
+	//idleCounter = (idleCounter + 1) % 31;
 	
 	// Rotate the relative change according to where we're facing
 	changePosT = axis.rotateToThisAxis(changePosT);
@@ -285,7 +280,8 @@ void TentacleSObj::slam() {
 	//get the actual axis
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
-	if (((attackCounter - attackBuffer))%CYCLE == 0) {
+	//if (((attackCounter - attackBuffer))%CYCLE == 0) {
+	if (stateCounter == 0) {
 		// First, rotate ourselves to the player
 		Vec3f rotationAxis = Vec3f(0,0,1);
 		Vec4f qAngle = Vec4f(rotationAxis, playerAngle);
@@ -341,9 +337,11 @@ void TentacleSObj::slam() {
 		* 
 		*/
 	Vec3f pos;
-	if ( ((attackCounter - attackBuffer))%5 == 0 )
+//	if ( ((attackCounter - attackBuffer))%5 == 0 )
+	if ( stateCounter%5 == 0 )
 	{
-		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+		//if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+		if (stateCounter < CYCLE/2) {
 			//Base z
 			//Base d
 
@@ -361,7 +359,8 @@ void TentacleSObj::slam() {
 			//Tip h
 			changeProportionT.y -= 30;
 				
-		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
+		//} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
+		} else if (stateCounter < CYCLE) {
 			//Mid y
 			changePosM.y += 5;
 			//Mid z
@@ -380,7 +379,8 @@ void TentacleSObj::slam() {
 	}
 
 	// we're done!
-	if((attackCounter - attackBuffer)%CYCLE == CYCLE - 1)
+	//if((attackCounter - attackBuffer)%CYCLE == CYCLE - 1)
+	if(stateCounter == CYCLE - 1)
 	{
 		// reset our rotation
 		this->getPhysicsModel()->ref->setRot(lastRotation);
@@ -408,8 +408,6 @@ void TentacleSObj::slam() {
 }
 
 void TentacleSObj::spike() {
-	static int spikeCounter = 0; 
-
 	//get the actual axis
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
@@ -426,8 +424,7 @@ void TentacleSObj::spike() {
 	pm->colBoxes[2] = Box();
 
 	// I'm randomly making spike last 5 cycles, feel free to change this xD
-	currStateDone = (spikeCounter == 4);
-	spikeCounter = (spikeCounter + 1)%5;
+	currStateDone = (stateCounter == 4);
 }
 
 int TentacleSObj::serialize(char * buf) {
@@ -494,7 +491,8 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 	string s = typeid(*obj).name();
 
 	// if the monster is attacking, it pushes everything off it on the last attack frame
-	if (attackCounter == (attackBuffer + attackFrames))
+//	if (attackCounter == (attackBuffer + attackFrames))
+	if (modelAnimationState == T_RAGE)
 	{
 		Vec3f up = (PE::get()->getGravVec() * -1);
 		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);

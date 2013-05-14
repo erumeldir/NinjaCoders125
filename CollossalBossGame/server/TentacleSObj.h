@@ -38,8 +38,7 @@ private:
 	Box updatableBox;
 	int health;
 	bool attacked;
-	int idleCounter; // keeps track of what frame we are in the idle animation
-	int attackCounter; // number of frames in between when the monster is harmful (emulates an 'attack')
+	int stateCounter; // keeps track of our frames within each state
 	int attackBuffer; // how many frames pass before we're harmful again
 	int attackFrames; // how many continuous frames we are harmful
 	bool sweepingZPositive; // are we sweeping in the direction which makes z positive 
