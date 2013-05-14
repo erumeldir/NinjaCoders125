@@ -5,7 +5,7 @@
 // fwd decl
 class MonsterSObj;
 
-#define CYCLE 48 //always even because of integer division
+#define CYCLE 50 //always even because of integer division
 
 class TentacleSObj : public ServerObject
 {
@@ -20,6 +20,11 @@ public:
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
 	void setAnimationState(TentacleActionState state) { modelAnimationState = state; }
 
+	// Actions
+	void idle();
+	void slam();
+	void spike();
+
 	int getHealth() { return health; }
 
 	float angleToNearestPlayer();
@@ -32,15 +37,21 @@ private:
 	MonsterSObj* overlord;
 	Box updatableBox;
 	int health;
-	int idleCounter; // keeps track of what frame we are in the idle animation
-	int attackCounter; // number of frames in between when the monster is harmful (emulates an 'attack')
+	bool attacked;
+	int stateCounter; // keeps track of our frames within each state
 	int attackBuffer; // how many frames pass before we're harmful again
 	int attackFrames; // how many continuous frames we are harmful
 	bool sweepingZPositive; // are we sweeping in the direction which makes z positive 
 	int dir;
+	bool currStateDone; // whether or not our current state has gone through it's full cycle
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 	Quat_t lastRotation;
+	float playerAngle;
+
+	// Collision boxes
 	Box idleBoxes[3]; // stores initial idle collision boxes
+	Box slamBoxes[3]; // stores first position for the slam boxes
+	Box spikeBox; // stores spike box =D
 };
 
