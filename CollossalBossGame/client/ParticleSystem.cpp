@@ -22,6 +22,7 @@ ParticleSystem::ParticleSystem()
 {
 	this->pointSize = 10.0f;
 	srand (time(NULL));
+	filename = "res/particle.bmp";
 }
 
 void ParticleSystem::init(LPDIRECT3DDEVICE9 pDevice)
@@ -33,7 +34,7 @@ void ParticleSystem::init(LPDIRECT3DDEVICE9 pDevice)
 								&vb,
 								0);
 	D3DXCreateTextureFromFile(pDevice,   //Direct3D Device
-                             "res/particle.bmp",       //File Name
+                              filename,       //File Name
 	                          &texture);    //Texture handle
 					
 }
@@ -102,6 +103,7 @@ void ParticleSystem::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
 
     direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
     direct3dDevice->SetRenderState( D3DRS_LIGHTING, false);
+    direct3dDevice->SetRenderState( D3DRS_FOGENABLE, false);
 
 
 }
@@ -114,7 +116,7 @@ void ParticleSystem::postRender(LPDIRECT3DDEVICE9 direct3dDevice)
     direct3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, false);
 
     direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
-
+	direct3dDevice->SetRenderState( D3DRS_FOGENABLE, true);
 }
 
 bool ParticleSystem::isDead()

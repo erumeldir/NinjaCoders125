@@ -1,5 +1,6 @@
 #pragma once
 #include "ClientObject.h"
+#include "SmokeEffect.h"
 
 class TentacleCObj : public ClientObject
 {
@@ -17,5 +18,6 @@ public:
 private:
 	RenderModel * box;
 	RenderModel *rm;
+	SmokeEffect* smoking;
 };
 

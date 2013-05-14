@@ -59,7 +59,7 @@ public:
 	void setHUDText(string newText, int health, float charge) { hudText = newText; healthPts = health; this->charge = charge;}
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
 	void addParticleEffect(ParticleSystem* ps) { ps->init(this->direct3dDevice); this->particleSystems.push_back(ps);  }
-	
+	void startFog(float density);
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
 

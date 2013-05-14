@@ -13,7 +13,7 @@ HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs)
 	D3DXCreateSprite(direct3dDevice,&sprite2);
 	
 	D3DXCreateTextureFromFile(direct3dDevice,   //Direct3D Device
-                             "res/nebula.jpg",       //File Name
+                             "res/nebula1.jpg",       //File Name
                              &g_texture);    //Texture handle
 	D3DXCreateTextureFromFile(direct3dDevice,   //Direct3D Device
                             "res/gameover.png",       //File Name
