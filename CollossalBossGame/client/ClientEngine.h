@@ -7,6 +7,7 @@
 
 #include "defs.h"
 #include "XboxController.h"
+#include "GameState.h"
 
 class ClientEngine {
 public:
@@ -16,10 +17,13 @@ public:
 	static int getExitStatus() { return exitStatus; }
 
 	void run();
+	void reset();
+	void serverUpdate(char * buf);
 	void exit(int i = 0);
 
 	static XboxController *getController() { return ce->xctrl; }
 
+	GameState state;
 private:
 	//Constructors/destructors are private
 	ClientEngine();
@@ -27,6 +31,9 @@ private:
 
 	bool isRunning;
 	XboxController * xctrl;
+
+	void initializeSubModules();
+	void cleanSubModules();
 
 	static int exitStatus;
 	static ClientEngine *ce;	//instance

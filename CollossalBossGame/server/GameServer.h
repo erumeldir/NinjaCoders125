@@ -19,16 +19,16 @@ public:
 	void event_monster_spawn();
 	void event_disconnect(int playerid);
 
+	void sendGameState();
+	void recieveInput(char * buf);
+
 	GameState state;
 
 private:
 	static GameServer * gs;
     GameServer(void);
     ~GameServer(void);
-
-	void sendGameState();
-	void recieveInput(char * buf);
-
+	
 	void gameLoop();
 	void initializeSubModules();
 	void cleanSubModules();

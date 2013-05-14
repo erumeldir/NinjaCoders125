@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "RenderModel.h"
 #include "ClientObjectManager.h"
+#include "ClientEngine.h"
 #include "PlayerCObj.h"
 #include "ConfigurationManager.h"
 #include <mmsystem.h>
@@ -158,8 +159,32 @@ void RenderEngine::renderInitalization()
  * Author(s): Franklin
  */
 void RenderEngine::gamestartdisplaylogic() {
-	hud->displayStart();
+	switch(CE::get()->state.currentState) {
+		case GAME_CONNECTING:
+		case GAME_SCENE_SELECT:
+			hud->displaySceneSelect();
+			break;
+		case GAME_LOADING:
+			hud->displayLoadingScreen();
+			break;
+		case GAME_CLASS_SELECT:
+			hud->displayClassSelect();
+			break;
+		case GAME_START:
+			hud->displayStart(); 
+			break;
+		case GAME_RUNNING:
+			// no hud. This isn't really a hud. It's really just a screen thing.
+		case GAME_END:
+			if(CE::get()->state.playerDeathCount == CE::get()->state.totalPlayerCount) { hud->displayGameOver(); }
+			else if(CE::get()->state.monsterDeathCount == CE::get()->state.totalMonsterCount) { hud->displayVictory(); }
+			break;
+		default:
+			// cout << "Odd State" << endl;
+			break;
+	}
 }
+
 
 /*
  * Initialize DirectX and any other rendering libraries that we may have.
@@ -178,7 +203,7 @@ RenderEngine::RenderEngine() {
 	this->addParticleEffect(colBxPts);
 
 	cam = new Camera(cameraDist);
-	hud = new HeadsUpDisplay(direct3dDevice, &gamestarted);
+	hud = new HeadsUpDisplay(direct3dDevice);
 	hudText = "DEFAULT";
 	monsterHUDText = "DEFAULT";
 
@@ -199,13 +224,13 @@ RenderEngine::~RenderEngine() {
 }
 
 void RenderEngine::drawHUD() {
-	if(gamestarted) {
+	if(CE::get()->state.currentState > GAME_START) {
 		hud->displayText(this->hudText,this->monsterHUDText);
 		hud->displayHealthBars(this->healthPts, this->monsterHealthPts, this->charge);
 	}
 	else
 	{
-		this->colBxPts->kill();
+		// this->colBxPts->kill();
 	}
 }
 

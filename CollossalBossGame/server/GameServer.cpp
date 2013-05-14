@@ -15,14 +15,12 @@ using namespace std;
 
 GameServer * GameServer::gs;
 
-GameServer::GameServer(void)
-{
+GameServer::GameServer(void) {
 	initializeSubModules();
 	state.reset();
 }
 
-GameServer::~GameServer(void)
-{
+GameServer::~GameServer(void) {
 	cleanSubModules();
 	state.reset();
 }
@@ -42,22 +40,34 @@ void GameServer::cleanSubModules() {
 }
 
 void GameServer::gameLoop() {
-	// Get input from client
-    SNM::get()->update();
-
-	// Update state
-	SOM::get()->update();
-
-	// Send state to client
-	SOM::get()->sendState();
+	switch(state.currentState) {
+		case GAME_CONNECTING:
+		case GAME_SCENE_SELECT:
+			SNM::get()->update();
+			this->sendGameState();
+			SNM::get()->getSendBuffer();
+			SNM::get()->sendToAll(COMPLETE, 0);
+			break;
+		case GAME_LOADING:
+		case GAME_CLASS_SELECT:
+		case GAME_START:
+		case GAME_RUNNING:
+		case GAME_END:
+			SNM::get()->update();
+			SOM::get()->update();
+			SOM::get()->sendState();
+			this->sendGameState();
+			SNM::get()->getSendBuffer();
+			SNM::get()->sendToAll(COMPLETE, 0);
+			break;
+		default:
+			cout << "Odd State" << endl;
+	}
 }
 
 /* the main function on the server side, initalizes the server loop
 */
 void GameServer::run() {
-	//Create game objects
-	gameInit();
-
 	//Main server loop
 	while(true) 
     {
@@ -132,16 +142,19 @@ void GameServer::recieveInput(char * buf) {
 	}
 }
 
-void GameServer::event_reset(int playerid) { event_hard_reset(playerid); }
-void GameServer::event_hard_reset(int playerid) {	
-	if(state.playerDeathCount == state.totalPlayerCount || state.monsterDeathCount == state.totalMonsterCount) {
-		state.totalMonsterCount = 0;
-		state.playerDeathCount = 0;
-		state.monsterDeathCount = 0;
-		// Fire some function to reset the positions of all server objects.
-		SOM::get()->reset();
-		gameInit();
+void GameServer::event_reset(int playerid) {
+	if(state.currentState == GAME_END) {
+		if(state.playerDeathCount == state.totalPlayerCount || state.monsterDeathCount == state.totalMonsterCount) {
+			event_hard_reset(playerid);
+		}
 	}
+}
+void GameServer::event_hard_reset(int playerid) {	
+	SNM::get()->getSendBuffer();
+	SNM::get()->sendToAll(RESET, 0);
+	this->cleanSubModules();
+	this->state.reset();
+	this->initializeSubModules();
 }
 
 void GameServer::event_player_death(int playerid) { state.playerdeath(playerid); }

@@ -210,10 +210,10 @@ void ServerNetworkManager::receiveFromClients() {
 					}
                     break;
 				case GAMESTATE_MANAGER:
-					// GameServer::get()->recieveInput(packet.packet_data);
+					GameServer::get()->recieveInput(packet.packet_data);
 					break;
 				case CLIENT_READY:
-					// GameServer::get()->state.clientready(packet.object_id);
+					GameServer::get()->state.clientready(packet.object_id);
 					break;
                 default:
                     DC::get()->print("error in packet types\n");

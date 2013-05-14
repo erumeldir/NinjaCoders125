@@ -99,6 +99,9 @@ void GameState::playerconnect(int playerid) {
 	}
 	playersconnected[totalPlayerCount] = playerid+1;
 	totalPlayerCount++;
+	if(currentState == GAME_CONNECTING) {
+		currentState = GAME_SCENE_SELECT;
+	}
 }
 
 void GameState::playerdeath(int playerid) {

@@ -13,7 +13,7 @@
 class HeadsUpDisplay
 {
 public:
-	HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs);
+	HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice);
 	virtual ~HeadsUpDisplay(void);
 
 	void displayText(string hudText, string monsterHUDText);
@@ -27,7 +27,6 @@ public:
 	void displayLoadingScreen();
 	void displayClassSelect();
 private:
-	bool * gamestart;
 	ID3DXFont* direct3dText; // the pointer to the device class
 	
 	IDirect3DTexture9 *g_texture;

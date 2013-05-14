@@ -1,5 +1,6 @@
 #include "ClientNetworkManager.h"
 #include "ClientObjectManager.h"
+#include "ClientEngine.h"
 #include "XboxController.h"
 #include "Action.h"
 #include "defs.h"
@@ -76,19 +77,21 @@ void XboxController::sendInput() {
 			istat.rotVert = atan(y2 / (JOY_MAX * 16));
 		}
 
-		/*istat.rotHoriz = 0;
-		istat.rotVert = 0;
-		float angle, magnitude;
-		if(fabs(x2) > DEADZONE || fabs(y2) > DEADZONE) {
-			istat.rotAngle = -atan2(x2 / DEADZONE, y2 / DEADZONE);
+		bool lshb = (gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
+		bool rshb = (gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
+		if(istat.start || istat.quit || lshb || rshb) {
+			GameData gd;
+			gd.clear();
+			gd.start = istat.start;
+			gd.hardreset = istat.quit;
+			gd.left = lshb;
+			gd.right = rshb;
+			gd.playerid = COM::get()->player_id;
+			ClientNetworkManager::get()->sendData(GAMESTATE_MANAGER, reinterpret_cast<char*>(&gd), sizeof(GameData), COM::get()->player_id);
 		}
-		if(x2 * x2 + y2 * y2 < DEADZONE * DEADZONE) {
-			angle = atan2(x2, y2);
-			magnitude = (M_PI / 12) * (sqrt(x2 * x2 + y2 * y2) - DEADZONE) / DEADZONE;
-
-			istat.rotHoriz = magnitude * cos(angle);
-			istat.rotVert  = magnitude * sin(angle);
-		}*/
+	}
+	if(CE::get()->state.currentState < GAME_RUNNING) {
+		SecureZeroMemory(&istat, sizeof(istat));
 	}
 	//Send the input data, zero'd if nothing is there
 	ClientNetworkManager::get()->sendData(OBJECT_MANAGER, reinterpret_cast<char*>(&istat), sizeof(inputstatus), COM::get()->player_id);

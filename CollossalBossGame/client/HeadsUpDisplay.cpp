@@ -1,9 +1,8 @@
 #include "HeadsUpDisplay.h"
 #include "ConfigurationManager.h"
 
-HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice, bool * gs)
+HeadsUpDisplay::HeadsUpDisplay(LPDIRECT3DDEVICE9 direct3dDevice)
 {
-	gamestart = gs;
 	hudTopX = CM::get()->find_config_as_int("HUD_TOP_X");
 	hudTopY = CM::get()->find_config_as_int("HUD_TOP_Y");
 
@@ -190,10 +189,10 @@ void HeadsUpDisplay::displayHealthBars(int playerHealth, int monsterHealth, floa
 	chargeLine->SetWidth(10.0f);
 	chargeLine->Draw(clines, 2, D3DCOLOR_ARGB(255, (int)(255.0 * (100.0 - charge) / 100.0), (int)(255.0 * charge / 100.0), (int)(charge * 2)));
 
-
+	/*
 	if(playerHealth == 0) displayGameOver();
 	else if(monsterHealth == 0) displayVictory(); // todo Franklin fix so that we only Victory on last phase
-
+	*/
 	//D3DXVECTOR3 pos;
 	//pos.x=0.0f;
 	//pos.y=0.0f;
@@ -262,64 +261,39 @@ void displaytexture(LPD3DXSPRITE * sprite, D3DXVECTOR3 * pos, IDirect3DTexture9 
 
 void HeadsUpDisplay::displayStart()
 {
-	if (!*gamestart) {
-		int pid = COM::get()->player_id;
-		int playercount = 0;
-		int playernumber = 0;
-		int ready[5]; ready[1] = 0; ready[2] = 0; ready[3] = 0; ready[4] = 0;
-		vector<ClientObject *> l;
-		COM::get()->findObjects(OBJ_PLAYER, &l);
-		for(vector<ClientObject *>::iterator it = l.begin(); it != l.end(); ++it) {
-			PlayerCObj * pc = (PlayerCObj *)(*it);
-			playercount++;
-			if (pc->getId() == pid) {
-				playernumber = playercount;
-				ready[playercount] = pc->ready;
-			} else {
-				ready[playercount] = pc->ready;
-			}
-		}
-		if(playercount >= 1) {
-			D3DXVECTOR3 p1c(0,0,0.25);
-			D3DXVECTOR3 p1r(0,0,0);
-			if (ready[1]) { displaytexture(&playerready, &p1r, &playerreadytxt); }
-			(playernumber == 1) ? displaytexture(&youarep1, &p1c, &youarep1txt) : displaytexture(&p1connect, &p1c, &p1connecttxt);
-		}
-		if(playercount >= 2) {
-			D3DXVECTOR3 p2c(300,0,0.25);
-			D3DXVECTOR3 p2r(300,0,0);
-			if (ready[2]) { displaytexture(&playerready, &p2r, &playerreadytxt); }
-			(playernumber == 2) ? displaytexture(&youarep2, &p2c, &youarep2txt) : displaytexture(&p2connect, &p2c, &p2connecttxt);
-		}
-		if(playercount >= 3) {
-			D3DXVECTOR3 p3c(0,300,0.25);
-			D3DXVECTOR3 p3r(0,300,0);
-			if (ready[3]) { displaytexture(&playerready, &p3r, &playerreadytxt); }
-			(playernumber == 3) ? displaytexture(&youarep3, &p3c, &youarep3txt) : displaytexture(&p3connect, &p3c, &p3connecttxt);
-		}
-		if(playercount >= 4) {
-			D3DXVECTOR3 p4c(300,300,0.25);
-			D3DXVECTOR3 p4r(300,300,0);
-			if (ready[4]) { displaytexture(&playerready, &p4r, &playerreadytxt); }
-			(playernumber == 4) ? displaytexture(&youarep4, &p4c, &youarep4txt) : displaytexture(&p4connect, &p4c, &p4connecttxt);
-		}
-		if(!ready[playernumber]) {
-			D3DXVECTOR3 rdy(300,200,0);
-			displaytexture(&pressstart, &rdy, &pressstarttxt);
-		}
-		D3DXVECTOR3 blk(0,0,0.5);
-		displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
-
-		bool allready = true;
-		for(int j = 1; j < playercount+1; j++) {
-			if(ready[j] != 1) {
-				allready = false;
-			}
-		}
-		if(allready) {
-			*gamestart = true;
-		}
+	GameState * s = &CE::get()->state;
+	int playercount = s->totalPlayerCount;
+	int playernumber = s->getplayerindex(COM::get()->player_id);
+	if(playercount >= 1) {
+		D3DXVECTOR3 p1c(0,0,0.25);
+		D3DXVECTOR3 p1r(0,0,0);
+		if (s->playersready[0]) { displaytexture(&playerready, &p1r, &playerreadytxt); }
+		(playernumber == 1) ? displaytexture(&youarep1, &p1c, &youarep1txt) : displaytexture(&p1connect, &p1c, &p1connecttxt);
 	}
+	if(playercount >= 2) {
+		D3DXVECTOR3 p2c(300,0,0.25);
+		D3DXVECTOR3 p2r(300,0,0);
+		if (s->playersready[1]) { displaytexture(&playerready, &p2r, &playerreadytxt); }
+		(playernumber == 2) ? displaytexture(&youarep2, &p2c, &youarep2txt) : displaytexture(&p2connect, &p2c, &p2connecttxt);
+	}
+	if(playercount >= 3) {
+		D3DXVECTOR3 p3c(0,300,0.25);
+		D3DXVECTOR3 p3r(0,300,0);
+		if (s->playersready[2]) { displaytexture(&playerready, &p3r, &playerreadytxt); }
+		(playernumber == 3) ? displaytexture(&youarep3, &p3c, &youarep3txt) : displaytexture(&p3connect, &p3c, &p3connecttxt);
+	}
+	if(playercount >= 4) {
+		D3DXVECTOR3 p4c(300,300,0.25);
+		D3DXVECTOR3 p4r(300,300,0);
+		if (s->playersready[3]) { displaytexture(&playerready, &p4r, &playerreadytxt); }
+		(playernumber == 4) ? displaytexture(&youarep4, &p4c, &youarep4txt) : displaytexture(&p4connect, &p4c, &p4connecttxt);
+	}
+	if(!s->clientsready[playernumber]) {
+		D3DXVECTOR3 rdy(300,200,0);
+		displaytexture(&pressstart, &rdy, &pressstarttxt);
+	}
+	D3DXVECTOR3 blk(0,0,0.5);
+	displaytexture(&blackbackground, &blk, &blackbackgroundtxt);
 
 }
 

@@ -16,15 +16,7 @@ int ClientEngine::exitStatus;
  * Engine constructor.  Initializes the other engines.
  */
 ClientEngine::ClientEngine() {
-	isRunning = true;
-	exitStatus = 0;
-
-	//Initialize engines
-	DC::init("clientLog.txt");
-	CNM::init();
-	RE::init();
-	COM::init();
-	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
+	initializeSubModules();
 }
 
 /*
@@ -32,10 +24,7 @@ ClientEngine::ClientEngine() {
  */
 ClientEngine::~ClientEngine() {
 	//Clean engines
-	RE::clean();
-	COM::clean();
-	CNM::clean();
-	DC::clean();
+	cleanSubModules();
 }
 
 
@@ -46,6 +35,29 @@ void ClientEngine::exit(int i) {
 	DC::get()->print("Exiting with error code %d\n", i);
 	isRunning = false;
 	exitStatus = i;
+}
+
+void ClientEngine::initializeSubModules() {
+	isRunning = true;
+	exitStatus = 0;
+
+	//Initialize engines
+	DC::init("clientLog.txt");
+	CNM::init();
+	RE::init();
+	COM::init();
+	xctrl = new XboxController(1); // For now, we can decide later if we want to change the id
+
+	state.reset();
+}
+
+void ClientEngine::cleanSubModules() {
+	RE::clean();
+	COM::clean();
+	CNM::clean();
+	DC::clean();
+
+	state.reset();
 }
 
 /*
@@ -76,5 +88,22 @@ void ClientEngine::run() {
 		
 
 		//Sleep(10);
+
+		if(CE::get()->state.currentState == GAME_LOADING) {
+			char a[4];
+			ClientNetworkManager::get()->sendData(CLIENT_READY, a, 4, COM::get()->player_id);
+		}
 	}
+}
+
+void ClientEngine::serverUpdate(char * buf) {
+	state.deserialize(buf);
+}
+
+void ClientEngine::reset() {
+	// Shutdown and reset network manager
+	// clean Client Engine
+	cleanSubModules();
+	// reinit Client Engine
+	initializeSubModules();
 }
