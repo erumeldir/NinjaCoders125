@@ -20,6 +20,11 @@ public:
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
 	void setAnimationState(TentacleActionState state) { modelAnimationState = state; }
 
+	// Actions
+	void idle();
+	void slam();
+	void spike();
+
 	int getHealth() { return health; }
 
 	float angleToNearestPlayer();
@@ -41,7 +46,10 @@ private:
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 	Quat_t lastRotation;
+
+	// Collision boxes
 	Box idleBoxes[3]; // stores initial idle collision boxes
 	Box slamBoxes[3]; // stores first position for the slam boxes
+	Box spikeBox; // stores spike box =D
 };
 

@@ -27,6 +27,8 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	slamBoxes[1] = CM::get()->find_config_as_box("BOX_TENT_MID_SLAM");
 	slamBoxes[2] = CM::get()->find_config_as_box("BOX_TENT_TIP_SLAM");
 
+	spikeBox = CM::get()->find_config_as_box("BOX_TENT_SPIKE");
+
 	for (int i=0; i<3; i++) {
 		assert(pm->addBox(idleBoxes[i]) == i && "Your physics model is out of sync with the rest of the world...");
 	}
@@ -55,14 +57,25 @@ TentacleSObj::~TentacleSObj(void)
 bool TentacleSObj::update() {
 	attackCounter++;
 
-	// start attacking!
+	// State transitions
+	// These should probably be moved to the monster...
 	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
 		if (this->getFlag(IS_HARMFUL))
 		{
 			this->setFlag(IS_HARMFUL, 0);
 			attackBuffer = rand() % 40;
 			attackFrames = - rand() % 15;
-			modelAnimationState = T_IDLE;
+
+			// this is horrendous.....and really should have real logic...
+			if (rand() % 2)
+			{
+				modelAnimationState = T_IDLE;
+			}
+			else
+			{
+				modelAnimationState = T_SPIKE; // for testing
+			}
+
 			this->getPhysicsModel()->ref->setRot(lastRotation);
 		} else {
 			float angle = this->angleToNearestPlayer();
@@ -77,7 +90,101 @@ bool TentacleSObj::update() {
 			}
 		}
 	}
+
+	// State logic
+	switch(modelAnimationState)
+	{
+	case T_IDLE:
+		idle();
+		break;
+	case T_SLAM:
+		slam();
+		break;
+	case T_SPIKE:
+		spike();
+		break;
+	default:
+		if(modelAnimationState > NUM_T) DC::get()->print("ERROR: Tentacle state %d not known\n", modelAnimationState);
+		break;
+	}
+
+	if (health <= 0) {
+		health = 0;
+		overlord->removeTentacle(this);
+		return true; // I died!
+		//health = 0;
+		// fancy animation 
+		// just dont attack
+		//attackBuffer = 0;
+		//attackFrames = 0;
+	}
+
+
+	return false;
+}
+
+void TentacleSObj::idle() {
+	/* Cycle logic:
+	 * CYCLE*1/2 = The tentacle is extended
+	 * CYCLE = when the tentacle is back at the default position
+	 */
+	Box base = this->getPhysicsModel()->colBoxes.at(0);
+	Box middle = this->getPhysicsModel()->colBoxes.at(1);
+	Box tip = this->getPhysicsModel()->colBoxes.at(2);
+
+	Vec3f changePosT = Vec3f(), changeProportionT = Vec3f();
+	Vec3f changePosM = Vec3f(), changeProportionM = Vec3f();
+
+	//get the actual axis
+	Vec4f axis = this->getPhysicsModel()->ref->getRot();
+
+	// reset your state
+	if (idleCounter == 0) {
+		Box origBase = idleBoxes[0];
+		Box origMiddle = idleBoxes[1];
+		Box origTip = idleBoxes[2];
+
+		base.setPos(axis.rotateToThisAxis(origBase.getPos()));
+		base.setSize(axis.rotateToThisAxis(origBase.getSize()));
+
+		middle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
+		middle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
+
+		tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
+		tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
+	}
+	else if(idleCounter < 15) {
+		changeProportionM.y+=7;
+		changePosM.y--;
+		changePosT.y++;
+	}
+	else {
+		changeProportionM.y-=7;
+		changePosM.y++;
+		changePosT.y--;
+	}
+
+	idleCounter = (idleCounter + 1) % 31;
 	
+	// Rotate the relative change according to where we're facing
+	changePosT = axis.rotateToThisAxis(changePosT);
+	changeProportionT = axis.rotateToThisAxis(changeProportionT);
+	changePosM = axis.rotateToThisAxis(changePosM);
+	changeProportionM = axis.rotateToThisAxis(changeProportionM);
+	
+	tip.setRelPos(changePosT);
+	tip.setRelSize(changeProportionT);
+
+	middle.setRelPos(changePosM);
+	middle.setRelSize(changeProportionM);
+	
+	// Set new collision boxes
+	pm->colBoxes[0] = *(base.fix());
+	pm->colBoxes[1] = *(middle.fix());
+	pm->colBoxes[2] = *(tip.fix());
+}
+
+void TentacleSObj::slam() {
 	/* Cycle logic:
 	 * CYCLE*1/2 = The tentacle is extended
 	 * CYCLE = when the tentacle is back at the default position
@@ -91,120 +198,87 @@ bool TentacleSObj::update() {
 	//get the actual axis
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
-	if (modelAnimationState == T_IDLE)
-	{
-		// reset your state
-		if (idleCounter == 0) {
-			Box origBase = idleBoxes[0];
-			Box origMiddle = idleBoxes[1];
-			Box origTip = idleBoxes[2];
+	if (((attackCounter - attackBuffer))%CYCLE == 0) {
+		Box origBase = slamBoxes[0];
+		Box origMiddle = slamBoxes[1];
+		Box origTip = slamBoxes[2];
 
-			base.setPos(axis.rotateToThisAxis(origBase.getPos()));
-			base.setSize(axis.rotateToThisAxis(origBase.getSize()));
+		base.setPos(axis.rotateToThisAxis(origBase.getPos()));
+		base.setSize(axis.rotateToThisAxis(origBase.getSize()));
 
-			middle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
-			middle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
+		middle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
+		middle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
 
-			tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
-			tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
-		}/*
-		else if(idleCounter < 15) {
-			changeProportionM.y+=7;
-			changePosM.y--;
-			changePosT.y++;
-		}
-		else {
-			changeProportionM.y-=7;
-			changePosM.y++;
-			changePosT.y--;
-		}
+		tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
+		tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
+	}
+	/*
+		* What I want when I start slamming:
+		* BOX_TENT_BASE = -12, -20, 0, 28, 28, 75
+		* BOX_TENT_MID = -12, -50, -95, 28, 90, 90
+		* BOX_TENT_TIP = -12, 30, -165, 28, 30, 40
+		*
+		* When I'm in the middle of slamming:
+		* BOX_TENT_BASE = -12, -20, 28, 28, 28, 35
+		* BOX_TENT_MID = -12, -20, -28, 28, 70, 50
+		* BOX_TENT_TIP = -12, 8, 28, 28, 105, 35
+		*
+		* Base z: 0 -> 28 (-28, or -2 * 2 per 5 + a remainder)
+		* Base d: 75 -> 35 (-40, or -4 * 2 per 5)
+		*
+		* Mid y: -50 -> -20 (+30 or +6 per 5)
+		* Mid z: -95 -> -28 (+67 or +12 per 5 + a remainder)
+		* Mid h: 90 -> 70 (-20 or -4 per 5)
+		* Mid d: 90 -> 50 (-40 or -8 per 5)
+		*
+		* Tip y: 30 -> 8 (-22 or -4 per 5)
+		* Tip z: -165 -> 28 (+193 or +38 per 5)
+		* Tip h: 28 -> 105 (+77 or +14 per 5)
+		* Tip d: 40 -> 35 (-5 or -1 per 5)
+		* 
+		* Algorithm: 
+		*  1. at the beginning and end, move DIF % 10 units
+		*  2. per CYCLE / 10 iterations move everything DIF / 10 units.
+		* 
+		* With Cycle = 50, that means we need to get there in 25
+		* 
 		*/
-		idleCounter = (idleCounter + 1) % 31;
+	Vec3f pos;
+	if ( ((attackCounter - attackBuffer))%5 == 0 )
+	{
+		if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
+			//Base z
+			//Base d
 
-	} else { // SLAM
-
-		if (((attackCounter - attackBuffer))%CYCLE == 0) {
-			Box origBase = slamBoxes[0];
-			Box origMiddle = slamBoxes[1];
-			Box origTip = slamBoxes[2];
-
-			base.setPos(axis.rotateToThisAxis(origBase.getPos()));
-			base.setSize(axis.rotateToThisAxis(origBase.getSize()));
-
-			middle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
-			middle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
-
-			tip.setPos(axis.rotateToThisAxis(origTip.getPos()));
-			tip.setSize(axis.rotateToThisAxis(origTip.getSize()));
-		}
-		/*
-		 * What I want when I start slamming:
-		 * BOX_TENT_BASE = -12, -20, 0, 28, 28, 75
-		 * BOX_TENT_MID = -12, -50, -95, 28, 90, 90
-		 * BOX_TENT_TIP = -12, 30, -165, 28, 30, 40
-		 *
-		 * When I'm in the middle of slamming:
-		 * BOX_TENT_BASE = -12, -20, 28, 28, 28, 35
-		 * BOX_TENT_MID = -12, -20, -28, 28, 70, 50
-		 * BOX_TENT_TIP = -12, 8, 28, 28, 105, 35
-		 *
-		 * Base z: 0 -> 28 (-28, or -2 * 2 per 5 + a remainder)
-		 * Base d: 75 -> 35 (-40, or -4 * 2 per 5)
-		 *
-		 * Mid y: -50 -> -20 (+30 or +6 per 5)
-		 * Mid z: -95 -> -28 (+67 or +12 per 5 + a remainder)
-		 * Mid h: 90 -> 70 (-20 or -4 per 5)
-		 * Mid d: 90 -> 50 (-40 or -8 per 5)
-		 *
-		 * Tip y: 30 -> 8 (-22 or -4 per 5)
-		 * Tip z: -165 -> 28 (+193 or +38 per 5)
-		 * Tip h: 28 -> 105 (+77 or +14 per 5)
-		 * Tip d: 40 -> 35 (-5 or -1 per 5)
-		 * 
-		 * Algorithm: 
-		 *  1. at the beginning and end, move DIF % 10 units
-		 *  2. per CYCLE / 10 iterations move everything DIF / 10 units.
-		 * 
-		 * With Cycle = 50, that means we need to get there in 25
-		 * 
-		 */
-		Vec3f pos;
-		if ( ((attackCounter - attackBuffer))%5 == 0 )
-		{
-			if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
-				//Base z
-				//Base d
-
-				//Mid y
-				changePosM.y -= 5;
-				//Mid z
-				changePosM.z += 14;
-				//Mid d
-				//changeProportionM.z -= 20;
+			//Mid y
+			changePosM.y -= 5;
+			//Mid z
+			changePosM.z += 14;
+			//Mid d
+			//changeProportionM.z -= 20;
 				
-				//Tip y
-				changePosT.y += 4;
-				//Tip z
-				changePosT.z += 39;
-				//Tip h
-				changeProportionT.y -= 30;
+			//Tip y
+			changePosT.y += 4;
+			//Tip z
+			changePosT.z += 39;
+			//Tip h
+			changeProportionT.y -= 30;
 				
-			} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
-				//Mid y
-				changePosM.y += 5;
-				//Mid z
-				changePosM.z -= 14;
-				//Mid d
-				//changeProportionM.z += 20;
+		} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
+			//Mid y
+			changePosM.y += 5;
+			//Mid z
+			changePosM.z -= 14;
+			//Mid d
+			//changeProportionM.z += 20;
 				
-				//Tip y
-				changePosT.y -= 4;
-				//Tip z
-				changePosT.z -= 39;
-				//Tip h
-				changeProportionT.y += 30;
+			//Tip y
+			changePosT.y -= 4;
+			//Tip z
+			changePosT.z -= 39;
+			//Tip h
+			changeProportionT.y += 30;
 				
-			}
 		}
 	}
 	
@@ -224,20 +298,23 @@ bool TentacleSObj::update() {
 	pm->colBoxes[0] = *(base.fix());
 	pm->colBoxes[1] = *(middle.fix());
 	pm->colBoxes[2] = *(tip.fix());
+}
 
-	if (health <= 0) {
-		health = 0;
-		overlord->removeTentacle(this);
-		return true; // I died!
-		//health = 0;
-		// fancy animation 
-		// just dont attack
-		//attackBuffer = 0;
-		//attackFrames = 0;
-	}
+void TentacleSObj::spike() {
+	//get the actual axis
+	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
+	Box spike;
 
-	return false;
+	spike.setPos(axis.rotateToThisAxis(spikeBox.getPos()));
+	spike.setSize(axis.rotateToThisAxis(spikeBox.getSize()));
+
+	// Spike is one big collision box
+	// middle and tip are dimmension-less
+	// Set new collision boxes
+	pm->colBoxes[0] = *(spike.fix());
+	pm->colBoxes[1] = Box();
+	pm->colBoxes[2] = Box();
 }
 
 int TentacleSObj::serialize(char * buf) {
