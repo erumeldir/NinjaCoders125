@@ -31,7 +31,6 @@ public:
 	char serialbuffer[100];
 
 private:
-	TentacleSObj *tentacle[10];
 	PhysicsModel *pm;
 	int health;
 	int phase; // what phase of the monster you're in

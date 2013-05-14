@@ -37,15 +37,18 @@ private:
 	MonsterSObj* overlord;
 	Box updatableBox;
 	int health;
+	bool attacked;
 	int idleCounter; // keeps track of what frame we are in the idle animation
 	int attackCounter; // number of frames in between when the monster is harmful (emulates an 'attack')
 	int attackBuffer; // how many frames pass before we're harmful again
 	int attackFrames; // how many continuous frames we are harmful
 	bool sweepingZPositive; // are we sweeping in the direction which makes z positive 
 	int dir;
+	bool currStateDone; // whether or not our current state has gone through it's full cycle
 	TentacleActionState modelAnimationState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 	Quat_t lastRotation;
+	float playerAngle;
 
 	// Collision boxes
 	Box idleBoxes[3]; // stores initial idle collision boxes

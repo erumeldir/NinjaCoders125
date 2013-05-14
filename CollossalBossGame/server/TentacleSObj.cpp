@@ -41,6 +41,8 @@ TentacleSObj::TentacleSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, Mon
 	attackCounter = distribution(generator);
 	
 	idleCounter = 0;
+	attacked = false; // haven't been attacked yet
+	currStateDone = true; // no states have started yet
 
 	// Configuration options
 	attackBuffer = CM::get()->find_config_as_int("TENTACLE_ATTACK_BUF");
@@ -57,58 +59,13 @@ TentacleSObj::~TentacleSObj(void)
 bool TentacleSObj::update() {
 	attackCounter++;
 
-	// State transitions
-	// These should probably be moved to the monster...
-	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
-		if (this->getFlag(IS_HARMFUL))
-		{
-			this->setFlag(IS_HARMFUL, 0);
-			attackBuffer = rand() % 40;
-			attackFrames = - rand() % 15;
+	////////////////// State transitions /////////////////////
+	// These should maybe be moved to the monster...
 
-			// this is horrendous.....and really should have real logic...
-			if (rand() % 2)
-			{
-				modelAnimationState = T_IDLE;
-			}
-			else
-			{
-				modelAnimationState = T_SPIKE; // for testing
-			}
-
-			this->getPhysicsModel()->ref->setRot(lastRotation);
-		} else {
-			float angle = this->angleToNearestPlayer();
-			if (angle != -1.f)
-			{
-				Vec3f axis = Vec3f(0,0,1);
-				Vec4f qAngle = Vec4f(axis,angle);
-				lastRotation = this->getPhysicsModel()->ref->getRot();
-				this->getPhysicsModel()->ref->rotate(qAngle);
-				this->setFlag(IS_HARMFUL, 1);
-				modelAnimationState = T_SLAM;
-			}
-		}
-	}
-
-	// State logic
-	switch(modelAnimationState)
-	{
-	case T_IDLE:
-		idle();
-		break;
-	case T_SLAM:
-		slam();
-		break;
-	case T_SPIKE:
-		spike();
-		break;
-	default:
-		if(modelAnimationState > NUM_T) DC::get()->print("ERROR: Tentacle state %d not known\n", modelAnimationState);
-		break;
-	}
-
+	// If you're dead, you're dead xD
 	if (health <= 0) {
+		// DEAD STATE
+		// todo Dead animation?...
 		health = 0;
 		overlord->removeTentacle(this);
 		return true; // I died!
@@ -118,7 +75,134 @@ bool TentacleSObj::update() {
 		//attackBuffer = 0;
 		//attackFrames = 0;
 	}
+	// Only change states when our current state has gone through a whole cycle
+	// This should be set by the individual state methods when their cycle is over
+	// i.e. idle(), slam(), spike(), etc...
+	else if (currStateDone)
+	{
+		currStateDone = false; // we're about to start a new state =)
 
+		int angryProb = attacked ? 85 : 60;
+		
+		// we're attacking!
+		if ((rand() % 100) < angryProb) 
+		{
+			this->setFlag(IS_HARMFUL, 1);
+
+			playerAngle = this->angleToNearestPlayer();
+			bool playerNear = playerAngle != -1.f;
+
+			int targetAttackProb = playerNear ? 90 : 25;
+
+			// targetted attack
+			if ((rand() % 100) < targetAttackProb)
+			{
+				// if we got here without a real target, just set a default
+				// for now anyway
+				if (playerAngle == -1.f) playerAngle = 0.f;
+
+				// randomly pick between shoot and slam
+				// maybe this will depend on if you're a tentacle or a head
+				if (rand() % 2) { modelAnimationState = T_SLAM; }
+				else { modelAnimationState = T_SHOOT; }
+			}
+			// non-targetted attack
+			else
+			{
+				// randomly pick between slam combo, spike, and defense rage
+				switch(rand() % 3)
+				{
+				case 0:		modelAnimationState = T_COMBO; break;
+				case 1:		modelAnimationState = T_SPIKE; break;
+				default:	modelAnimationState = T_RAGE; break;
+				}
+			}
+		}
+		// we're not attacking!
+		else
+		{
+			this->setFlag(IS_HARMFUL, 0);
+
+			// randomly pick between idle and probing
+			if (rand() % 2) { modelAnimationState = T_IDLE; }
+			else { modelAnimationState = T_PROBE; }
+		}
+	}
+
+	//	if (attackCounter > attackBuffer && !( (attackCounter - attackBuffer) % CYCLE)){
+	//		if (this->getFlag(IS_HARMFUL))
+	//		{
+	//			this->setFlag(IS_HARMFUL, 0);
+	//			attackBuffer = rand() % 40;
+	//			attackFrames = - rand() % 15;
+
+	//			// this is horrendous.....and really should have real logic...
+	//			if (rand() % 2)
+	//			{
+	//				modelAnimationState = T_IDLE;
+	//			}
+	//			else
+	//			{
+	//				modelAnimationState = T_SPIKE; // for testing
+	//			}
+
+	//			this->getPhysicsModel()->ref->setRot(lastRotation);
+	//		} else {
+	//			float angle = this->angleToNearestPlayer();
+	//			if (angle != -1.f)
+	//			{
+	//				Vec3f axis = Vec3f(0,0,1);
+	//				Vec4f qAngle = Vec4f(axis,angle);
+	//				lastRotation = this->getPhysicsModel()->ref->getRot();
+	//				this->getPhysicsModel()->ref->rotate(qAngle);
+	//				this->setFlag(IS_HARMFUL, 1);
+	//				modelAnimationState = T_SLAM;
+	//			}
+	//		}
+	//	}
+	//}
+
+	// for testing todo remove
+	DC::get()->print("Current State is...");
+
+	///////////////////// State logic ///////////////////////
+	switch(modelAnimationState)
+	{
+	case T_IDLE:
+		DC::get()->print("...IDLE!\r");
+		idle();
+		break;
+	case T_PROBE:
+		DC::get()->print("...PROBE!\r");
+		idle(); // todo probe
+		break;
+	case T_SLAM:
+		DC::get()->print("...SLAM!\r");
+		slam();
+		break;
+	case T_COMBO:
+		DC::get()->print("...COMBO!\r");
+		slam(); // todo slam combo
+		break;
+	case T_SHOOT:
+		DC::get()->print("...SHOOT!\r");
+		slam(); // todo shoot (maybe wait until we have a head model?)
+		break;
+	case T_SPIKE:
+		DC::get()->print("...SPIKE!\r");
+		spike();
+		break;
+	case T_RAGE:
+		DC::get()->print("...RAGE!\r");
+		spike(); // todo defense rage
+		break;
+	default:
+		if(modelAnimationState > NUM_T) DC::get()->print("ERROR: Tentacle state %d not known\n", modelAnimationState);
+		break;
+	}
+
+	// Reset attack every update loop, onCollision re-sets it
+	attacked = false;
 
 	return false;
 }
@@ -164,6 +248,9 @@ void TentacleSObj::idle() {
 		changePosT.y--;
 	}
 
+	// we're done!
+	currStateDone = (idleCounter == 30);
+
 	idleCounter = (idleCounter + 1) % 31;
 	
 	// Rotate the relative change according to where we're facing
@@ -199,6 +286,16 @@ void TentacleSObj::slam() {
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
 	if (((attackCounter - attackBuffer))%CYCLE == 0) {
+		// First, rotate ourselves to the player
+		Vec3f rotationAxis = Vec3f(0,0,1);
+		Vec4f qAngle = Vec4f(rotationAxis, playerAngle);
+		lastRotation = this->getPhysicsModel()->ref->getRot();
+		this->getPhysicsModel()->ref->rotate(qAngle);
+
+		// Update our actual rotation axis
+		axis = this->getPhysicsModel()->ref->getRot();
+
+		// Now set our collision boxes
 		Box origBase = slamBoxes[0];
 		Box origMiddle = slamBoxes[1];
 		Box origTip = slamBoxes[2];
@@ -281,6 +378,16 @@ void TentacleSObj::slam() {
 				
 		}
 	}
+
+	// we're done!
+	if((attackCounter - attackBuffer)%CYCLE == CYCLE - 1)
+	{
+		// reset our rotation
+		this->getPhysicsModel()->ref->setRot(lastRotation);
+
+		// establish that we're done
+		currStateDone = true;
+	}
 	
 	// Rotate the relative change according to where we're facing
 	changePosT = axis.rotateToThisAxis(changePosT);
@@ -301,6 +408,8 @@ void TentacleSObj::slam() {
 }
 
 void TentacleSObj::spike() {
+	static int spikeCounter = 0; 
+
 	//get the actual axis
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
@@ -315,6 +424,10 @@ void TentacleSObj::spike() {
 	pm->colBoxes[0] = *(spike.fix());
 	pm->colBoxes[1] = Box();
 	pm->colBoxes[2] = Box();
+
+	// I'm randomly making spike last 5 cycles, feel free to change this xD
+	currStateDone = (spikeCounter == 4);
+	spikeCounter = (spikeCounter + 1)%5;
 }
 
 int TentacleSObj::serialize(char * buf) {
@@ -391,7 +504,11 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
 		health-= player->damage;
+		
 		if(this->health < 0) health = 0;
-		if(this->health > 100) health = 100;
+		if(this->health > 100) health = 100; // would this ever be true? o_O
+
+		// I have been attacked! You'll regret it in the next udpate loop player! >_>
+		attacked = player->damage > 0;
 	}
 }
