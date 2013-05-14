@@ -31,6 +31,12 @@ bool BulletSObj::update() {
 	// Apply Force of Gravity on every time step - or not, since we wanted an arc-ing shot
 	// return true when it collides with something?
 	// That'll wait for onCollision, I suppose.
+	this->setFlag(IS_FALLING, 0); // YAY IT'S A LASER PEWPEW
+	Vec3f magvec = this->getPhysicsModel()->vel;
+	Vec3f magacc = this->getPhysicsModel()->accel;
+	if(fabs(magvec.x) < 0.1 && fabs(magvec.y) < 0.1 && fabs(magvec.z) < 0.1 && fabs(magacc.x) < 0.1 && fabs(magacc.y) < 0.1 && fabs(magacc.z) < 0.1) {
+		return true;
+	}
 	if(this->health > 0) {
 		return false;
 	} else {

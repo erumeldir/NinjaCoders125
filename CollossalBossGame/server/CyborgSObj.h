@@ -11,5 +11,5 @@ public:
 	virtual void initialize();
 protected:
 	virtual void releaseCharge();
+	virtual void actionAttack();
 };
-

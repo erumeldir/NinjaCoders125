@@ -80,6 +80,7 @@ void PlayerSObj::initialize() {
 	initUpRot = Quat_t();
 	finalUpRot = Quat_t();
 	camYaw = 0;
+	camPitch = 0;
 	camKpSlow = CM::get()->find_config_as_float("CAM_KP_SLOW");
 	camKpFast = CM::get()->find_config_as_float("CAM_KP_FAST");
 	camKp = camKpSlow;
@@ -109,11 +110,12 @@ bool PlayerSObj::update() {
 	{
 		firedeath = false;
 
-		attacking = istat.attack && newAttack;
-		newAttack = !istat.attack;
+		attacking = istat.specialPower && newAttack;
+		newAttack = !istat.specialPower;
 
-		//if (attacking) attackCounter++;
-		//else attackCounter = 0;
+		if (attacking) {
+			actionAttack();
+		}
 
 		// Jumping can happen in two cases
 		// 1. Collisions
@@ -148,6 +150,16 @@ bool PlayerSObj::update() {
 		if(fabs(istat.forwardDist) > 0.0f || fabs(istat.rightDist) > 0.0f) {
 			yaw = camYaw + istat.rotAngle;
 		}
+		if(istat.camLock) {
+			camPitch = 0.f;
+		} else {
+			camPitch += istat.rotVert;
+		}
+		if (camPitch > M_PI / 2.f) {
+			camPitch = (float)M_PI / 2.f;
+		} else if(camPitch < -M_PI / 4) {
+			camPitch = (float)-M_PI / 4.f;
+		}
 
 		Quat_t qRot = upRot * Quat_t(Vec3f(0,1,0), yaw);
 		pm->ref->setRot(qRot);
@@ -162,7 +174,7 @@ bool PlayerSObj::update() {
 		pm->applyForce(total);
 
 		// Apply special power
-		if (istat.specialPower && !getFlag(IS_FALLING)) // holding down increases the charge
+		if (istat.attack && !getFlag(IS_FALLING)) // holding down increases the charge
 		{
 			charge+=chargeUpdate;
 			if(charge > 13) charge = 13.f;

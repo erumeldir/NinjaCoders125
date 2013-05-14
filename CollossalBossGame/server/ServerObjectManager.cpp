@@ -211,9 +211,8 @@ void ServerObjectManager::reset() {
 			it != mObjs.end();
 			++it) {
 		ServerObject * o = it->second;
-		string s = typeid(*o).name();
 		// if it's not a Player object...
-		if(s.compare("class PlayerSObj")) {
+		if(o->getType() != OBJ_PLAYER) {
 			// asdf.push_back(it->first);
 			//freeId(it->first);
 			//lsObjsToSend.push_back(pair<CommandTypes,ServerObject*>(CMD_DELETE,it->second));

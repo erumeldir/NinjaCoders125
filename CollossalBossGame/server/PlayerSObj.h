@@ -47,6 +47,7 @@ protected:
 	//Quat_t camYawRot;		//Camera yaw about the default up vector
 	float yaw;
 	float camYaw;
+	float camPitch;
 	Quat_t camRot;
 	Quat_t initUpRot;
 	Quat_t finalUpRot;
@@ -64,5 +65,6 @@ protected:
 	float controlAngles(float des, float cur);
 
 	virtual void releaseCharge() = 0;
+	virtual void actionAttack() = 0;
 };
 
