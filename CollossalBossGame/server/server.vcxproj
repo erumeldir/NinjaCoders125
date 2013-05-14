@@ -82,7 +82,6 @@
     <ClCompile Include="TestSObj.cpp" />
     <ClCompile Include="WallSObj.cpp" />
     <ClCompile Include="WorldSObj.cpp" />
-    <ClCompile Include="WorldManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -97,8 +96,6 @@
     <ClInclude Include="TentacleSObj.h" />
     <ClInclude Include="TestSObj.h" />
     <ClInclude Include="WallSObj.h" />
-    <ClInclude Include="WorldSObj.h" />
-    <ClInclude Include="WorldManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\shared.vcxproj">
