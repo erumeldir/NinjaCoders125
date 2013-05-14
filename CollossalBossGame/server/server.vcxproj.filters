@@ -41,9 +41,6 @@
     <ClCompile Include="MonsterSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WorldManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TentacleSObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,13 +94,7 @@
     <ClInclude Include="WallSObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldSObj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterSObj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TentacleSObj.h">

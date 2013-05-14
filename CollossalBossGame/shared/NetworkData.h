@@ -5,14 +5,16 @@
 #include "defs.h"
 
 #define MAX_PACKET_SIZE 1000000
-#define PACKET_SIZE 1024
+#define PACKET_SIZE 256
 
 // The type of message sent between client and server.
 enum PacketTypes {
     INIT_CONNECTION = 0,
-    ACTION_EVENT = 1,
-	MESSAGE = 2,
-	COMPLETE
+    OBJECT_MANAGER = 1,
+    GAMESTATE_MANAGER = 2,
+    RESET = 3,
+    CLIENT_READY = 4,
+    COMPLETE
 };
 
 // Commands sent from the ServerObjectManager to the ClientObjectManager.

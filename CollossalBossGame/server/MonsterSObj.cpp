@@ -3,6 +3,7 @@
 #include "ServerObjectManager.h"
 #include "defs.h"
 #include "PlayerSObj.h"
+#include "GameServer.h"
 #include <time.h>
 
 MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
@@ -21,7 +22,7 @@ MonsterSObj::MonsterSObj(uint id, uint numParts) : ServerObject(id)
 
 	this->numParts = numParts;
 	phase = -1;
-	WorldManager::get()->event_monster_spawn();
+	GameServer::get()->event_monster_spawn();
 
 	srand((uint)time(NULL)); // initialize our random number generator
 
@@ -85,7 +86,7 @@ bool MonsterSObj::update() {
 				newTentacle = new TentacleSObj(SOM::get()->genId(), (Model)i, currPlace.first, currPlace.second, this);
 				break;
 			default: // you beat all the phases!
-				WorldManager::get()->event_monster_death();
+				GameServer::get()->event_monster_death();
 				return true; // I died!
 				// DO NOTHING MORE
 				// DONT YOU DARE
