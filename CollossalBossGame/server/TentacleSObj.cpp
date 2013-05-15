@@ -169,7 +169,7 @@ bool TentacleSObj::update() {
 
 	// for testing todo remove
 
-	//actionState = RAGE_ACTION;
+	actionState = RAGE_ACTION;
 
 	///////////////////// State logic ///////////////////////
 
@@ -482,7 +482,29 @@ void TentacleSObj::rage() {
 		SOM::get()->add(new RageSObj(SOM::get()->genId(), pm->ref->getPos() + changePos));
 	}
 
-	currStateDone = stateCounter >= RageSObj::lifetime; // random fix todo
+	// for now, keep our initial idle collision boxes
+	Box origBase = idleBoxes[0];
+	Box origMiddle = idleBoxes[1];
+	Box origTip = idleBoxes[2];
+
+	//get the actual axis
+	Vec4f axis = this->getPhysicsModel()->ref->getRot();
+
+	origBase.setPos(axis.rotateToThisAxis(origBase.getPos()));
+	origBase.setSize(axis.rotateToThisAxis(origBase.getSize()));
+
+	origMiddle.setPos(axis.rotateToThisAxis(origMiddle.getPos()));
+	origMiddle.setSize(axis.rotateToThisAxis(origMiddle.getSize()));
+
+	origTip.setPos(axis.rotateToThisAxis(origTip.getPos()));
+	origTip.setSize(axis.rotateToThisAxis(origTip.getSize()));
+
+	pm->colBoxes[0] = *(origBase.fix());
+	pm->colBoxes[1] = *(origMiddle.fix());
+	pm->colBoxes[2] = *(origTip.fix());
+
+	// when the object dies we're done raging
+	currStateDone = stateCounter >= RageSObj::lifetime;
 }
 
 int TentacleSObj::serialize(char * buf) {
