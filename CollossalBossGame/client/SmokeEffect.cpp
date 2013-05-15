@@ -4,7 +4,7 @@
 SmokeEffect::SmokeEffect(void)
 {
 	vbSize = 2048;
-	filename = "res/smoke.bmp";
+	filename = "res/smokey.png";
 	vbOffset = 0;
 	vbBatchSize = 512;
 	pointSize = 5.0f;
@@ -19,6 +19,8 @@ SmokeEffect::~SmokeEffect(void)
 void SmokeEffect::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
 {
 	ParticleSystem::preRender(direct3dDevice);
+
+
    	direct3dDevice->SetRenderState(D3DRS_FOGENABLE, false);
 	//direct3dDevice->SetRenderState(D3DRS_RANGEFOGENABLE, TRUE);
 }
@@ -40,10 +42,10 @@ void SmokeEffect::resetParticle(ParticleAttributes* a)
 	D3DXVECTOR3 max = D3DXVECTOR3(1.0f,1.0f,1.0f);
 	this->getRandVec(&a->vel, &min, &max);
 	D3DXVec3Normalize(&a->vel, &a->vel);
-	a->vel *= 5;  
-	a->color = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
+	a->vel *= 15;  
+	a->color = D3DXCOLOR(0.1f,0.1f,0.1f,0.25f);
 	a->age = 0;
-	a->lifetime = 10;
+	a->lifetime = 20;
 }
 
 void SmokeEffect::update(float timeDelta)
@@ -52,11 +54,14 @@ void SmokeEffect::update(float timeDelta)
 	for(i = particles.begin(); i != particles.end(); i++)
 	{
 		i->age+=timeDelta;
-		if(i->age > i->lifetime) resetParticle(&(*i));
+		//if(i->age > i->lifetime) resetParticle(&(*i));
 			
 		i->pos += i->vel * timeDelta;
 		i->pos.y--;
+		i->pos.x++;
+		i->pos.z--;
 		i->vel.y--;
+
 		if(i->pos.y < 0) resetParticle(&(*i));
 	}
 }
