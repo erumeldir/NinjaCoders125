@@ -4,7 +4,7 @@ class RageSObj :
 	public ServerObject
 {
 public:
-	RageSObj(uint id, Point_t pos, Box bx);
+	RageSObj(uint id, Point_t pos);
 	virtual ~RageSObj(void);
 
 	virtual bool update();

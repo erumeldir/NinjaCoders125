@@ -41,6 +41,7 @@ void ParticleSystem::init(LPDIRECT3DDEVICE9 pDevice)
 
 ParticleSystem::~ParticleSystem(void)
 {
+	particles.clear();
 	texture->Release();
 	vb->Release();
 }
@@ -103,7 +104,7 @@ void ParticleSystem::preRender(LPDIRECT3DDEVICE9 direct3dDevice)
 
     direct3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
     direct3dDevice->SetRenderState( D3DRS_LIGHTING, false);
-    direct3dDevice->SetRenderState( D3DRS_FOGENABLE, false);
+  //  direct3dDevice->SetRenderState( D3DRS_FOGENABLE, false);
 
 
 }

@@ -214,6 +214,8 @@ RenderEngine::~RenderEngine() {
 	RE::re = NULL;
 	direct3dDevice->Release(); // close and release the 3D device
 	direct3dInterface->Release(); // close and release Direct3D
+	this->removeParticleEffect(colBxPts);
+
 	delete hud;
 	delete cam;
 }
@@ -261,15 +263,19 @@ void RenderEngine::render() {
 	gamestartdisplaylogic();
 	hud->displayBackground();
 	sceneDrawing();
-	for(int i = 0; i < this->particleSystems.size(); i++)
-	{
-		this->particleSystems[i]->render(direct3dDevice);
+	for(list<ParticleSystem *>::iterator it = particleSystems.begin();
+			it != particleSystems.end();
+			++it) {
+		(*it)->render(direct3dDevice);
 	}
 	drawHUD();
 
 	direct3dDevice->EndScene(); // ends the 3D scene
 
 	direct3dDevice->Present(0, 0, 0, 0); // displays the created frame
+
+	//Clear collision-box particles
+	this->colBxPts->update(.33);
 }
 
 // todo take time

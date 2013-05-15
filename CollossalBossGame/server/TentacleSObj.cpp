@@ -3,6 +3,7 @@
 #include "ServerObjectManager.h"
 #include "defs.h"
 #include "PlayerSObj.h"
+#include "BulletSObj.h"
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 #include "RageSObj.h"
@@ -168,7 +169,7 @@ bool TentacleSObj::update() {
 
 	// for testing todo remove
 
-	actionState = RAGE_ACTION;
+	//actionState = RAGE_ACTION;
 
 	///////////////////// State logic ///////////////////////
 
@@ -475,10 +476,10 @@ void TentacleSObj::rage() {
 
 	// First, we create the wave object
 	if (stateCounter == 0) {
-		Box rageBox;
 		Vec4f axis = this->getPhysicsModel()->ref->getRot();
-		rageBox.setRelPos(axis.rotateToThisAxis(Vec3f(0,0,-120)));
-		SOM::get()->add(new RageSObj(SOM::get()->genId(), pm->ref->getPos(), rageBox));
+		Vec3f changePos = Vec3f(0,0,-120);
+		changePos = axis.rotateToThisAxis(changePos);
+		SOM::get()->add(new RageSObj(SOM::get()->genId(), pm->ref->getPos() + changePos));
 	}
 
 	currStateDone = stateCounter >= RageSObj::lifetime; // random fix todo
@@ -544,9 +545,6 @@ float TentacleSObj::angleToNearestPlayer()
 }
 
 void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
-	// if I collided against the player, AND they're attacking me, loose health
-	string s = typeid(*obj).name();
-
 	// if the monster is attacking, it pushes everything off it on the last attack frame
 //	if (attackCounter == (attackBuffer + attackFrames))
 	if (actionState == RAGE_ACTION)
@@ -555,7 +553,8 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);
 	}
 
-	if(!s.compare("class PlayerSObj")) 
+	// if I collided against the player, AND they're attacking me, loose health
+	if(obj->getType() == OBJ_PLAYER)
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
 		health-= player->damage;
@@ -565,5 +564,12 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 
 		// I have been attacked! You'll regret it in the next udpate loop player! >_>
 		attacked = player->damage > 0;
+	}
+
+	if(obj->getType() == OBJ_BULLET) {
+		BulletSObj* bullet = reinterpret_cast<BulletSObj*>(obj);
+		health -= bullet->damage;
+		if(this->health < 0) health = 0;
+		if(this->health > 100) health = 100;
 	}
 }

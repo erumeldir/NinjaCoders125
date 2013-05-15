@@ -3,12 +3,12 @@
 
 int RageSObj::lifetime;
 
-RageSObj::RageSObj(uint id, Point_t pos, Box bx) : ServerObject(id)
+RageSObj::RageSObj(uint id, Point_t pos) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new RageSObj %d\n", id);
 	this->modelNum = (Model)-1; // these guys are invisible
 	pm = new PhysicsModel(pos, Quat_t(), 1);
-	pm->addBox(bx);
+	pm->addBox(Box());
 	age = 0;
 	this->setFlag(IS_STATIC, 1);
 	lifetime = 20;

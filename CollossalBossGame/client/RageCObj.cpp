@@ -17,7 +17,7 @@ RageCObj::RageCObj(uint id, char *serializedData) :
 
 RageCObj::~RageCObj(void)
 {
-	delete push;
+	RE::get()->removeParticleEffect(push);
 	delete rm;
 }
 

@@ -6,9 +6,9 @@ PushAwayEffect::PushAwayEffect(void)
 	vbSize = 2048;
 	vbOffset = 0;
 	vbBatchSize = 512;
-	pointSize = 2.5f;
+	pointSize = 12.5f;
 	filename = "res/spiky.jpg";
-	for(int i =0; i< 1000; i++) addParticle();
+	for(int i =0; i< 512; i++) addParticle();
 }
 
 
@@ -25,10 +25,10 @@ void PushAwayEffect::resetParticle(ParticleAttributes* a)
 	D3DXVECTOR3 max = D3DXVECTOR3(1.0f,1.0f,1.0f);
 	this->getRandVec(&a->vel, &min, &max);
 	D3DXVec3Normalize(&a->vel, &a->vel);
-	a->vel *= 17;  
-	a->color = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
+	a->vel *= 30;  
+	a->color = D3DXCOLOR(1.0f, 0.1f, 0.1f, 1.0f);
 	a->age = 0;
-	a->lifetime = 5;
+	a->lifetime = 3;
 }
 
 void PushAwayEffect::update(float timeDelta)
