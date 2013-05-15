@@ -88,9 +88,21 @@ enum ObjectType {
 	OBJ_PLAYER,
 	OBJ_MONSTER,
 	OBJ_TENTACLE,
+	OBJ_BULLET,
 	NUM_OBJS
 };
 
+/*
+ * Character Classes
+ * These tell the client which object to create.
+ */
+enum CharacterClass {
+	CHAR_CLASS_GENERAL,
+	CHAR_CLASS_CYBORG,
+	CHAR_CLASS_SHOOTER,
+	CHAR_CLASS_SCIENTIST,
+	CHAR_CLASS_MECHANIC 
+};
 /*
  * Data format structures
  * These structures are used for formatting serialized data.  No actual
@@ -111,6 +123,7 @@ enum ObjectType {
  */
 struct CreateHeader {
 	ObjectType type;
+	CharacterClass cc;
 };
 
 /*
@@ -182,3 +195,4 @@ enum PlayerAnimationState {
 	ATK  = 3,
 	DEAD = 4
 };
+

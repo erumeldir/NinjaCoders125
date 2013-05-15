@@ -3,6 +3,7 @@
 #include "ServerObjectManager.h"
 #include "defs.h"
 #include "PlayerSObj.h"
+#include "BulletSObj.h"
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 #include <time.h>
@@ -260,9 +261,6 @@ float TentacleSObj::angleToNearestPlayer()
 }
 
 void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) {
-	// if I collided against the player, AND they're attacking me, loose health
-	string s = typeid(*obj).name();
-
 	// if the monster is attacking, it pushes everything off it on the last attack frame
 	if (attackCounter == (attackBuffer + attackFrames))
 	{
@@ -270,10 +268,18 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);
 	}
 
-	if(!s.compare("class PlayerSObj")) 
+	// if I collided against the player, AND they're attacking me, loose health
+	if(obj->getType() == OBJ_PLAYER)
 	{	
 		PlayerSObj* player = reinterpret_cast<PlayerSObj*>(obj);
 		health-= player->damage;
+		if(this->health < 0) health = 0;
+		if(this->health > 100) health = 100;
+	}
+
+	if(obj->getType() == OBJ_BULLET) {
+		BulletSObj* bullet = reinterpret_cast<BulletSObj*>(obj);
+		health -= bullet->damage;
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;
 	}

@@ -126,3 +126,25 @@ void slerp(Quat_t *res, const Quat_t &start, const Quat_t &end, float t) {
 Vec3f Vec4f::rotateToThisAxis(Vec3f change) {
 	return rotate(change, *this);
 }
+/*
+DIRECTION flip(DIRECTION dir) {
+	return (DIRECTION)((dir < 0x7) ? (dir << 3) : (dir >> 3));
+}
+*/
+
+Vec3f dirVec(DIRECTION dir) {
+	switch(dir) {
+	case NORTH:
+		return Vec3f(0,0,1);
+	case EAST:
+		return Vec3f(1,0,0);
+	case UP:
+		return Vec3f(0,1,0);
+	case SOUTH:
+		return Vec3f(0,0,-1);
+	case WEST:
+		return Vec3f(-1,0,0);
+	case DOWN:
+		return Vec3f(0,-1,0);
+	}
+}
