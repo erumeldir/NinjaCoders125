@@ -21,6 +21,8 @@ public:
 	void setAnimationState(int state) { modelAnimationState = state; }
 	char serialbuffer[100];
 
+	virtual void clearAccessory() { }
+
 	bool attacking, newAttack;
 	uint jumpCounter, attackCounter;
 	int health;

@@ -8,7 +8,7 @@ public:
 	virtual ~ShootingEffect(void);
 	virtual void resetParticle(ParticleAttributes* a);
 	virtual void update(float timeDelta);
-	virtual void setPosition(Vec3f pos);
+	virtual void setPosition(Vec3f pos, int size = 5);
 
 	D3DXVECTOR3 pos;
 };

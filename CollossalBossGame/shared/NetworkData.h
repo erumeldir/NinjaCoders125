@@ -89,6 +89,7 @@ enum ObjectType {
 	OBJ_MONSTER,
 	OBJ_TENTACLE,
 	OBJ_BULLET,
+	OBJ_HARPOON,
 	NUM_OBJS
 };
 

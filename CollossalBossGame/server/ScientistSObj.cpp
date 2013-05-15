@@ -1,28 +1,28 @@
-#include "ShooterSObj.h"
+#include "ScientistSObj.h"
 #include "BulletSObj.h"
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 #include "ServerObjectManager.h"
 
-ShooterSObj::ShooterSObj(uint id, uint clientId) : PlayerSObj(id, clientId, CHAR_CLASS_SHOOTER)
+ScientistSObj::ScientistSObj(uint id, uint clientId) : PlayerSObj(id, clientId, CHAR_CLASS_SCIENTIST)
 {
 	// Other re-initializations (things that don't depend on parameters, like config)
 	this->initialize();
 }
 
 
-ShooterSObj::~ShooterSObj(void)
+ScientistSObj::~ScientistSObj(void)
 {
 }
 
-void ShooterSObj::initialize() {
+void ScientistSObj::initialize() {
 	// Configuration options
 	PlayerSObj::initialize();
 	hso = NULL;
 }
 
-void ShooterSObj::actionAttack() {
+void ScientistSObj::actionAttack() {
 	Vec3f position;
 	position.x = this->pm->ref->getPos().x;
 	position.y = 10 + this->pm->ref->getPos().y;
@@ -48,7 +48,7 @@ void ShooterSObj::actionAttack() {
 	}
 }
 
-void ShooterSObj::releaseCharge() {
+void ScientistSObj::releaseCharge() {
 	Vec3f position;
 	position.x = this->pm->ref->getPos().x;
 	position.y = 10 + this->pm->ref->getPos().y;
@@ -62,7 +62,7 @@ void ShooterSObj::releaseCharge() {
 	SOM::get()->add(bso);
 }
 
-void ShooterSObj::clearAccessory() {
+void ScientistSObj::clearAccessory() {
 	hso->health = 0;
 	this->setFlag(IS_FLOATING, 0);
 	this->pm->accel = this->pm->vel*-1;

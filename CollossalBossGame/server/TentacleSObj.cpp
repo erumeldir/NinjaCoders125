@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "PlayerSObj.h"
 #include "BulletSObj.h"
+#include "HarpoonSObj.h"
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
 #include <time.h>
@@ -279,6 +280,13 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 
 	if(obj->getType() == OBJ_BULLET) {
 		BulletSObj* bullet = reinterpret_cast<BulletSObj*>(obj);
+		health -= bullet->damage;
+		if(this->health < 0) health = 0;
+		if(this->health > 100) health = 100;
+	}
+
+	if(obj->getType() == OBJ_HARPOON) {
+		HarpoonSObj* bullet = reinterpret_cast<HarpoonSObj*>(obj);
 		health -= bullet->damage;
 		if(this->health < 0) health = 0;
 		if(this->health > 100) health = 100;

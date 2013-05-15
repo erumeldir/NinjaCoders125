@@ -1,9 +1,11 @@
-#include "BulletSObj.h"
+#include "HarpoonSObj.h"
+#include "ShooterSObj.h"
+#include "PhysicsEngine.h"
 #include "ServerObjectManager.h"
 #include "defs.h"
 #include <math.h>
 
-BulletSObj::BulletSObj(uint id, Model modelNum, Point_t pos, Vec3f initialForce, int dmg, int diameter) : ServerObject(id)
+HarpoonSObj::HarpoonSObj(uint id, Model modelNum, Point_t pos, Vec3f initialForce, int dmg, int diameter, PlayerSObj * pso) : ServerObject(id)
 {
 	if(SOM::get()->debugFlag) DC::get()->print("Created new Bullet %d ", id);
 	Box bxVol;
@@ -22,33 +24,44 @@ BulletSObj::BulletSObj(uint id, Model modelNum, Point_t pos, Vec3f initialForce,
 	health = 5;
 	this->damage = dmg;
 	this->diameter = diameter;
+	this->pso = pso;
 }
 
 
-BulletSObj::~BulletSObj(void)
+HarpoonSObj::~HarpoonSObj(void)
 {
 	delete pm;
 }
 
-bool BulletSObj::update() {
+bool HarpoonSObj::update() {
 	// Apply Force of Gravity on every time step - or not, since we wanted an arc-ing shot
 	// return true when it collides with something?
 	// That'll wait for onCollision, I suppose.
 	this->setFlag(IS_FALLING, 0); // YAY IT'S A LASER PEWPEW
-	Vec3f magvec = this->getPhysicsModel()->vel;
-	Vec3f magacc = this->getPhysicsModel()->accel;
-	if(fabs(magvec.x) < 0.1 && fabs(magvec.y) < 0.1 && fabs(magvec.z) < 0.1 && fabs(magacc.x) < 0.1 && fabs(magacc.y) < 0.1 && fabs(magacc.z) < 0.1) {
-		return true;
+	if(this->getFlag(IS_STATIC)) {
+		assert(this->pso != NULL && "I'm not sure what happened here.");
+		Vec3f hl = this->pm->ref->getPos();
+		Vec3f pl = pso->getPhysicsModel()->ref->getPos();
+		Vec3f v = (hl - pl);
+		if(fabs(v.x) < 15 && fabs(v.y) < 15 && fabs(v.z) < 15) {
+			// pso->setFlag(IS_FLOATING, 1);
+			pso->getPhysicsModel()->accel = Vec3f();
+			pso->getPhysicsModel()->vel = Vec3f();
+		} else {
+			v.normalize();
+			pso->getPhysicsModel()->accel = (v/2);
+			// pso->getPhysicsModel()->vel = v;
+			pso->setFlag(IS_FLOATING, 1);
+		}
 	}
-	if(this->health > 0) {
+	if (this->health > 0) {
 		return false;
 	} else {
 		return true;
-		//return false;
 	}
 }
 
-int BulletSObj::serialize(char * buf) {
+int HarpoonSObj::serialize(char * buf) {
 	// All this ObjectState stuff is extra. TODO: Remove extra. 
 	*(int *)buf = diameter;
 	buf = buf + 4;
@@ -77,12 +90,14 @@ int BulletSObj::serialize(char * buf) {
 	}
 }
 
-void BulletSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
+void HarpoonSObj::onCollision(ServerObject *obj, const Vec3f &collNorm) {
 	if(obj->getType() == OBJ_GENERAL) {
-		this->health = 0;
-	} else {
- 		if(obj->getType() == OBJ_TENTACLE) {
-			this->health = 0;
-		}
+		this->setFlag(IS_STATIC, 1);
+	}
+	if(obj->getType() == OBJ_TENTACLE) {
+		pso->clearAccessory();
+	}
+	if(obj->getType() == OBJ_PLAYER) {
+		// this->health = 0;
 	}
 }

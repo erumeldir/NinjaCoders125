@@ -44,7 +44,7 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	PhysicsModel *mdl = obj->getPhysicsModel();
 
 	//Apply gravity if not falling; otherwise, apply friction
-	if(obj->getFlag(IS_FALLING)) {
+	if(obj->getFlag(IS_FALLING) && !obj->getFlag(IS_FLOATING)) {
 		//gravity
 		mdl->applyAccel(gravVec*gravMag);
 	} else {

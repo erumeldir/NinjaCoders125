@@ -4,11 +4,11 @@
 #include "Action.h"
 #include "ShootingEffect.h"
 
-class BulletCObj : public ClientObject
+class HarpoonCObj : public ClientObject
 {
 public:
-	BulletCObj(uint id, char *serializedData);
-	virtual ~BulletCObj(void);
+	HarpoonCObj(uint id, char *serializedData);
+	virtual ~HarpoonCObj(void);
 
 	virtual bool update();
 
