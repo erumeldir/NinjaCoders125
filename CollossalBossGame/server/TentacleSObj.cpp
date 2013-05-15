@@ -106,8 +106,8 @@ bool TentacleSObj::update() {
 
 				// randomly pick between shoot and slam
 				// maybe this will depend on if you're a tentacle or a head
-				if (rand() % 2) { modelAnimationState = T_SLAM; }
-				else { modelAnimationState = T_SHOOT; }
+				if (rand() % 2) { actionState = SLAM_ACTION; }
+				else { actionState = SHOOT_ACTION; }
 			}
 			// non-targetted attack
 			else
@@ -115,9 +115,9 @@ bool TentacleSObj::update() {
 				// randomly pick between slam combo, spike, and defense rage
 				switch(rand() % 3)
 				{
-				case 0:		modelAnimationState = T_COMBO; break;
-				case 1:		modelAnimationState = T_SPIKE; break;
-				default:	modelAnimationState = T_RAGE; break;
+				case 0:		actionState = COMBO_ACTION; break;
+				case 1:		actionState = SPIKE_ACTION; break;
+				default:	actionState = RAGE_ACTION; break;
 				}
 			}
 		}
@@ -127,8 +127,8 @@ bool TentacleSObj::update() {
 			this->setFlag(IS_HARMFUL, 0);
 
 			// randomly pick between idle and probing
-			if (rand() % 2) { modelAnimationState = T_IDLE; }
-			else { modelAnimationState = T_PROBE; }
+			if (rand() % 2) { actionState = IDLE_ACTION; }
+			else { actionState = PROBE_ACTION; }
 		}
 	}
 
@@ -168,31 +168,34 @@ bool TentacleSObj::update() {
 	// for testing todo remove
 
 	///////////////////// State logic ///////////////////////
-	switch(modelAnimationState)
+
+	//actionState = COMBO_ACTION;
+	
+	switch(actionState)
 	{
-	case T_IDLE:
+	case IDLE_ACTION:
 		idle();
 		break;
-	case T_PROBE:
+	case PROBE_ACTION:
 		idle(); // todo probe
 		break;
-	case T_SLAM:
+	case SLAM_ACTION:
 		slam();
 		break;
-	case T_COMBO:
-		slam(); // todo slam combo
+	case COMBO_ACTION:
+		slamCombo();
 		break;
-	case T_SHOOT:
+	case SHOOT_ACTION:
 		slam(); // todo shoot (maybe wait until we have a head model?)
 		break;
-	case T_SPIKE:
+	case SPIKE_ACTION:
 		spike();
 		break;
-	case T_RAGE:
+	case RAGE_ACTION:
 		spike(); // todo defense rage
 		break;
 	default:
-		if(modelAnimationState > NUM_T) DC::get()->print("ERROR: Tentacle state %d not known\n", modelAnimationState);
+		if(actionState > NUM_TENTACLE_ACTIONS) DC::get()->print("ERROR: Tentacle state %d not known\n", modelAnimationState);
 		break;
 	}
 
@@ -203,6 +206,8 @@ bool TentacleSObj::update() {
 }
 
 void TentacleSObj::idle() {
+	modelAnimationState = T_IDLE;
+
 	/* Cycle logic:
 	 * CYCLE*1/2 = The tentacle is extended
 	 * CYCLE = when the tentacle is back at the default position
@@ -267,7 +272,61 @@ void TentacleSObj::idle() {
 }
 
 void TentacleSObj::slam() {
-	/* Cycle logic:
+	// First, rotate ourselves to the player
+	if (stateCounter == 0) {
+		Vec3f rotationAxis = Vec3f(0,0,1);
+		Vec4f qAngle = Vec4f(rotationAxis, playerAngle);
+		lastRotation = this->getPhysicsModel()->ref->getRot();
+		this->getPhysicsModel()->ref->rotate(qAngle);
+	}
+
+	slamMotion();
+
+	// we're done!
+	//if((attackCounter - attackBuffer)%CYCLE == CYCLE - 1)
+	if(stateCounter == CYCLE - 1)
+	{
+		// reset our rotation
+		this->getPhysicsModel()->ref->setRot(lastRotation);
+
+		// establish that we're done
+		currStateDone = true;
+	}
+}
+
+#define NUM_SLAMS 16
+#define SLAM_ANGLE 2*M_PI/NUM_SLAMS
+void TentacleSObj::slamCombo() {
+	// First, save our initial rotation and reset our angle
+	if (stateCounter == 0) {
+		lastRotation = this->getPhysicsModel()->ref->getRot();
+	}
+
+	// Then, every new slam cycle, rotate our tentacle
+	//if (stateCounter%CYCLE == 0) {
+		Vec3f rotationAxis = Vec3f(0,0,1);
+		//Vec4f qAngle = Vec4f(rotationAxis, SLAM_ANGLE);
+		Vec4f qAngle = Vec4f(rotationAxis, SLAM_ANGLE/CYCLE);
+		this->getPhysicsModel()->ref->rotate(qAngle);
+	//}
+
+	slamMotion();
+
+	// We're done!
+	if (stateCounter >= CYCLE*NUM_SLAMS)
+	{
+		// reset our rotation
+		this->getPhysicsModel()->ref->setRot(lastRotation);
+
+		// establish that we're done
+		currStateDone = true;
+	}
+}
+
+void TentacleSObj::slamMotion() {
+	modelAnimationState = T_SLAM;
+
+		/* Cycle logic:
 	 * CYCLE*1/2 = The tentacle is extended
 	 * CYCLE = when the tentacle is back at the default position
 	 */
@@ -281,17 +340,7 @@ void TentacleSObj::slam() {
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
 	//if (((attackCounter - attackBuffer))%CYCLE == 0) {
-	if (stateCounter == 0) {
-		// First, rotate ourselves to the player
-		Vec3f rotationAxis = Vec3f(0,0,1);
-		Vec4f qAngle = Vec4f(rotationAxis, playerAngle);
-		lastRotation = this->getPhysicsModel()->ref->getRot();
-		this->getPhysicsModel()->ref->rotate(qAngle);
-
-		// Update our actual rotation axis
-		axis = this->getPhysicsModel()->ref->getRot();
-
-		// Now set our collision boxes
+	if (stateCounter%CYCLE == 0) {
 		Box origBase = slamBoxes[0];
 		Box origMiddle = slamBoxes[1];
 		Box origTip = slamBoxes[2];
@@ -341,7 +390,7 @@ void TentacleSObj::slam() {
 	if ( stateCounter%5 == 0 )
 	{
 		//if ((attackCounter - attackBuffer)%CYCLE < CYCLE/2) {
-		if (stateCounter < CYCLE/2) {
+		if (stateCounter%CYCLE < CYCLE/2) {
 			//Base z
 			//Base d
 
@@ -360,7 +409,7 @@ void TentacleSObj::slam() {
 			changeProportionT.y -= 30;
 				
 		//} else if ((attackCounter - attackBuffer)%CYCLE < CYCLE) {
-		} else if (stateCounter < CYCLE) {
+		} else if (stateCounter%CYCLE < CYCLE) {
 			//Mid y
 			changePosM.y += 5;
 			//Mid z
@@ -376,17 +425,6 @@ void TentacleSObj::slam() {
 			changeProportionT.y += 30;
 				
 		}
-	}
-
-	// we're done!
-	//if((attackCounter - attackBuffer)%CYCLE == CYCLE - 1)
-	if(stateCounter == CYCLE - 1)
-	{
-		// reset our rotation
-		this->getPhysicsModel()->ref->setRot(lastRotation);
-
-		// establish that we're done
-		currStateDone = true;
 	}
 	
 	// Rotate the relative change according to where we're facing
@@ -408,6 +446,8 @@ void TentacleSObj::slam() {
 }
 
 void TentacleSObj::spike() {
+	modelAnimationState = T_SPIKE;
+
 	//get the actual axis
 	Vec4f axis = this->getPhysicsModel()->ref->getRot();
 
@@ -492,7 +532,7 @@ void TentacleSObj::onCollision(ServerObject *obj, const Vec3f &collisionNormal) 
 
 	// if the monster is attacking, it pushes everything off it on the last attack frame
 //	if (attackCounter == (attackBuffer + attackFrames))
-	if (modelAnimationState == T_RAGE)
+	if (actionState == RAGE_ACTION)
 	{
 		Vec3f up = (PE::get()->getGravVec() * -1);
 		obj->getPhysicsModel()->applyForce((up + collisionNormal)*(float)pushForce);
