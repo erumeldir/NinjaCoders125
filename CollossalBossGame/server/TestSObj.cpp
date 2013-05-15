@@ -34,6 +34,7 @@ TestSObj::TestSObj(uint id, Model modelNum, Point_t pos, Quat_t rot, int dir) : 
 
 
 TestSObj::~TestSObj(void) {
+	delete pm;
 }
 
 bool TestSObj::update() {

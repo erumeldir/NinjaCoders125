@@ -94,6 +94,7 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PlayerCObj.cpp" />
     <ClCompile Include="PushAwayEffect.cpp" />
+    <ClCompile Include="RageCObj.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="RenderModel.cpp" />
     <ClCompile Include="ShootingEffect.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PlayerCObj.h" />
     <ClInclude Include="PushAwayEffect.h" />
+    <ClInclude Include="RageCObj.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="RenderModel.h" />
     <ClInclude Include="resource.h" />

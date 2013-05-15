@@ -86,6 +86,7 @@ enum ObjectType {
 	OBJ_PLAYER,
 	OBJ_MONSTER,
 	OBJ_TENTACLE,
+	OBJ_RAGE,
 	NUM_OBJS
 };
 

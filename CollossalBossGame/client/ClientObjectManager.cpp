@@ -7,6 +7,7 @@
 #include "PlayerCObj.h"
 #include "MonsterCObj.h"
 #include "TentacleCObj.h"
+#include "RageCObj.h"
 
 ClientObjectManager *ClientObjectManager::com;
 
@@ -122,6 +123,9 @@ void ClientObjectManager::create(uint id, char *data) {
 		break;
 	case OBJ_TENTACLE:
 		obj = new TentacleCObj(id, data + sizeof(CreateHeader));
+		break;
+	case OBJ_RAGE:
+		obj = new RageCObj(id, data + sizeof(CreateHeader));
 		break;
 	//case OBJ_ARENA:
 	//	obj = new WallCObj(id, data + sizeof(CreateHeader));

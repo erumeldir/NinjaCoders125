@@ -28,7 +28,7 @@ void PushAwayEffect::resetParticle(ParticleAttributes* a)
 	a->vel *= 17;  
 	a->color = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
 	a->age = 0;
-	a->lifetime = 15;
+	a->lifetime = 5;
 }
 
 void PushAwayEffect::update(float timeDelta)

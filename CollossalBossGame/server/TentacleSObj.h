@@ -40,6 +40,7 @@ public:
 	void slam();
 	void slamCombo();
 	void spike();
+	void rage();
 
 	int getHealth() { return health; }
 

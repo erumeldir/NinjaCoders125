@@ -5,6 +5,7 @@
 #include "PlayerSObj.h"
 #include "ConfigurationManager.h"
 #include "PhysicsEngine.h"
+#include "RageSObj.h"
 #include <time.h>
 #include <random>
 
@@ -167,6 +168,8 @@ bool TentacleSObj::update() {
 
 	// for testing todo remove
 
+	actionState = RAGE_ACTION;
+
 	///////////////////// State logic ///////////////////////
 
 	//actionState = COMBO_ACTION;
@@ -192,7 +195,7 @@ bool TentacleSObj::update() {
 		spike();
 		break;
 	case RAGE_ACTION:
-		spike(); // todo defense rage
+		rage();
 		break;
 	default:
 		if(actionState > NUM_TENTACLE_ACTIONS) DC::get()->print("ERROR: Tentacle state %d not known\n", modelAnimationState);
@@ -465,6 +468,20 @@ void TentacleSObj::spike() {
 
 	// I'm randomly making spike last 5 cycles, feel free to change this xD
 	currStateDone = (stateCounter == 4);
+}
+
+void TentacleSObj::rage() {
+	modelAnimationState = T_IDLE; // todo rage animation
+
+	// First, we create the wave object
+	if (stateCounter == 0) {
+		Box rageBox;
+		Vec4f axis = this->getPhysicsModel()->ref->getRot();
+		rageBox.setRelPos(axis.rotateToThisAxis(Vec3f(0,0,-120)));
+		SOM::get()->add(new RageSObj(SOM::get()->genId(), pm->ref->getPos(), rageBox));
+	}
+
+	currStateDone = stateCounter >= RageSObj::lifetime; // random fix todo
 }
 
 int TentacleSObj::serialize(char * buf) {
