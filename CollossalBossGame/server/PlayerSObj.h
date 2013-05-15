@@ -2,6 +2,7 @@
 #include "ServerObject.h"
 #include "WorldManager.h"
 #include "Action.h"
+#include "CollisionModel.h"
 
 class PlayerSObj : public ServerObject
 {

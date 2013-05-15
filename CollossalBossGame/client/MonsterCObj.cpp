@@ -26,5 +26,5 @@ bool MonsterCObj::update() {
 void MonsterCObj::deserialize(char* newState) {
 	MonsterState *state = (MonsterState*)newState;
 	this->health = state->health;
-	rm->getFrameOfRef()->deserialize(newState + sizeof(MonsterState));
+	//rm->getFrameOfRef()->deserialize(newState + sizeof(MonsterState));
 }
