@@ -7,7 +7,7 @@
 #include <vector>
 #include "Action.h"
 
-ClientNetworkManager ClientNetworkManager::CNM;
+ClientNetworkManager * ClientNetworkManager::CNM;
 
 /*
 	This object handles networking for the client
@@ -24,6 +24,7 @@ ClientNetworkManager ClientNetworkManager::CNM;
 ClientNetworkManager::ClientNetworkManager(void) {
 	connected = false;
 	debugFlag = CM::get()->find_config_as_int("NETWORK_DEBUG_FLAG");
+
 	char * HOST = CM::get()->find_config("HOST");
 	char * PORT = CM::get()->find_config("PORT");
 
@@ -137,7 +138,7 @@ ClientNetworkManager::ClientNetworkManager(void) {
 }
 
 ClientNetworkManager::~ClientNetworkManager(void) {
-
+	// TODO: close socket
 }
 
 bool ClientNetworkManager::isConnected()
@@ -160,17 +161,12 @@ int ClientNetworkManager::receivePackets(char * recvbuf)
     return iResult;
 }
 
-ClientNetworkManager * ClientNetworkManager::get() {
-	return &CNM;
-}
-
 bool ClientNetworkManager::update()
 {
     Packet packet;
     int data_length = receivePackets(network_data);
 	bool ret = true;
 
-	// TODO how to make sure you get all the packets the server wants to send? O_O
     while (data_length <= 0) 
     {
         //no data recieved
@@ -194,7 +190,7 @@ bool ClientNetworkManager::update()
 				connected = true;
 				ret = false;
 				break;
-            case ACTION_EVENT:
+            case OBJECT_MANAGER:
                 //DC::get()->print("client received action event packet from server\n");
 					
 				//memcpy(&(((TestObject*)COM::get()->find(0))->istat), &packet.packet_data, sizeof(inputstatus));
@@ -202,6 +198,13 @@ bool ClientNetworkManager::update()
 				if(debugFlag) DC::get()->print(CONSOLE | LOGFILE, "%s %d: Action event received\n", __FILE__, __LINE__);
 				COM::get()->serverUpdate(packet.object_id, packet.command_type, packet.packet_data);
                 break;
+			case GAMESTATE_MANAGER:
+				// ClientEngine::get()->serverUpdate(packet.packet_data);
+				break;
+			case RESET:
+				// RESET LOGIC. Like destroying everything and resetting.
+				// ClientEngine::get()->reset();
+				break;
 			case COMPLETE:
 				if(debugFlag) DC::get()->print(CONSOLE | LOGFILE, "%s %d: Complete packet received\n", __FILE__, __LINE__);
 				ret = false;
@@ -217,14 +220,14 @@ bool ClientNetworkManager::update()
 	return ret; 
 }
 
-void ClientNetworkManager::sendData(char * data, int datalen, int objectID) {
+void ClientNetworkManager::sendData(PacketTypes messagetype, char * data, int datalen, int objectID) {
 	// std::cout << data << std::endl;
 	
     char packet_data[sizeof(Packet)];
 
 	Packet packet;
 	packet.iteration = this->iteration_count;
-	packet.packet_type = ACTION_EVENT;
+	packet.packet_type = messagetype;
 	packet.object_id = objectID;
 	packet.command_type = CMD_ACTION;
 	packet.data_size = datalen;

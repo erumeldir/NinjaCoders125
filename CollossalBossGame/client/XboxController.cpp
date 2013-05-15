@@ -45,6 +45,7 @@ void XboxController::sendInput() {
 		istat.quit =			(gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;
 		istat.start =			(gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
 		istat.attack =			(gamepad.bRightTrigger) != 0;
+		istat.camLock =			(gamepad.bLeftTrigger);
 
 
 		// Get joystick positions
@@ -90,7 +91,7 @@ void XboxController::sendInput() {
 		}*/
 	}
 	//Send the input data, zero'd if nothing is there
-	ClientNetworkManager::get()->sendData(reinterpret_cast<char*>(&istat), sizeof(inputstatus), COM::get()->player_id);
+	ClientNetworkManager::get()->sendData(OBJECT_MANAGER, reinterpret_cast<char*>(&istat), sizeof(inputstatus), COM::get()->player_id);
 }
 
 bool XboxController::isConnected()

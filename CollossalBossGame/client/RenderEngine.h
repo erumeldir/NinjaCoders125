@@ -22,7 +22,12 @@
 #include "ClientObject.h"
 #include "XAnimator_lib.h"
 #include "Camera.h"
+#include "HeadsUpDisplay.h"
+#include "ParticleSystem.h"
 #include <time.h>
+#include "Snow.h"
+#include "CollisionBoxPoints.h"
+#include "ChargeEffect.h"
 
 using namespace std;
 
@@ -46,35 +51,33 @@ public:
 
 	LPDIRECT3D9 direct3dInterface; // the pointer to our Direct3D interface
 	LPDIRECT3DDEVICE9 direct3dDevice; // the pointer to the device class
-	ID3DXFont* direct3dText; // the pointer to the device class
-	LPD3DXLINE healthLine;
-	LPD3DXLINE monsterLine;
-	LPD3DXLINE backgroundLine;
-	LPD3DXSPRITE sprite;
-	LPD3DXSPRITE sprite1;
 	void renderThis(ClientObject *obj);
 	
 	Camera * getCamera() { return cam; }
-	void updateCamera(const Point_t &pos, const Rot_t &rot);
+	CollisionBoxPoints* getColBxPts() { return colBxPts; }
 
-	void setHUDText(string newText, int health) { hudText = newText; healthPts = health; }
+	void setHUDText(string newText, int health, float charge) { hudText = newText; healthPts = health; this->charge = charge;}
 	void setMonsterHUDText(string newText, int health) { monsterHUDText = newText; monsterHealthPts = health; }
-
+	void addParticleEffect(ParticleSystem* ps) { ps->init(this->direct3dDevice); this->particleSystems.push_back(ps);  }
+	
 	//Models
 	void animate(int id, const D3DXMATRIX &pos);
-	bool loadModel(const char * filename, int * idAddr);
+
+	bool loadModel(const char * filename, int * idAddr, const D3DXMATRIX &rootMat);
 
 	bool debugFlag;
 	//Debug
 	IXAnimator *getAnim() { return xAnimator; }
 
+	bool gamestarted; // begins as false, when everyone's pressed start, then set this to true.
 
 private:
 	void startWindow ();
 	void renderInitalization();	//the stuff that can't be pulled from here
 	void sceneDrawing();
 	void drawHUD();
-	void HUDInitialization();
+	void gamestartdisplayinit();
+	void gamestartdisplaylogic();
 
 	RenderEngine();
 	virtual ~RenderEngine();
@@ -87,18 +90,17 @@ private:
 	string monsterHUDText;
 	int healthPts;
 	int monsterHealthPts;
-	clock_t initTime, final;
+	float charge;
 
 	HWND windowHandle;	
 	list<ClientObject *> lsObjs;
 
 	Camera* cam;
-
-	IDirect3DTexture9 *g_texture;
-
+	HeadsUpDisplay* hud;
+	vector<ParticleSystem*> particleSystems;
+	CollisionBoxPoints* colBxPts;
 	//Configuration fields
 	float cameraDist;
-	int hudTopX, hudTopY;
 };
 typedef RenderEngine RE;
 

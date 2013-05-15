@@ -26,18 +26,38 @@ AudioEngine::AudioEngine() {
 		DC::get()->print("[Audio] WARNING: Init failed - no audio.\n");
 		break;
 	case 1:
-		DC::get()->print("[Audio] Init successful");
+		DC::get()->print("[Audio] Init successful\n");
 	}	
 
 	//test audio
-	loadStream();
+	char* music = CM::get()->find_config("MUSIC");
+	uint testid = addStream(music);
+	//playOneShot(testid,0.1f);
+
+	char* link = CM::get()->find_config("LINK");
+	uint jumpsound = addSound(link);
+	playLoop(jumpsound);
+
+	/*
+	FMOD::Channel *chan1;
+	result = system->playSound(FMOD_CHANNEL_FREE, stream, false, &chan1);
+	FMOD_ERRCHECK(result);
+	if(fmodErrThrown)
+		return false;*/
 }
 
 /*
- * Engine destructor. Deletes all audio assets and cleans all buffers.
+ * Deletes all audio assets and cleans all buffers.
  */
 AudioEngine::~AudioEngine() {
-	//add shut down code here
+
+	for(map<uint, FMOD::Sound *>::iterator it = loadedSounds.begin();
+		it != loadedSounds.end();
+		++it) {
+			it->second->release();
+	}
+	loadedSounds.clear();
+	system->release();
 }
 
 /*
@@ -73,10 +93,11 @@ int AudioEngine::startFMOD() {
 		return -1;
 	}
 
-	result = system->getNumDrivers(&numdrivers);
+	result = system->getNumDrivers(&numDrivers);
 	FMOD_ERRCHECK(result);
 
-	if(numdrivers == 0)
+	bool enableSound = CM::get()->find_config_as_bool("ENABLE_SOUND");
+	if(numDrivers == 0 || !enableSound)
 	{
 		result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND);
 		DC::get()->print("[Audio] WARNING: No driver found. Sound not enabled\n.");
@@ -87,17 +108,17 @@ int AudioEngine::startFMOD() {
 	}
 	else
 	{
-		result = system->getDriverCaps(0, &caps, 0, &speakermode);
+		result = system->getDriverCaps(0, &caps, 0, &speakerMode);
 		FMOD_ERRCHECK(result);
 		if(fmodErrThrown)
 			return -1;
 	}
 
 	//set the user selected speaker mode
-	result = system->setSpeakerMode(speakermode);
+	result = system->setSpeakerMode(speakerMode);
 	FMOD_ERRCHECK(result);
 	if(fmodErrThrown)
-		return -1;
+		return 0;
 
 	DC::get()->print("[Audio] Checking for hardware emulation...\n");
 
@@ -108,25 +129,25 @@ int AudioEngine::startFMOD() {
 		DC::get()->print("[Audio] WARNING: Hardware acceleration off!\n");
 		FMOD_ERRCHECK(result);
 		if(fmodErrThrown)
-			return -1;
+			return 0;
 	}
 
 	//get the driver info
-	result = system->getDriverInfo(0, drivername, 256, 0);
+	result = system->getDriverInfo(0, driverName, 256, 0);
 	FMOD_ERRCHECK(result);
 	if(fmodErrThrown)
-		return -1;
+		return 0;
 
-	DC::get()->print("[Audio] Driver: %s\n\n", drivername);
+	DC::get()->print("[Audio] Driver: %s\n\n", driverName);
 
-	if(strstr(drivername, "SigmaTel"))
+	if(strstr(driverName, "SigmaTel"))
 	{
 		//SigmaTel devices crackle if format is PCM 16bit
 		//set to PCM floating point to fix
 		result = system->setSoftwareFormat(48000,FMOD_SOUND_FORMAT_PCMFLOAT, 0, 0, FMOD_DSP_RESAMPLER_LINEAR);
 		FMOD_ERRCHECK(result)
 		if(fmodErrThrown)
-			return -1;
+			return 0;
 	}
 
 	//System::init(Max channels, init flags, extra driver data) only change max channels/flags
@@ -140,7 +161,7 @@ int AudioEngine::startFMOD() {
 	}
 	FMOD_ERRCHECK(result);
 	if(fmodErrThrown)
-		return -1;
+		return 0;
 
 	if(computerHasAudio)
 		return 1;
@@ -148,20 +169,135 @@ int AudioEngine::startFMOD() {
 		return 0;
 }
 
-bool AudioEngine::loadStream()
-{
-	FMOD::Sound *testing;
-	char* filename = CM::get()->find_config("MUSIC");
-	result = system->createStream(filename, FMOD_DEFAULT, 0, &testing);
+/*
+ * If the sound is not currently in our soundbank, adds it and returns the soundId
+ */
+uint AudioEngine::addSound(char* filename) {
+	uint id = getFileHash(filename);
+	map<uint, FMOD::Sound *>::iterator res = loadedSounds.find(id);
+	if(res != loadedSounds.end()) //sound already exists
+		return id;
+
+	//create a new sound
+	bool created = loadSound(filename, id);
+	if(created)
+		return id;
+	else
+		return 0;
+}
+
+/*
+ * If the sound is not currently in our soundbank, adds it and returns the soundId
+ */
+uint AudioEngine::addStream(char* filename) {
+	uint id = getFileHash(filename);
+	map<uint, FMOD::Sound *>::iterator res = loadedSounds.find(id);
+	if(res != loadedSounds.end()) //sound already exists
+		return id;
+
+	//create a new sound
+	bool created = loadStream(filename, id);
+	if(created)
+		return id;
+	else
+		return 0;
+}
+
+/*
+ * Opens a given file as a stream and handles any fmod exceptions that occur
+ */
+bool AudioEngine::loadSound(char* filename, uint soundId) {
+	FMOD::Sound *sound;
+	result = system->createSound(filename, FMOD_DEFAULT, 0, &sound);
 	FMOD_ERRCHECK(result);
 	if(fmodErrThrown)
 		return false;
 
-	FMOD::Channel *chan1;
-	result = system->playSound(FMOD_CHANNEL_FREE, testing, false, &chan1);
-	FMOD_ERRCHECK(result);
-	if(fmodErrThrown)
-		return false;
-
+	//add our sound to the hashtable
+	loadedSounds.insert(pair<uint,FMOD::Sound*>(soundId,sound));
 	return true;
+}
+
+/*
+ * Opens a given file as a stream and handles any fmod exceptions that occur
+ */
+bool AudioEngine::loadStream(char* filename, uint soundId) {
+	FMOD::Sound *stream;
+	result = system->createStream(filename, FMOD_DEFAULT, 0, &stream);
+	FMOD_ERRCHECK(result);
+	if(fmodErrThrown)
+		return false;
+
+	//add our sound to the hashtable
+	loadedSounds.insert(pair<uint,FMOD::Sound*>(soundId,stream));
+	return true;
+}
+
+/*
+ * Plays a one shot sample
+ */
+void AudioEngine::playOneShot(uint soundId) {
+	
+	map<uint,FMOD::Sound*>::iterator res = loadedSounds.find(soundId);
+	if(res != loadedSounds.end())
+	{
+		FMOD::Channel *chan;
+		FMOD::Sound *sound = res->second;
+		sound->setLoopCount(0);
+		FMOD_ERRCHECK(result);
+		result = system->playSound(FMOD_CHANNEL_FREE,sound,false,&chan);
+		FMOD_ERRCHECK(result);
+	}
+}
+
+/*
+ * Plays a one shot sample with the option of a starting channel volume
+ */
+void AudioEngine::playOneShot(uint SoundId, float volume) {
+
+	map<uint,FMOD::Sound*>::iterator res = loadedSounds.find(SoundId);
+	if(res != loadedSounds.end())
+	{
+		FMOD::Channel *chan;
+		FMOD::Sound *sound = res->second;
+		result = sound->setLoopCount(0);
+		FMOD_ERRCHECK(result);
+		result = system->playSound(FMOD_CHANNEL_FREE,sound,true,&chan);
+		FMOD_ERRCHECK(result);
+		result = chan->setVolume(volume);
+		FMOD_ERRCHECK(result);
+		result = chan->setPaused(false);
+		FMOD_ERRCHECK(result);
+	}
+}
+
+/*
+ * Plays a sample as a loop (mostly for streams)
+ */
+void AudioEngine::playLoop(uint SoundId) {
+	
+	map<uint,FMOD::Sound*>::iterator res = loadedSounds.find(SoundId);
+	if(res != loadedSounds.end())
+	{
+		FMOD::Channel *chan;
+		FMOD::Sound *sound = res->second;
+		sound->setLoopCount(-1);
+		result = system->playSound(FMOD_CHANNEL_FREE,sound,true,&chan);
+		FMOD_ERRCHECK(result);
+		result = chan->setLoopCount(-1);
+		FMOD_ERRCHECK(result);
+		result = chan->setPaused(false);
+		FMOD_ERRCHECK(result);
+	}
+}
+
+/*
+ * generates a simple hash so a sound can be searched by id as well as filename
+ */
+uint AudioEngine::getFileHash(char* filename)
+{
+	uint hash = 0;
+	for(int i = 0; i < strlen(filename); i++)
+		hash = 65599 * hash + filename[i];
+	return hash ^ (hash >> 16);
 }

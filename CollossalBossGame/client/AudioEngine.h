@@ -2,6 +2,8 @@
  * AudioEngine.h
  * Handles the audio playback
  */
+#include <map>
+
 #include "defs.h"
 #include "DebugConsole.h"
 #include "fmod.hpp"
@@ -23,27 +25,41 @@ public:
 	static AudioEngine *get() { return ae; }
 	static void clean() { delete ae; }
 
+	static uint getFileHash(char* filename);
+
+	//add sound to our soundbank
+	uint addSound(char* filename);
+	uint addStream(char* filename);
+
+	void playOneShot(uint soundId);
+	void playOneShot(uint soundId, float volume);
+	void playLoop(uint soundId);
+
 private:
 	//Constructors/destructors are private
 	AudioEngine();
 	virtual ~AudioEngine();
-
 	static AudioEngine *ae;	//instance
 
 	//FMOD init
 	int startFMOD();
 
-	//load file
-	bool loadStream();
+	//file loading
+	bool loadStream(char* filename, uint soundId);
+	bool loadSound(char* filename, uint soundId);
+
+	//hash table for our sounds and music streams
+	map<uint, FMOD::Sound *> loadedSounds;
+	map<uint, FMOD::Channel *> channels;
 
 	//FMOD objects
 	FMOD::System	 *system;
 	FMOD_RESULT		 result;
 	uint			 version;
-	int				 numdrivers;
-	FMOD_SPEAKERMODE speakermode; //number of channels
+	int				 numDrivers;
+	FMOD_SPEAKERMODE speakerMode; //number of channels
 	FMOD_CAPS	     caps;
-	char			 drivername[256];
+	char			 driverName[256];
 	bool			 fmodErrThrown; //used to check success without fatal exits/crashes
 };
 typedef AudioEngine AE;

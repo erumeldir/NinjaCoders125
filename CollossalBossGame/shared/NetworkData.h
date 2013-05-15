@@ -5,14 +5,16 @@
 #include "defs.h"
 
 #define MAX_PACKET_SIZE 1000000
-#define PACKET_SIZE 1024
+#define PACKET_SIZE 256
 
 // The type of message sent between client and server.
 enum PacketTypes {
     INIT_CONNECTION = 0,
-    ACTION_EVENT = 1,
-	MESSAGE = 2,
-	COMPLETE
+    OBJECT_MANAGER = 1,
+    GAMESTATE_MANAGER = 2,
+    RESET = 3,
+    CLIENT_READY = 4,
+    COMPLETE
 };
 
 // Commands sent from the ServerObjectManager to the ClientObjectManager.
@@ -64,7 +66,10 @@ enum Model {
 	MDL_WEST_WALL,
 	MDL_NORTH_WALL,
 	MDL_SOUTH_WALL,
-    MDL_PLAYER,
+    MDL_PLAYER_1,
+	MDL_PLAYER_2,
+	MDL_PLAYER_3,
+	MDL_PLAYER_4,
 	MDL_TEST_BOX,
 	MDL_TEST_PYRAMID,
 	MDL_TEST_PLANE,
@@ -79,6 +84,7 @@ enum Model {
  */
 enum ObjectType {
 	OBJ_GENERAL,
+	OBJ_WORLD,
 	OBJ_PLAYER,
 	OBJ_MONSTER,
 	OBJ_TENTACLE,
@@ -113,6 +119,20 @@ struct CreateHeader {
 struct PlayerState {
     Model modelNum;
 	int health;
+	int ready;
+	int charge;
+	int animationstate;
+	Quat_t camRot;
+};
+
+/*
+ * Stores information on the collision boxes that need to be 
+ * rendered on the client for testing
+ */
+const int maxBoxes = 5;
+struct CollisionState {
+	int totalBoxes; // so we know how many to actually draw
+	Box boxes[maxBoxes]; // to keep it simple, you can have up to 5 collision boxes
 };
 
 /*
@@ -120,7 +140,13 @@ struct PlayerState {
  */
 struct ObjectState {
     Model modelNum;
-	Vec3f scale;
+};
+
+/*
+ * State information for the WorldObject
+ */
+struct WorldState {
+	DIRECTION gravDir;
 };
 
 /*
@@ -136,5 +162,23 @@ struct MonsterState {
  */
 struct TentacleState {
 	Model modelNum;
+	int animationState;
+};
+
+enum TentacleActionState {
+	T_IDLE,
+	T_SLAM,
+	NUM_T
 	//int health;
+};
+
+/*
+ * Types of player animation states
+ */
+enum PlayerAnimationState {
+	IDLE = 0,
+	WALK = 1,
+	JUMP = 2,
+	ATK  = 3,
+	DEAD = 4
 };

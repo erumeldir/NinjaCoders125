@@ -3,8 +3,6 @@
 #define TIMESTEP 5
 
 //Movement Defines
-#define GROUND_FRICTION 1.1f	//A bit excessive, but it works for now
-#define AIR_FRICTION 1.01f	//A bit excessive, but it works for now
 #define MAX_VEL 5.0f
 
 //Collision Defines
@@ -23,6 +21,7 @@ PhysicsEngine::PhysicsEngine(void)
 	xNeg = yNeg = zNeg = 0;
 	gravVec = Vec3f(0, -1, 0);
 	gravDir = DOWN;
+	this->setGravDir(DOWN);
 }
 
 
@@ -76,26 +75,6 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	//Update acceleration
 	mdl->accel = Vec3f();
 
-#if 0
-	//Cap position
-	Point_t pos = mdl->ref->getPos();
-	if(pos.y + mdl->vol.y < yNeg) {
-		pos.y = yNeg - mdl->vol.y;
-	} else if(pos.y + mdl->vol.y + mdl->vol.h > yPos) {
-		pos.y = yPos - (mdl->vol.y + mdl->vol.h);
-	}
-	if(pos.x + mdl->vol.x < xNeg) {
-		pos.x = xNeg - mdl->vol.x;
-	} else if(pos.x + mdl->vol.x + mdl->vol.w > xPos) {
-		pos.x = xPos - (mdl->vol.x + mdl->vol.w);
-	}
-	if(pos.z + mdl->vol.z < zNeg) {
-		pos.z = zNeg - mdl->vol.z;
-	} else if(pos.z + mdl->vol.z + mdl->vol.l > zPos) {
-		pos.z = zPos - (mdl->vol.z + mdl->vol.l);
-	}
-	mdl->ref->setPos(Point_t(pos.x, pos.y, pos.z));
-#endif
 
 	//Object falls if it has moved (it may not fall after collision checks have been applied)
 	if(fabs(dx) > 0 || fabs(dy) > 0 || fabs(dz) > 0) {
@@ -106,12 +85,33 @@ bool PhysicsEngine::applyPhysics(ServerObject *obj) {
 	return true;	//We'll add a detection for has-moved later
 }
 
-
-void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2)
+{
 	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
 				 *mdl2 = obj2->getPhysicsModel();
-	Box bx1 = mdl1->vol + mdl1->ref->getPos(),
-		bx2 = mdl2->vol + mdl2->ref->getPos();
+	if(mdl1 == NULL || mdl2 == NULL) {
+		return;
+	}
+
+	// go through all the boxes of obj1 
+	vector<Box> obj1Boxes = mdl1->colBoxes;
+	vector<Box> obj2Boxes = mdl2->colBoxes;
+	for(std::vector<Box>::iterator box1 = obj1Boxes.begin(); box1 != obj1Boxes.end(); ++box1)
+		// go through all the boxes of obj
+		for(std::vector<Box>::iterator box2 = obj2Boxes.begin(); box2 != obj2Boxes.end(); ++box2)
+		{
+			applyPhysics(obj1, obj2, *box1, *box2);
+		}
+}
+
+void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1, Box b2) {
+	PhysicsModel *mdl1 = obj1->getPhysicsModel(),
+				 *mdl2 = obj2->getPhysicsModel();
+
+
+	Box bx1 = b1 + mdl1->ref->getPos(),
+		bx2 = b2 + mdl2->ref->getPos();
+
 	Vec3f collNorm1 = Vec3f(),
 		  collNorm2 = Vec3f();
 
@@ -189,12 +189,22 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(fXShift / 2, 0, 0);
             ptObj2Shift = Vec3f(-fXShift / 2, 0, 0);
         }
-		sign = fXShift < 0 ? -1 : 1;
+		sign = fXShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(sign,0,0);
 		collNorm2 = Vec3f(-sign,0,0);
 		mdl1->vel.x = 0;
 		mdl2->vel.x = 0;
-		//DC::get()->print(CONSOLE | LOGFILE, "(shifted x %f (sign = %f))\n", fXShift, sign);
+
+		//Stop the lower object from falling
+        if( ((gravDir == WEST) && (bx2.x + ptObj2Shift.x > bx1.x + ptObj1Shift.x)) ||
+			((gravDir == EAST) && (bx2.x + ptObj2Shift.x < bx1.x + ptObj1Shift.x)) ) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else if( ((gravDir == WEST) && (bx1.x + ptObj1Shift.x > bx2.x + ptObj2Shift.x)) ||
+				   ((gravDir == EAST) && (bx1.x + ptObj1Shift.x < bx2.x + ptObj2Shift.x)) ) {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+		}
     } else if(canShiftY && fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
         //Shift by Y (vertical)
         if(obj1->getFlag(IS_STATIC)) {
@@ -207,21 +217,22 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(0, fYShift / 2, 0);
             ptObj2Shift = Vec3f(0, -fYShift / 2, 0);
         }
-		sign = fYShift < 0 ? -1 : 1;
+		sign = fYShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(0,sign,0);
 		collNorm2 = Vec3f(0,-sign,0);
-		
-		//Stop the lower object from falling
-        if(bx2.y > bx1.y) {
-            obj2->setFlag(IS_FALLING, false);
-			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
-        } else {
-			obj1->setFlag(IS_FALLING, false);
-			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
-        }
 		mdl1->vel.y = 0;
 		mdl2->vel.y = 0;
-		//DC::get()->print(CONSOLE | LOGFILE, "(shifted y %f (sign = %f))\n", fYShift, sign);
+
+		//Stop the lower object from falling
+        if( ((gravDir == DOWN) && (bx2.y + ptObj2Shift.y > bx1.y + ptObj1Shift.y)) ||
+			((gravDir == UP)   && (bx2.y + ptObj2Shift.y < bx1.y + ptObj1Shift.y)) ) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else if( ((gravDir == DOWN) && (bx1.y + ptObj1Shift.y > bx2.y + ptObj2Shift.y)) ||
+				   ((gravDir == UP)   && (bx1.y + ptObj1Shift.y < bx2.y + ptObj2Shift.y)) ) {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+		}
     } else {
         //Shift by Z
         if(obj1->getFlag(IS_STATIC)) {
@@ -234,15 +245,55 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
             ptObj1Shift = Vec3f(0, 0, fZShift / 2);
             ptObj2Shift = Vec3f(0, 0, -fZShift / 2);
         }
-		sign = fZShift < 0 ? -1 : 1;
+		sign = fZShift < 0 ? -1.f : 1.f;
 		collNorm1 = Vec3f(0,0,sign);
 		collNorm2 = Vec3f(0,0,-sign);
 		mdl1->vel.z = 0;
 		mdl2->vel.z = 0;
-		//DC::get()->print(CONSOLE | LOGFILE, "(shifted z %f (sign = %f))\n", fZShift, sign);
+
+		//Stop the lower object from falling
+        if( ((gravDir == SOUTH) && (bx2.z + ptObj2Shift.z > bx1.z + ptObj1Shift.z)) ||
+			((gravDir == NORTH) && (bx2.z + ptObj2Shift.z < bx1.z + ptObj1Shift.z)) ) {
+            obj2->setFlag(IS_FALLING, false);
+			obj2->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+        } else if( ((gravDir == SOUTH) && (bx1.z + ptObj1Shift.z > bx2.z + ptObj2Shift.z)) ||
+				   ((gravDir == NORTH) && (bx1.z + ptObj1Shift.z < bx2.z + ptObj2Shift.z)) ) {
+			obj1->setFlag(IS_FALLING, false);
+			obj1->getPhysicsModel()->frictCoeff = GROUND_FRICTION;
+		}
 	}
 
-#if 1
+#if 0
+	//Testing prints
+	char *s;
+	switch(gravDir) {
+	case NORTH:
+		s = "NORTH";
+		break;
+	case SOUTH:
+		s = "SOUTH";
+		break;
+	case EAST:
+		s = "EAST";
+		break;
+	case WEST:
+		s = "WEST";
+		break;
+	case UP:
+		s = "UP";
+		break;
+	case DOWN:
+		s = "DOWN";
+		break;
+	default:
+		s = "?";
+	}
+	if(obj1->getId() == 8 || obj2->getId() == 8) {
+	DC::get()->print(CONSOLE | LOGFILE, "Direction %s, isFalling %d/%d = %s/%s\n",
+		s, obj1->getId(), obj2->getId(), obj1->getFlag(IS_FALLING) ? "T" : "F", obj2->getFlag(IS_FALLING) ? "T" : "F");
+	}
+#endif
+
 	//Move the objects by the specified amount
 	mdl1->ref->translate(ptObj1Shift);
 	mdl2->ref->translate(ptObj2Shift);
@@ -250,12 +301,13 @@ void PhysicsEngine::applyPhysics(ServerObject *obj1, ServerObject *obj2) {
 		mdl1->applyForce(collNorm1);
 		mdl2->applyForce(collNorm2);
 	}
-#endif
+
 	//Inform the logic module of the collision event
 	obj1->onCollision(obj2, collNorm1);
 	obj2->onCollision(obj1, collNorm2);
 }
 
+// NOTE: This expects positive width, height, length
 bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
 	return !(bx1.x + bx1.w < bx2.x ||
 			 bx1.y + bx1.h < bx2.y ||
@@ -263,4 +315,51 @@ bool PhysicsEngine::aabbCollision(const Box &bx1, const Box &bx2) {
 			 bx1.x > bx2.x + bx2.w ||
 			 bx1.y > bx2.y + bx2.h ||
 			 bx1.z > bx2.z + bx2.l);
+}
+
+void PhysicsEngine::setGravDir(DIRECTION dir) {
+	gravDir = dir;
+
+	Vec3f newVec, crossVec;
+	switch(dir) {
+	case NORTH:
+		newVec = Vec3f(0,0,1);
+		curGravRot = Quat_t(Vec3f(1,0,0), 3 * M_PI / 2);
+		break;
+	case SOUTH:
+		newVec = Vec3f(0,0,-1);
+		curGravRot = Quat_t(Vec3f(1,0,0), -3 * M_PI / 2);
+		break;
+	case EAST:
+		newVec = Vec3f(1,0,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), -3 * M_PI / 2);
+		break;
+	case WEST:
+		newVec = Vec3f(-1,0,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), 3 * M_PI / 2);
+		break;
+	case UP:
+		newVec = Vec3f(0,1,0);
+		curGravRot = Quat_t(Vec3f(0,0,1), M_PI);
+		break;
+	case DOWN:
+		newVec = Vec3f(0,-1,0);
+		curGravRot = Quat_t();
+		break;
+	}
+	/*
+	DC::get()->print(LOGFILE, "Old/New vecs: (%f,%f,%f)/(%f,%f,%f) ", gravVec.x, gravVec.y, gravVec.z, newVec.x, newVec.y, newVec.z);
+	cross(&crossVec, newVec, gravVec);
+	crossVec.normalize();
+	float ang = M_PI * 2 - angle(gravVec, newVec);
+	static Quat_t q = Quat_t();
+	curGravRot = Quat_t(crossVec, ang);
+	q *= curGravRot;
+	DC::get()->print(LOGFILE, "Axis: (%f,%f,%f) Angle: %f ", crossVec.x, crossVec.y, crossVec.z, ang * 180 / M_PI);
+	Vec3f up, fwd, rt;
+	getCorrectedAxes(q, &fwd, &up, &rt);
+	DC::get()->print(LOGFILE, "Up/Forward/Right: (%f,%f,%f)/(%f,%f,%f)/(%f,%f,%f)\n",
+		up.x, up.y, up.z, fwd.x, fwd.y, fwd.z,rt.x,rt.y, rt.z);
+	*/
+	gravVec = newVec;
 }

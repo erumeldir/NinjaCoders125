@@ -22,6 +22,7 @@ ClientEngine::ClientEngine() {
 
 	//Initialize engines
 	DC::init("clientLog.txt");
+	CNM::init();
 	RE::init();
 	COM::init();
 	AE::init();
@@ -36,6 +37,7 @@ ClientEngine::~ClientEngine() {
 	RE::clean();
 	COM::clean();
 	AE::clean();
+	CNM::clean();
 	DC::clean();
 }
 

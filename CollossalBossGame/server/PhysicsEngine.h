@@ -11,6 +11,7 @@ public:
 
 	bool applyPhysics(ServerObject *obj);
 	void applyPhysics(ServerObject *obj1, ServerObject *obj2);
+	void applyPhysics(ServerObject *obj1, ServerObject *obj2, Box b1, Box b2);
 
 	void setLimits(float xNeg, float yNeg, float zNeg, float xPos, float yPos, float zPos) {
 		this->xPos = xPos;
@@ -21,36 +22,11 @@ public:
 		this->zNeg = zNeg;
 	}
 
-	inline void setGravDir(uint dir) {
-		gravDir = dir;
+	void setGravDir(DIRECTION dir);
 
-		if(dir & NORTH) {
-			gravVec.z = 1;
-		} else if(dir & SOUTH) {
-			gravVec.z = -1;
-		} else {
-			gravVec.z = 0;
-		}
-
-		if(dir & EAST) {
-			gravVec.x = 1;
-		} else if(dir & WEST) {
-			gravVec.x = -1;
-		} else {
-			gravVec.x = 0;
-		}
-
-		if(dir & UP) {
-			gravVec.y = 1;
-		} else if(dir & DOWN) {
-			gravVec.y = -1;
-		} else {
-			gravVec.y = 0;
-		}
-	}
-
-	inline uint getGravDir() { return gravDir; }
+	inline DIRECTION getGravDir() { return gravDir; }
 	inline const Vec3f &getGravVec() { return gravVec; }
+	inline const Quat_t &getCurGravRot() { return curGravRot; }
 
 private:
 	PhysicsEngine(void);
@@ -65,7 +41,8 @@ private:
 	// Configuration options
 	float gravMag;
 	Vec3f gravVec;
-	uint gravDir;
+	DIRECTION gravDir;
+	Quat_t curGravRot;
 
 	//Position caps
 	float xPos, yPos, zPos,

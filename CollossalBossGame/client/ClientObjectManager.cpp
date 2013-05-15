@@ -13,6 +13,7 @@ ClientObjectManager *ClientObjectManager::com;
 ClientObjectManager::ClientObjectManager(void) {
 	curId = 0;
 	debugFlag = CM::get()->find_config_as_bool("COM_DEBUG_FLAG");
+	collisionMode = CM::get()->find_config_as_bool("COLLISION_MODE");
 }
 
 
@@ -23,6 +24,18 @@ ClientObjectManager::~ClientObjectManager(void) {
 		delete it->second;
 	}
 	mObjs.clear();
+}
+
+/*
+ * Populates the vector with all client objects of ObjectType type.
+ * Author: Franklin
+ */
+void ClientObjectManager::findObjects(ObjectType type, vector<ClientObject *> * l) {
+	for(map<uint, ClientObject *>::iterator it = mObjs.begin(); it != mObjs.end(); ++it) {
+		if (it->second->getObjectType() == type) {
+			l->push_back(it->second);
+		}
+	}
 }
 
 /*
@@ -94,9 +107,13 @@ void ClientObjectManager::serverUpdate(uint id, CommandTypes cmd, char *data) {
  * Creates the specified object and adds it to the list
  */
 void ClientObjectManager::create(uint id, char *data) {
-	ClientObject *obj;
+	ClientObject *obj = NULL;
 	CreateHeader *h = (CreateHeader*)data;
 	switch(h->type) {
+	case OBJ_WORLD:
+		//Just copy the world state into our state variable- no need to create an object
+		this->worldState = (*(WorldState*)data);
+		break;
 	case OBJ_PLAYER:
 		obj = new PlayerCObj(id, data + sizeof(CreateHeader));
 		break;
@@ -112,7 +129,9 @@ void ClientObjectManager::create(uint id, char *data) {
 		obj = new TestObject(id, data + sizeof(CreateHeader));
 		break;
 	}
-	add(obj);
+	if(obj != NULL) {
+		add(obj);
+	}
 }
 
 void ClientObjectManager::add(ClientObject *obj) {
