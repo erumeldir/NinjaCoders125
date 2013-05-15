@@ -5,7 +5,21 @@
 // fwd decl
 class MonsterSObj;
 
-#define CYCLE 50 //always even because of integer division
+// note this is only for slam now
+//#define CYCLE 50 //always even because of integer division
+#define CYCLE 18 //always even because of integer division
+
+// Different things tentacles can do
+enum TentacleAction {
+	IDLE_ACTION,
+	SLAM_ACTION,
+	SPIKE_ACTION,
+	PROBE_ACTION,
+	SHOOT_ACTION,
+	COMBO_ACTION,
+	RAGE_ACTION,
+	NUM_TENTACLE_ACTIONS
+};
 
 class TentacleSObj : public ServerObject
 {
@@ -19,10 +33,12 @@ public:
 	virtual ObjectType getType() { return OBJ_TENTACLE; }
 	virtual void onCollision(ServerObject *obj, const Vec3f &collisionNormal);
 	void setAnimationState(TentacleActionState state) { modelAnimationState = state; }
+	void setAction(TentacleAction action) { actionState = action; }
 
 	// Actions
 	void idle();
 	void slam();
+	void slamCombo();
 	void spike();
 
 	int getHealth() { return health; }
@@ -45,6 +61,7 @@ private:
 	int dir;
 	bool currStateDone; // whether or not our current state has gone through it's full cycle
 	TentacleActionState modelAnimationState;
+	TentacleAction actionState;
 	int pushForce; // force of tentacle when it pushes player away after attacking it
 	Quat_t lastRotation;
 	float playerAngle;
@@ -53,5 +70,8 @@ private:
 	Box idleBoxes[3]; // stores initial idle collision boxes
 	Box slamBoxes[3]; // stores first position for the slam boxes
 	Box spikeBox; // stores spike box =D
+
+	// Helper actions
+	void slamMotion(); // doesn't do the begin/end rotation
 };
 

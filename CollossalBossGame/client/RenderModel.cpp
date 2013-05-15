@@ -170,7 +170,10 @@ void RenderModel::render() {
 
 		//Render
 		if (RE::get()->debugFlag) DC::get()->print("ANIMATION STATE %d\n", modelState);
-		if(modelState != prevModelState) RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
+		if(modelState != prevModelState) {
+			RE::get()->getAnim()->ChangeAnimationSet(modelId, this->modelState);
+			RE::get()->getAnim()->ChangeAnimationPlaybackSpeed(modelId, 3.0);
+		}
 		RE::get()->animate(modelId, /*rotX * rotY * rotZ*/ rotMat * trans);
 		prevModelState = modelState;
 		//Draw Boxes

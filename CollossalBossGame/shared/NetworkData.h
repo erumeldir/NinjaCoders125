@@ -169,7 +169,6 @@ enum TentacleActionState {
 	T_SPIKE,
 	T_PROBE,
 	T_SHOOT,
-	T_COMBO,
 	T_RAGE,
 	NUM_T
 };
