@@ -22,7 +22,7 @@ public:
 	uint addSound(char* filename);
 
 	//play sound
-	void playSound(uint soundId, Frame frame);
+	bool playOneShot(uint soundId);
 
 private:
 	//all sounds available for our object

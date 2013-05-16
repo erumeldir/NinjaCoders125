@@ -18,7 +18,11 @@ PlayerCObj::PlayerCObj(uint id, char *data) :
 	this->health = state->health;
 	this->charge = state->charge;
 	rm = new RenderModel(Point_t(),Quat_t(), state->modelNum);
+	ss = new SoundSource();
+	char* s1 = CM::get()->find_config("LINK");
+	jumpsound = ss->addSound(s1);
 	cameraPitch = DEFAULT_PITCH;
+	buttonheld = false;
 	ready = false;
 	chargingEffect = new ChargeEffect(10);
 	// Register with RE, SO SMART :O
@@ -29,6 +33,7 @@ PlayerCObj::~PlayerCObj(void)
 {
 	delete rm;
 	delete chargingEffect;
+	delete ss;
 
 	//Quit the game
 	CE::get()->exit();
@@ -54,6 +59,16 @@ bool PlayerCObj::update() {
 					cameraPitch = (float)M_PI / 2.f;
 				} else if(cameraPitch < -M_PI / 4) {
 					cameraPitch = (float)-M_PI / 4.f;
+				}
+			}
+			//Hacky solution! CHANGE ME!!! Please I beg you!!!!
+			if(xctrl->getState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				if(!buttonheld) {
+					ss->playOneShot(jumpsound);
+					buttonheld = true;
+				}
+				else {
+					buttonheld = false;
 				}
 			}
 		}

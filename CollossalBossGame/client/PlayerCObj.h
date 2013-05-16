@@ -2,6 +2,7 @@
 #include "RenderModel.h"
 #include "ChargeEffect.h"
 #include "ClientObject.h"
+#include "SoundSource.h"
 
 class PlayerCObj : public ClientObject
 {
@@ -24,8 +25,13 @@ private:
 	int health;
 	float charge;
 	RenderModel *rm;
+	SoundSource *ss;
 	float cameraPitch;
 	Quat_t camRot;
 	ChargeEffect* chargingEffect;
+
+	//sounds
+	uint jumpsound;
+	bool buttonheld;
 };
 

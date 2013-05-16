@@ -9,18 +9,14 @@
 //static members
 AudioEngine *AudioEngine::ae;
 
-/*
- * Engine constructor.Initialize the FMOD engine
- */
 AudioEngine::AudioEngine() {
-	//start up fmod
-	int initResult = startFMOD();
 
+	int initResult = startFMOD();
 	//handle init success/failure
 	switch(initResult) {
 	case -1:
 		DC::get()->print("[Audio] ERROR: Critical FMOD error. Exiting\n");
-		exit(-1); //for now just quit if critical error
+		exit(-1); //Hacky solution...probably should change this
 		break;
 	case 0:
 		DC::get()->print("[Audio] WARNING: Init failed - no audio.\n");
@@ -30,25 +26,15 @@ AudioEngine::AudioEngine() {
 	}	
 
 	//test audio
-	char* music = CM::get()->find_config("MUSIC");
+	/*char* music = CM::get()->find_config("MUSIC");
 	uint testid = addStream(music);
-	//playOneShot(testid,0.1f);
+	playOneShot(testid,0.3f);*/
 
-	char* link = CM::get()->find_config("LINK");
+	/*char* link = CM::get()->find_config("LINK");
 	uint jumpsound = addSound(link);
-	playLoop(jumpsound);
-
-	/*
-	FMOD::Channel *chan1;
-	result = system->playSound(FMOD_CHANNEL_FREE, stream, false, &chan1);
-	FMOD_ERRCHECK(result);
-	if(fmodErrThrown)
-		return false;*/
+	playOneShot(testid);*/
 }
 
-/*
- * Deletes all audio assets and cleans all buffers.
- */
 AudioEngine::~AudioEngine() {
 
 	for(map<uint, FMOD::Sound *>::iterator it = loadedSounds.begin();
@@ -243,7 +229,7 @@ void AudioEngine::playOneShot(uint soundId) {
 	{
 		FMOD::Channel *chan;
 		FMOD::Sound *sound = res->second;
-		sound->setLoopCount(0);
+		result = sound->setMode(FMOD_LOOP_OFF); //set to loop
 		FMOD_ERRCHECK(result);
 		result = system->playSound(FMOD_CHANNEL_FREE,sound,false,&chan);
 		FMOD_ERRCHECK(result);
@@ -260,7 +246,7 @@ void AudioEngine::playOneShot(uint SoundId, float volume) {
 	{
 		FMOD::Channel *chan;
 		FMOD::Sound *sound = res->second;
-		result = sound->setLoopCount(0);
+		result = sound->setMode(FMOD_LOOP_OFF); //set to loop
 		FMOD_ERRCHECK(result);
 		result = system->playSound(FMOD_CHANNEL_FREE,sound,true,&chan);
 		FMOD_ERRCHECK(result);
@@ -281,10 +267,9 @@ void AudioEngine::playLoop(uint SoundId) {
 	{
 		FMOD::Channel *chan;
 		FMOD::Sound *sound = res->second;
-		sound->setLoopCount(-1);
-		result = system->playSound(FMOD_CHANNEL_FREE,sound,true,&chan);
+		result = sound->setMode(FMOD_LOOP_NORMAL); //set to loop
 		FMOD_ERRCHECK(result);
-		result = chan->setLoopCount(-1);
+		result = system->playSound(FMOD_CHANNEL_FREE,sound,true,&chan);
 		FMOD_ERRCHECK(result);
 		result = chan->setPaused(false);
 		FMOD_ERRCHECK(result);
